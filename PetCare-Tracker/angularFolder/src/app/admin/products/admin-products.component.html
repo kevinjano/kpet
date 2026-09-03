@@ -1,0 +1,114 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Productos</h2>
+
+  <div class="admin-filter-bar">
+    <div class="admin-search-wrap">
+      <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="admin-search-input" placeholder="Buscar por nombre o descripción..." [(ngModel)]="searchTerm">
+    </div>
+    <select class="admin-filter-select" [(ngModel)]="categoryFilter">
+      <option value="">Todas las categorías</option>
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+    <span class="admin-filter-count">{{ filteredProducts.length }} de {{ products.length }}</span>
+  </div>
+
+  <app-admin-table>
+    <thead>
+    <tr>
+      <th>Imagen</th>
+      <th>Nombre</th>
+      <th>Categoría</th>
+      <th>Precio</th>
+      <th>Oferta</th>
+      <th>Stock</th>
+      <th>Activo</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let product of filteredProducts; trackBy: trackById">
+      <td>
+        <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="admin-thumb">
+        <span *ngIf="!product.imageUrl" class="text-muted">—</span>
+      </td>
+      <td class="fw-semibold">{{ product.name }}</td>
+      <td>{{ product.category }}</td>
+      <td>
+        <span *ngIf="product.onSale" class="text-decoration-line-through text-muted me-1">Bs.{{ product.price.toFixed(2) }}</span>
+        <span class="fw-semibold">Bs.{{ (product.onSale && product.salePrice != null ? product.salePrice : product.price).toFixed(2) }}</span>
+      </td>
+      <td><span class="role-pill" [class.role-admin]="product.onSale">{{ product.onSale ? 'Sí' : 'No' }}</span></td>
+      <td>{{ product.stock }}</td>
+      <td>{{ product.active ? 'Sí' : 'No' }}</td>
+      <td class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="editProduct(product)">Editar</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </app-admin-table>
+
+  <h3 class="admin-subtitle pt-5">{{ editingProductId ? 'Editar producto' : 'Añadir producto' }}</h3>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="admin-form-card kpet-fade-up">
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Nombre:</label>
+        <input type="text" class="form-control" formControlName="name">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Categoría:</label>
+        <select class="form-select" formControlName="category">
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Descripción:</label>
+        <textarea class="form-control" formControlName="description" rows="2"></textarea>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Precio (Bs):</label>
+        <input type="number" step="0.01" class="form-control" formControlName="price">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Stock:</label>
+        <input type="number" class="form-control" formControlName="stock">
+      </div>
+
+      <div class="col-md-4" *ngIf="form.value.onSale">
+        <label class="form-label fw-semibold">Precio de oferta (Bs):</label>
+        <input type="number" step="0.01" class="form-control" formControlName="salePrice">
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <input type="checkbox" id="onSale" class="form-check-input" formControlName="onSale">
+        <label for="onSale" class="form-check-label fw-semibold mb-0">En oferta</label>
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <input type="checkbox" id="active" class="form-check-input" formControlName="active">
+        <label for="active" class="form-check-label fw-semibold mb-0">Activo (visible en tienda)</label>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Imagen:</label>
+        <input type="file" accept="image/*" class="form-control" (change)="onFileSelected($event)">
+        <img *ngIf="previewUrl" [src]="previewUrl" alt="preview" class="admin-preview mt-2">
+      </div>
+
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-kpet-primary" [disabled]="form.invalid || saving">
+        {{ editingProductId ? 'Guardar cambios' : 'Añadir producto' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary" *ngIf="editingProductId" (click)="cancelEdit()">Cancelar</button>
+    </div>
+  </form>
+</div>

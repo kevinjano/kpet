@@ -1,0 +1,40 @@
+<div class="auth-page">
+  <div class="auth-card kpet-fade-up">
+    <a routerLink="/" class="auth-logo">
+      <img *ngIf="logoUrl; else registerLogoText" [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="auth-logo-img">
+      <ng-template #registerLogoText>Kpet<span class="dot">.</span></ng-template>
+    </a>
+    <h2>Crear cuenta</h2>
+    <p class="auth-subtitle">Únete a la familia Kpet</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="g-3">
+
+      <div class="form-group mb-3">
+        <input type="text" formControlName="firstName" class="form-control" placeholder="Nombre">
+      </div>
+      <div class="form-group mb-3">
+        <input type="text" formControlName="lastName" class="form-control" placeholder="Apellido">
+      </div>
+      <div class="form-group mb-3">
+        <input type="email" formControlName="email" class="form-control" placeholder="Correo electrónico">
+      </div>
+      <div class="form-group mb-3">
+        <input type="text" formControlName="noTel" class="form-control" placeholder="Número de teléfono">
+      </div>
+      <div class="form-group mb-4 password-field">
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control" placeholder="Contraseña">
+        <button type="button" class="password-toggle-btn" (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+          <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+        </button>
+      </div>
+
+      <button class="btn btn-kpet-primary w-100 mb-2" type="submit">Crear cuenta</button>
+      <button type="button" class="btn btn-fermer w-100" routerLink='/' routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Cancelar</button>
+
+    </form>
+
+    <p class="auth-footer">¿Ya tienes cuenta? <a routerLink="/login">Iniciar sesión</a></p>
+  </div>
+</div>

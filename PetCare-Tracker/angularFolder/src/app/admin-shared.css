@@ -1,0 +1,127 @@
+.admin-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+}
+
+.admin-subtitle {
+  font-weight: 700;
+  color: var(--kpet-ink);
+  border-bottom: 3px solid var(--kpet-purple-200, var(--kpet-purple-100));
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.admin-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-search-wrap {
+  position: relative;
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.admin-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--kpet-ink-soft);
+  pointer-events: none;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 0.55rem 0.9rem 0.55rem 2.4rem;
+  border-radius: var(--kpet-radius-pill);
+  border: 1px solid rgba(76, 29, 149, 0.14);
+  background: var(--kpet-white);
+  font-size: 0.9rem;
+  color: var(--kpet-ink);
+  transition: border-color var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.admin-search-input::placeholder {
+  color: var(--kpet-ink-soft);
+}
+
+.admin-search-input:focus {
+  outline: none;
+  border-color: var(--kpet-purple-500);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
+}
+
+.admin-filter-select {
+  padding: 0.55rem 2rem 0.55rem 0.9rem;
+  border-radius: var(--kpet-radius-pill);
+  border: 1px solid rgba(76, 29, 149, 0.14);
+  background: var(--kpet-white);
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--kpet-ink);
+  min-width: 170px;
+}
+
+.admin-filter-select:focus {
+  outline: none;
+  border-color: var(--kpet-purple-500);
+}
+
+.admin-filter-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--kpet-ink-soft);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* .admin-table-card / .admin-table* rules live in AdminTableComponent now
+   (angularFolder/src/app/admin-table) — that component wraps every admin list
+   table, so those styles only need to exist in one place. */
+.admin-form-card {
+  background: #F7F5FC;
+  border: 1px solid rgba(76, 29, 149, 0.06);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  overflow: hidden;
+  padding: 1.75rem;
+  margin-top: 1rem;
+}
+
+.role-pill {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+}
+
+.role-pill.role-admin {
+  background: linear-gradient(135deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
+  color: var(--kpet-purple-900);
+}
+
+.admin-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius-sm);
+}
+
+.admin-preview {
+  max-width: 200px;
+  max-height: 160px;
+  object-fit: contain;
+  border: 1px solid rgba(76, 29, 149, 0.1);
+  border-radius: var(--kpet-radius-sm);
+  padding: 4px;
+}

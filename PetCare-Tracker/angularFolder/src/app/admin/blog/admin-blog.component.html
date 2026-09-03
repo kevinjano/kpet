@@ -1,0 +1,71 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Blog</h2>
+
+  <app-admin-table>
+    <thead>
+    <tr>
+      <th>Imagen</th>
+      <th>Título</th>
+      <th>Fecha evento</th>
+      <th>Publicado</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let post of posts; trackBy: trackById">
+      <td>
+        <img *ngIf="post.imageUrl" [src]="resolveImageUrl(post.imageUrl)" [alt]="post.title" class="admin-thumb">
+        <span *ngIf="!post.imageUrl" class="text-muted">—</span>
+      </td>
+      <td class="fw-semibold">{{ post.title }}</td>
+      <td>{{ post.eventDate || '—' }}</td>
+      <td><span class="role-pill" [class.role-admin]="post.published">{{ post.published ? 'Sí' : 'No' }}</span></td>
+      <td class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="editPost(post)">Editar</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deletePost(post.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </app-admin-table>
+
+  <h3 class="admin-subtitle pt-5">{{ editingPostId ? 'Editar publicación' : 'Nueva publicación' }}</h3>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="admin-form-card kpet-fade-up">
+    <div class="row g-3">
+
+      <div class="col-md-8">
+        <label class="form-label fw-semibold">Título:</label>
+        <input type="text" class="form-control" formControlName="title">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Fecha del evento (opcional):</label>
+        <input type="date" class="form-control" formControlName="eventDate">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Contenido:</label>
+        <textarea class="form-control" formControlName="content" rows="4" placeholder="Cuenta la novedad, evento o historia..."></textarea>
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <input type="checkbox" id="published" class="form-check-input" formControlName="published">
+        <label for="published" class="form-check-label fw-semibold mb-0">Publicado (visible en el blog)</label>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Imagen:</label>
+        <input type="file" accept="image/*" class="form-control" (change)="onFileSelected($event)">
+        <img *ngIf="previewUrl" [src]="previewUrl" alt="preview" class="admin-preview mt-2">
+      </div>
+
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-kpet-primary" [disabled]="form.invalid || saving">
+        {{ editingPostId ? 'Guardar cambios' : 'Publicar' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary" *ngIf="editingPostId" (click)="cancelEdit()">Cancelar</button>
+    </div>
+  </form>
+</div>

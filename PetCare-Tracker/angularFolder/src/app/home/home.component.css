@@ -1,0 +1,579 @@
+:host {
+  display: block;
+}
+
+/* ---------- Nav ---------- */
+.kpet-nav {
+  background: var(--kpet-white);
+  border-bottom: 1px solid rgba(76, 29, 149, 0.08);
+  box-shadow: var(--kpet-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.kpet-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.kpet-logo-text {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-800));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.kpet-logo-text .dot {
+  color: var(--kpet-yellow-500);
+  -webkit-text-fill-color: var(--kpet-yellow-500);
+}
+
+.kpet-burger {
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+}
+
+.kpet-burger span {
+  width: 24px;
+  height: 2px;
+  background: var(--kpet-purple-700);
+  border-radius: 2px;
+}
+
+@media (max-width: 991.98px) {
+  .kpet-nav .container {
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .kpet-logo img {
+    height: 56px;
+  }
+
+  .kpet-logo-text {
+    font-size: 2.1rem;
+  }
+
+  .kpet-burger {
+    padding: 9px;
+  }
+
+  .kpet-burger span {
+    width: 27px;
+    height: 2.5px;
+  }
+}
+
+.kpet-nav-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.kpet-category-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  /* Category links center themselves in whatever space is left between the
+     logo and the action buttons, instead of clustering next to Carrito/Mi
+     perfil — and since they now claim all the leftover width, the actions
+     naturally land flush against the right edge. */
+  .kpet-category-nav {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .kpet-nav-actions {
+    flex-shrink: 0;
+  }
+}
+
+.kpet-category-nav a {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--kpet-ink-soft);
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 4px;
+  transition: color var(--kpet-transition);
+}
+
+.kpet-category-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
+  transition: width var(--kpet-transition);
+  border-radius: 2px;
+}
+
+.kpet-category-nav a:hover,
+.kpet-category-nav a.active {
+  color: var(--kpet-purple-700);
+}
+
+.kpet-category-nav a:hover::after,
+.kpet-category-nav a.active::after {
+  width: 100%;
+}
+
+.kpet-category-nav a.offer-link {
+  color: var(--kpet-purple-600);
+}
+
+.kpet-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.kpet-cart-btn {
+  position: relative;
+}
+
+.kpet-cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--kpet-yellow-500);
+  color: var(--kpet-purple-900);
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 991.98px) {
+  /* The mobile menu is a right-side drawer (matches the burger button's
+     position) rather than an inline dropdown — always rendered, off-screen via
+     transform when closed so it can slide in smoothly instead of popping open. */
+  .kpet-nav-content {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100dvh;
+    width: min(320px, 85vw);
+    background: var(--kpet-purple-100);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 5.5rem 1.5rem 2rem;
+    gap: 1.75rem;
+    transform: translateX(100%);
+    transition: transform 320ms var(--kpet-ease);
+    overflow-y: auto;
+    z-index: 200;
+    box-shadow: var(--kpet-shadow-lg);
+  }
+
+  .kpet-nav-content.open {
+    transform: translateX(0);
+  }
+
+  .kpet-nav-close {
+    position: absolute;
+    top: 1.1rem;
+    left: 1.1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--kpet-white);
+    color: var(--kpet-purple-700);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--kpet-transition), transform var(--kpet-transition);
+  }
+
+  .kpet-nav-close:hover {
+    background: var(--kpet-purple-100);
+    transform: rotate(90deg);
+  }
+
+  .kpet-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(59, 7, 100, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 190;
+    animation: kpet-nav-backdrop-in 220ms var(--kpet-ease);
+  }
+
+  @keyframes kpet-nav-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ---------- Drawer greeting ---------- */
+  .kpet-drawer-greeting {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--kpet-ink);
+    font-size: 0.98rem;
+  }
+
+  .kpet-drawer-greeting-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--kpet-white);
+    color: var(--kpet-purple-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .kpet-drawer-greeting-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  /* ---------- Category list + sliding multicolor pill (mirrors the admin sidebar) ---------- */
+  .kpet-category-nav {
+    position: relative;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .kpet-category-slider {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-radius: 12px;
+    background: linear-gradient(120deg, var(--kpet-purple-600) 0%, var(--kpet-purple-500) 55%, var(--kpet-yellow-500) 130%);
+    box-shadow: 0 4px 14px rgba(76, 29, 149, 0.22);
+    transition: transform 380ms cubic-bezier(0.34, 1.15, 0.64, 1), height 380ms cubic-bezier(0.34, 1.15, 0.64, 1);
+    z-index: 0;
+  }
+
+  .kpet-category-nav a {
+    position: relative;
+    z-index: 1;
+    display: block;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+  }
+
+  .kpet-category-nav a::after {
+    display: none;
+  }
+
+  .kpet-category-nav a.active {
+    color: var(--kpet-white);
+  }
+
+  .kpet-nav-actions {
+    margin-top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(76, 29, 149, 0.1);
+  }
+
+  .kpet-nav-actions .btn {
+    width: 100%;
+    background: var(--kpet-white);
+  }
+}
+
+/* ---------- Hero ---------- */
+.hero-wrap {
+  height: 420px;
+  max-height: 55vh;
+}
+
+.hero-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--kpet-purple-700), var(--kpet-purple-500) 55%, var(--kpet-yellow-500));
+  position: relative;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: white;
+  padding: 2rem;
+  max-width: 720px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.hero-overlay h1 {
+  font-weight: 800;
+  font-size: 2.6rem;
+  line-height: 1.15;
+}
+
+.hero-overlay p {
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+::ng-deep app-banner-carousel {
+  display: block;
+  height: 100%;
+}
+
+::ng-deep app-banner-carousel .kpet-carousel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(59, 7, 100, 0.55), rgba(59, 7, 100, 0.1) 55%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+::ng-deep app-banner-carousel .hero-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+/* ---------- Section header ---------- */
+.section-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+}
+
+.section-underline {
+  flex: 1;
+  max-width: 120px;
+  height: 4px;
+  margin-left: 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
+  display: none;
+}
+
+/* ---------- Product cards ---------- */
+.product-card {
+  border-color: rgba(76, 29, 149, 0.08);
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--kpet-shadow-lg);
+}
+
+.product-image-wrapper {
+  position: relative;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--kpet-purple-50);
+  border-top-left-radius: var(--kpet-radius);
+  border-top-right-radius: var(--kpet-radius);
+  overflow: hidden;
+}
+
+.product-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 400ms var(--kpet-ease);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.06);
+}
+
+.product-image-placeholder {
+  font-size: 3rem;
+  opacity: 0.35;
+}
+
+.offer-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
+  color: var(--kpet-purple-900);
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.product-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--kpet-ink);
+}
+
+.product-description {
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.price-old {
+  text-decoration: line-through;
+  color: #A79BC4;
+  font-size: 0.85rem;
+}
+
+.price-current {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--kpet-purple-700);
+}
+
+.add-to-cart-btn {
+  position: relative;
+}
+
+.add-to-cart-qty {
+  position: absolute;
+  top: 50%;
+  right: 0.7rem;
+  transform: translateY(-50%);
+  background: var(--kpet-white);
+  color: var(--kpet-purple-700);
+  font-weight: 800;
+  font-size: 0.78rem;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Conócenos / Social ---------- */
+.about-section {
+  background: var(--kpet-purple-50);
+  padding: 3.5rem 0;
+  margin-top: 3rem;
+}
+
+.about-text {
+  color: var(--kpet-ink-soft);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.social-card {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  padding: 1.75rem;
+}
+
+.social-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--kpet-ink);
+  margin-bottom: 1rem;
+}
+
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--kpet-white);
+  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-700));
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--kpet-shadow);
+  color: var(--kpet-white);
+}
+
+.social-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.social-tiktok {
+  background: linear-gradient(135deg, var(--kpet-ink), var(--kpet-purple-700));
+}
+
+.social-youtube {
+  background: linear-gradient(135deg, #DC2626, var(--kpet-purple-700));
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(76, 29, 149, 0.08);
+}
+
+.contact-link {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Footer ---------- */
+.footer-kpet {
+  background: linear-gradient(135deg, var(--kpet-purple-900), var(--kpet-purple-700));
+  color: rgba(255, 255, 255, 0.85);
+}

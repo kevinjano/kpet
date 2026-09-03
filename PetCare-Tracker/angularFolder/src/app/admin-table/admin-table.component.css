@@ -1,0 +1,54 @@
+/* Global (see ViewEncapsulation.None note in admin-table.component.ts) — these
+   selectors intentionally have no scope attribute so they reach projected
+   <thead>/<tbody> content from any admin page. */
+
+.admin-table-card {
+  background: #F7F5FC;
+  border: 1px solid rgba(76, 29, 149, 0.06);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.admin-table {
+  margin-bottom: 0;
+}
+
+/* background+color both set directly on th (not on thead) and deliberately
+   matching Bootstrap's own ".table > :not(caption) > * > *" selector
+   specificity plus one more type selector — Bootstrap sets background-color
+   AND color per-cell (not per-thead), so a rule that only styled `thead`
+   would tie on specificity and could lose depending on CSS load order,
+   silently leaving white-on-white header text.
+
+   Uses DIRECT-child combinators (>) on purpose: some admin tables (Pedidos →
+   Historial) nest a second, unrelated <table> inside a <td> to show an
+   order's line items when expanded. A plain descendant selector here would
+   also paint THAT inner table's header purple — colliding with its own
+   scoped color rule and landing on purple-on-purple, unreadable text. The
+   ">" chain only matches this component's own top-level header row. */
+.admin-table > thead > tr > th {
+  background: var(--kpet-purple-700);
+  color: var(--kpet-white);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: none;
+  padding: 0.9rem 1rem;
+}
+
+.admin-table td {
+  padding: 0.9rem 1rem;
+  border-color: rgba(76, 29, 149, 0.06);
+}
+
+.admin-table tbody tr {
+  background: #FBFAFE;
+  transition: background-color var(--kpet-transition);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--kpet-purple-50);
+}

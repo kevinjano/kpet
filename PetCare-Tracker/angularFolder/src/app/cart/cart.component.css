@@ -1,0 +1,210 @@
+.kpet-topbar {
+  background: var(--kpet-white);
+  border-bottom: 1px solid rgba(76, 29, 149, 0.08);
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.kpet-back-link {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.kpet-back-link:hover {
+  color: var(--kpet-purple-900);
+}
+
+.cart-logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.kpet-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--kpet-ink-soft);
+}
+
+.empty-cart-icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cart-items-card {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  overflow: hidden;
+}
+
+.cart-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(76, 29, 149, 0.06);
+  gap: 1rem;
+  flex-wrap: wrap;
+  transition: background-color var(--kpet-transition);
+}
+
+.cart-row:hover {
+  background: var(--kpet-purple-50);
+}
+
+.cart-row-header {
+  font-weight: 700;
+  color: var(--kpet-ink-soft);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: var(--kpet-purple-50);
+}
+
+.cart-row:last-child {
+  border-bottom: none;
+}
+
+.col-product { flex: 2 1 220px; }
+.col-price { flex: 1 1 80px; }
+.col-qty { flex: 1 1 120px; }
+.col-subtotal { flex: 1 1 80px; }
+.col-actions { flex: 0 0 40px; text-align: right; }
+
+.cart-thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius-sm);
+}
+
+.cart-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius-pill);
+  padding: 0.2rem 0.4rem;
+}
+
+.qty-control button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--kpet-white);
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  box-shadow: var(--kpet-shadow-sm);
+  cursor: pointer;
+  transition: transform var(--kpet-transition), background-color var(--kpet-transition);
+}
+
+.qty-control button:hover {
+  background: var(--kpet-purple-600);
+  color: white;
+  transform: scale(1.08);
+}
+
+.btn-remove {
+  border: none;
+  background: transparent;
+  color: var(--kpet-danger);
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--kpet-transition), transform var(--kpet-transition);
+}
+
+.btn-remove:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.checkout-box {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow);
+  padding: 1.5rem;
+  position: sticky;
+  top: 90px;
+}
+
+.checkout-title {
+  font-weight: 700;
+  color: var(--kpet-ink);
+  margin-bottom: 1rem;
+}
+
+.total-amount {
+  color: var(--kpet-purple-700);
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366, #1EBE57);
+  color: white;
+  font-weight: 700;
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.btn-whatsapp:hover {
+  background: linear-gradient(135deg, #1EBE57, #17A64A);
+  color: white;
+  box-shadow: var(--kpet-shadow);
+  transform: translateY(-2px);
+}
+
+/* ---------- Payment / QR step ---------- */
+.payment-card {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow);
+  padding: 2.5rem;
+  max-width: 520px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.payment-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+  margin-bottom: 0.5rem;
+}
+
+.payment-subtitle {
+  color: var(--kpet-ink-soft);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.qr-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.qr-image {
+  max-width: 260px;
+  width: 100%;
+  border-radius: var(--kpet-radius-sm);
+  border: 1px solid rgba(76, 29, 149, 0.1);
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.payment-thanks-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}

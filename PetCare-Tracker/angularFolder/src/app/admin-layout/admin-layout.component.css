@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.admin-page-content {
+  /* explicit width calc (not width:100%) so the sidebar offset never pushes
+     content past the right edge of the viewport and forces horizontal scroll */
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  box-sizing: border-box;
+  padding: 2rem 2.5rem 3rem;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@media (max-width: 767.98px) {
+  .admin-page-content {
+    margin-left: 0;
+    width: 100%;
+    /* top padding clears the fixed mobile topbar (76px) that replaces the
+       always-visible sidebar — see admin-nav.component.css */
+    padding: calc(76px + 1.5rem) 1rem 2.5rem;
+  }
+}

@@ -1,0 +1,96 @@
+.kpet-topbar {
+  background: var(--kpet-white);
+  border-bottom: 1px solid rgba(76, 29, 149, 0.08);
+  box-shadow: var(--kpet-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.kpet-back-link {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.kpet-back-link:hover {
+  color: var(--kpet-purple-900);
+}
+
+.kpet-logo-text-sm {
+  text-decoration: none;
+}
+
+.blog-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+  margin-bottom: 0.25rem;
+}
+
+.blog-subtitle {
+  color: var(--kpet-ink-soft);
+}
+
+.blog-card {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--kpet-shadow);
+}
+
+.blog-card-image {
+  height: 190px;
+  background: var(--kpet-purple-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.blog-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-card-image span {
+  font-size: 3rem;
+  opacity: 0.35;
+}
+
+.blog-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.blog-date {
+  color: var(--kpet-purple-600);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.blog-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--kpet-ink);
+  margin: 0.4rem 0 0.5rem;
+}
+
+.blog-card-content {
+  color: var(--kpet-ink-soft);
+  line-height: 1.5;
+  white-space: pre-line;
+}

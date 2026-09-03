@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kpet-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: projetfinal1234
+      MYSQL_DATABASE: kpet
+    ports:
+      - "3306:3306"
+    volumes:
+      - kpet-mysql-data:/var/lib/mysql
+
+volumes:
+  # Pinned to the volume's real underlying name (from when the compose project
+  # was still called petcare-tracker) so this rename doesn't orphan the data
+  # already on disk — Compose would otherwise look for a new, empty volume.
+  kpet-mysql-data:
+    name: petcare-tracker_petcare-mysql-data

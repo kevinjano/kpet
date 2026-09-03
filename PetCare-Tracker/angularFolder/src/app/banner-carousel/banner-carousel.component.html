@@ -1,0 +1,26 @@
+<div class="kpet-carousel" (mouseenter)="stopAutoplay()" (mouseleave)="startAutoplay()">
+
+  <div class="kpet-carousel-track" [style.transform]="'translateX(-' + (activeIndex * 100) + '%)'">
+    <div class="kpet-carousel-slide" *ngFor="let img of images">
+      <img [src]="img" alt="Banner Kpet">
+    </div>
+  </div>
+
+  <ng-content></ng-content>
+
+  <ng-container *ngIf="images.length > 1">
+    <button class="kpet-carousel-arrow kpet-carousel-prev" type="button" (click)="prev()" aria-label="Anterior">‹</button>
+    <button class="kpet-carousel-arrow kpet-carousel-next" type="button" (click)="next()" aria-label="Siguiente">›</button>
+
+    <div class="kpet-carousel-dots">
+      <button
+        *ngFor="let img of images; let i = index"
+        class="kpet-carousel-dot"
+        [class.active]="i === activeIndex"
+        (click)="goTo(i)"
+        [attr.aria-label]="'Ir al banner ' + (i + 1)">
+      </button>
+    </div>
+  </ng-container>
+
+</div>

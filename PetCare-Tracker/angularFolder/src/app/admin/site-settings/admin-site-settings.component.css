@@ -1,0 +1,34 @@
+@import '../../admin-shared.css';
+
+.banner-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.banner-item {
+  width: 180px;
+  border: 1px solid rgba(76, 29, 149, 0.1);
+  border-radius: var(--kpet-radius-sm);
+  overflow: hidden;
+  background: var(--kpet-purple-50);
+}
+
+.banner-thumb {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-item-actions {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.banner-item-actions .btn {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+}

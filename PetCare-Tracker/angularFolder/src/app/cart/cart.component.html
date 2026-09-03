@@ -1,0 +1,94 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
+    <img *ngIf="logoUrl" [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="cart-logo-img">
+  </div>
+</nav>
+
+<div class="container mt-4 mb-5" *ngIf="checkoutStep === 'cart'">
+  <h2 class="mb-4 kpet-title">Tu carrito</h2>
+
+  <div *ngIf="items.length === 0" class="empty-cart kpet-fade-up">
+    <div class="empty-cart-icon">🛒</div>
+    <p>Tu carrito está vacío.</p>
+    <a routerLink="/" class="btn btn-kpet-primary mt-2">Ir a la tienda</a>
+  </div>
+
+  <div *ngIf="items.length > 0" class="row g-4">
+    <div class="col-lg-8">
+      <div class="cart-items-card">
+        <div class="cart-row cart-row-header d-none d-md-flex">
+          <span class="col-product">Producto</span>
+          <span class="col-price">Precio</span>
+          <span class="col-qty">Cantidad</span>
+          <span class="col-subtotal">Subtotal</span>
+          <span class="col-actions"></span>
+        </div>
+
+        <div class="cart-row" *ngFor="let item of items; trackBy: trackByProductId">
+          <div class="col-product d-flex align-items-center gap-3">
+            <img *ngIf="item.product.imageUrl" [src]="resolveImageUrl(item.product.imageUrl)" [alt]="item.product.name" class="cart-thumb">
+            <div *ngIf="!item.product.imageUrl" class="cart-thumb cart-thumb-placeholder">🐾</div>
+            <span class="fw-semibold">{{ item.product.name }}</span>
+          </div>
+          <div class="col-price">Bs.{{ unitPrice(item).toFixed(2) }}</div>
+          <div class="col-qty">
+            <div class="qty-control">
+              <button type="button" (click)="decrement(item)">−</button>
+              <span>{{ item.quantity }}</span>
+              <button type="button" (click)="increment(item)">+</button>
+            </div>
+          </div>
+          <div class="col-subtotal fw-bold">Bs.{{ lineTotal(item).toFixed(2) }}</div>
+          <div class="col-actions">
+            <button class="btn-remove" type="button" (click)="remove(item)" aria-label="Eliminar">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="checkout-box kpet-fade-up">
+        <h3 class="checkout-title">Resumen</h3>
+        <div class="d-flex justify-content-between mb-3">
+          <span class="fw-semibold">Total</span>
+          <span class="fw-bold fs-4 total-amount">Bs.{{ total.toFixed(2) }}</span>
+        </div>
+        <button class="btn btn-whatsapp w-100" (click)="checkoutOnWhatsapp()">
+          <span aria-hidden="true">💬</span> Finalizar por WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4 mb-5" *ngIf="checkoutStep === 'payment'">
+  <div class="payment-card kpet-fade-up">
+
+    <ng-container *ngIf="!receiptConfirmed; else thanksBlock">
+      <h2 class="payment-title">¡Ya casi terminamos!</h2>
+      <p class="payment-subtitle">Tu pedido se envió por WhatsApp. Ahora escanea el código QR y envía tu comprobante de pago por ese mismo chat.</p>
+
+      <div class="qr-wrapper" *ngIf="qrCodeUrl; else noQr">
+        <img [src]="resolveImageUrl(qrCodeUrl)" alt="Código QR de pago" class="qr-image">
+      </div>
+      <ng-template #noQr>
+        <p class="text-muted">La tienda todavía no ha configurado un código QR de pago. Coordina el pago directamente por WhatsApp.</p>
+      </ng-template>
+
+      <button class="btn btn-kpet-primary mt-3" (click)="confirmReceiptSent()" [disabled]="confirmingReceipt">
+        {{ confirmingReceipt ? 'Confirmando...' : 'Ya envié mi comprobante' }}
+      </button>
+    </ng-container>
+
+    <ng-template #thanksBlock>
+      <div class="payment-thanks">
+        <div class="payment-thanks-icon">✅</div>
+        <h2 class="payment-title">¡Gracias por tu compra!</h2>
+        <p class="payment-subtitle">Tu pedido quedó <strong>pendiente de confirmación</strong>. En cuanto verifiquemos tu pago te contactaremos por WhatsApp.</p>
+        <a routerLink="/" class="btn btn-kpet-primary mt-2">Volver a la tienda</a>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

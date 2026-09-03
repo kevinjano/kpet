@@ -1,0 +1,37 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
+    <img *ngIf="settings?.logoUrl" [src]="resolveImageUrl(settings?.logoUrl)" alt="Kpet" class="dist-logo-img">
+  </div>
+</nav>
+
+<div class="container mt-4 mb-5">
+  <h1 class="dist-title kpet-fade-up">Nuestros Distribuidores</h1>
+  <p class="dist-subtitle">Encuentra el distribuidor Kpet más cercano a ti.</p>
+
+  <div class="city-filter" *ngIf="cities.length > 0">
+    <button class="city-chip" [class.active]="selectedCity === null" (click)="selectCity(null)">Todas las ciudades</button>
+    <button class="city-chip" *ngFor="let city of cities" [class.active]="selectedCity === city" (click)="selectCity(city)">{{ city }}</button>
+  </div>
+
+  <div *ngIf="visibleDistributors.length === 0" class="text-center text-muted py-5">
+    Todavía no hay distribuidores registrados en esta ciudad.
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-2">
+    <div class="col" *ngFor="let dist of visibleDistributors; trackBy: trackById">
+      <a [routerLink]="['/distribuidores', dist.id]" class="dist-card kpet-fade-up">
+        <div class="dist-card-image">
+          <img *ngIf="dist.imageUrl; else distPlaceholder" [src]="resolveImageUrl(dist.imageUrl)" [alt]="dist.name">
+          <ng-template #distPlaceholder><span>🏬</span></ng-template>
+        </div>
+        <div class="dist-card-body">
+          <span class="dist-city-pill">{{ dist.city }}</span>
+          <h2 class="dist-card-title">{{ dist.name }}</h2>
+          <p class="dist-card-address" *ngIf="dist.address">📍 {{ dist.address }}</p>
+          <p class="dist-card-count">{{ dist.distributorProducts.length }} producto{{ dist.distributorProducts.length === 1 ? '' : 's' }} disponible{{ dist.distributorProducts.length === 1 ? '' : 's' }}</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

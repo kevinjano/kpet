@@ -1,0 +1,283 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+/* =========================================================
+   Kpet design system — purple + yellow, modern & playful
+   ========================================================= */
+:root {
+  /* Brand palette */
+  --kpet-purple-900: #3B0764;
+  --kpet-purple-800: #4C1D95;
+  --kpet-purple-700: #5B21B6;
+  --kpet-purple-600: #7C3AED;
+  --kpet-purple-500: #8B5CF6;
+  --kpet-purple-100: #EDE9FE;
+  --kpet-purple-50:  #F5F3FF;
+
+  --kpet-yellow-600: #EAB308;
+  --kpet-yellow-500: #FACC15;
+  --kpet-yellow-400: #FDE047;
+  --kpet-yellow-100: #FEF9C3;
+
+  --kpet-ink: #241B33;
+  --kpet-ink-soft: #6B6178;
+  --kpet-bg: #FBFAFF;
+  --kpet-white: #FFFFFF;
+  --kpet-success: #22C55E;
+  --kpet-danger: #EF4444;
+
+  /* Elevation & motion */
+  --kpet-radius-sm: 10px;
+  --kpet-radius: 16px;
+  --kpet-radius-lg: 24px;
+  --kpet-radius-pill: 999px;
+  --kpet-shadow-sm: 0 2px 8px rgba(76, 29, 149, 0.08);
+  --kpet-shadow: 0 8px 24px rgba(76, 29, 149, 0.12);
+  --kpet-shadow-lg: 0 16px 40px rgba(76, 29, 149, 0.18);
+  --kpet-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --kpet-transition: 220ms var(--kpet-ease);
+
+  --kpet-font: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: var(--kpet-bg);
+  color: var(--kpet-ink);
+  font-family: var(--kpet-font);
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+a {
+  transition: color var(--kpet-transition);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  border-radius: var(--kpet-radius-pill);
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition), background-color var(--kpet-transition), color var(--kpet-transition), border-color var(--kpet-transition);
+  border: none;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Every Kpet button gets a purple<->yellow gradient overlay that fades in on hover */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 420ms var(--kpet-ease);
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+.btn-kpet-primary,
+.btn-compte,
+.bouton-voir-plus {
+  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-700));
+  color: var(--kpet-white) !important;
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.btn-kpet-primary::before,
+.btn-compte::before,
+.bouton-voir-plus::before {
+  background: linear-gradient(135deg, var(--kpet-purple-500), var(--kpet-yellow-500));
+}
+
+.btn-kpet-primary:hover,
+.btn-compte:hover,
+.bouton-voir-plus:hover {
+  color: var(--kpet-white) !important;
+  box-shadow: var(--kpet-shadow);
+  transform: translateY(-2px);
+}
+
+.btn-kpet-accent {
+  background: linear-gradient(135deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
+  color: var(--kpet-purple-900) !important;
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.btn-kpet-accent::before {
+  background: linear-gradient(135deg, var(--kpet-yellow-400), var(--kpet-purple-500));
+}
+
+.btn-kpet-accent:hover {
+  color: var(--kpet-white) !important;
+  box-shadow: var(--kpet-shadow);
+  transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+  border: 2px solid var(--kpet-purple-200, var(--kpet-purple-100));
+  color: var(--kpet-purple-700);
+  background: var(--kpet-white);
+}
+
+.btn-outline-secondary::before {
+  background: linear-gradient(135deg, var(--kpet-purple-500), var(--kpet-yellow-400));
+  opacity: 0;
+}
+
+.btn-outline-secondary:hover {
+  border-color: transparent;
+  color: var(--kpet-white) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--kpet-shadow);
+}
+
+.btn-fermer {
+  background: transparent;
+  color: var(--kpet-ink-soft);
+}
+
+.btn-fermer:hover {
+  color: var(--kpet-ink);
+  background: var(--kpet-purple-50);
+}
+
+/* ---------- Cards / surfaces ---------- */
+.card {
+  border-radius: var(--kpet-radius);
+  border: 1px solid rgba(76, 29, 149, 0.08);
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.shadow-sm {
+  box-shadow: var(--kpet-shadow-sm) !important;
+}
+
+.rounded-2 {
+  border-radius: var(--kpet-radius) !important;
+}
+
+.bg-primary {
+  background-color: var(--kpet-purple-50) !important;
+}
+
+.form-control,
+.form-select {
+  border-radius: var(--kpet-radius-sm);
+  border: 1.5px solid #E5DEF5;
+  padding: 0.6rem 0.9rem;
+  transition: border-color var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--kpet-purple-500);
+  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.15);
+}
+
+/* ---------- Password field with show/hide toggle ---------- */
+/* Wrap a password <input class="form-control"> in <div class="password-field">
+   plus a <button class="password-toggle-btn"> to get the eye icon; see
+   login/register/mon-compte templates for usage. */
+.password-field {
+  position: relative;
+}
+
+.password-field .form-control {
+  padding-right: 2.75rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--kpet-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color var(--kpet-transition), background-color var(--kpet-transition);
+}
+
+.password-toggle-btn:hover {
+  color: var(--kpet-purple-600);
+  background: var(--kpet-purple-50);
+}
+
+.password-toggle-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* ---------- Misc reused utility classes ---------- */
+.border-bottom {
+  border-color: var(--kpet-purple-500) !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.p-right-2 { padding-right: 2% !important; }
+.p-left-2 { padding-left: 2% !important; }
+.nav-link-spacing { margin-right: 2%; }
+.active { font-weight: 600; }
+.half-width { width: 70%; }
+.text-gray-custom { color: var(--kpet-ink-soft); }
+.fw-semi-bold { font-weight: 600; }
+.fs-sm { font-size: 0.9rem; }
+.fixed-size-textarea { resize: none; }
+.text-custom-blue { color: var(--kpet-purple-600) !important; }
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--kpet-purple-50);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.4);
+  border-radius: var(--kpet-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kpet-purple-600);
+}
+
+.container-fluid {
+  max-width: 1600px;
+}
+
+main {
+  margin-top: 2rem !important;
+}
+
+/* ---------- Simple fade/slide-in transitions ---------- */
+@keyframes kpet-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kpet-fade-up {
+  animation: kpet-fade-up 480ms var(--kpet-ease) both;
+}

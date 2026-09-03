@@ -1,0 +1,174 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Pedidos</h2>
+
+  <div class="low-stock-banner kpet-fade-up" *ngIf="lowStockEntries.length > 0">
+    <div class="low-stock-header">
+      <svg class="low-stock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <span>Stock bajo en distribuidores (menos de 15 unidades)</span>
+    </div>
+    <ul class="low-stock-list">
+      <li *ngFor="let entry of lowStockEntries">
+        <strong>{{ entry.productName }}</strong> en {{ entry.distributorName }}: {{ entry.quantity }} unidad{{ entry.quantity === 1 ? '' : 'es' }}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="orders.length === 0" class="text-center text-muted py-5">
+    Todavía no hay pedidos.
+  </div>
+
+  <div class="admin-filter-bar" *ngIf="orders.length > 0">
+    <div class="admin-search-wrap">
+      <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="admin-search-input" placeholder="Buscar por # de pedido o producto..." [(ngModel)]="searchTerm">
+    </div>
+    <select class="admin-filter-select" [(ngModel)]="statusFilter">
+      <option value="">Todos los estados</option>
+      <option [value]="STATUS_PENDING">{{ statusLabels[STATUS_PENDING] }}</option>
+      <option [value]="STATUS_CONFIRMED">{{ statusLabels[STATUS_CONFIRMED] }}</option>
+      <option [value]="STATUS_COMPLETED">{{ statusLabels[STATUS_COMPLETED] }}</option>
+      <option [value]="STATUS_CANCELLED">{{ statusLabels[STATUS_CANCELLED] }}</option>
+    </select>
+    <span class="admin-filter-count">{{ filteredOrders.length }} de {{ orders.length }}</span>
+  </div>
+
+  <div *ngIf="orders.length > 0">
+
+    <div class="orders-tab-switch">
+      <div class="orders-tab-slider" [class.tab-history]="activeOrdersTab === 'history'"></div>
+      <button type="button" class="orders-tab-btn" [class.active]="activeOrdersTab === 'inProcess'" (click)="activeOrdersTab = 'inProcess'">
+        Pendientes
+      </button>
+      <button type="button" class="orders-tab-btn" [class.active]="activeOrdersTab === 'history'" (click)="activeOrdersTab = 'history'">
+        Historial
+      </button>
+    </div>
+
+    <div *ngIf="activeOrdersTab === 'inProcess'">
+      <div *ngIf="inProcessOrders.length === 0" class="text-center text-muted py-4 orders-column-empty">
+        No hay pedidos en proceso.
+      </div>
+
+      <div class="order-list">
+        <div class="order-card kpet-fade-up" *ngFor="let order of inProcessOrders; trackBy: trackById">
+          <div class="order-card-header">
+            <div>
+              <span class="order-id">Pedido #{{ order.id }}</span>
+              <span class="order-date">{{ order.createdAt | date:'d MMM y, HH:mm' }}</span>
+            </div>
+            <span class="status-pill" [ngClass]="'status-' + order.status">{{ statusLabels[order.status] }}</span>
+          </div>
+
+          <table class="table order-items-table mb-2">
+            <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of order.items">
+              <td>{{ item.productName }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>Bs.{{ item.unitPrice.toFixed(2) }}</td>
+              <td>Bs.{{ (item.unitPrice * item.quantity).toFixed(2) }}</td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div class="order-card-footer">
+            <div class="d-flex align-items-center gap-3">
+              <span class="fw-bold">Total: Bs.{{ order.total.toFixed(2) }}</span>
+              <span class="receipt-flag" [class.receipt-flag-yes]="order.receiptSent">
+                {{ order.receiptSent ? '📎 Comprobante enviado' : 'Sin confirmar envío de comprobante' }}
+              </span>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button
+                *ngIf="order.status === STATUS_PENDING"
+                class="btn btn-sm btn-kpet-primary"
+                [disabled]="updatingId === order.id"
+                (click)="confirmPayment(order)">
+                Confirmar pago
+              </button>
+              <button
+                *ngIf="order.status === STATUS_CONFIRMED"
+                class="btn btn-sm btn-kpet-primary"
+                [disabled]="updatingId === order.id"
+                (click)="markCompleted(order)">
+                Marcar como finalizado
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="updatingId === order.id"
+                (click)="cancelOrder(order)">
+                Cancelar pedido
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeOrdersTab === 'history'">
+      <div *ngIf="historyOrders.length === 0" class="text-center text-muted py-4 orders-column-empty">
+        Todavía no hay pedidos finalizados.
+      </div>
+
+      <app-admin-table *ngIf="historyOrders.length > 0">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Pedido</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Comprobante</th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let order of historyOrders; trackBy: trackById">
+          <tr class="history-row" (click)="toggleExpanded(order.id)">
+            <td class="history-expand-cell">
+              <svg class="history-expand-icon" [class.expanded]="isExpanded(order.id)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </td>
+            <td class="fw-semibold">#{{ order.id }}</td>
+            <td>{{ order.createdAt | date:'d MMM y, HH:mm' }}</td>
+            <td class="fw-bold">Bs.{{ order.total.toFixed(2) }}</td>
+            <td>
+              <span class="receipt-flag" [class.receipt-flag-yes]="order.receiptSent">
+                {{ order.receiptSent ? 'Enviado' : 'Sin confirmar' }}
+              </span>
+            </td>
+          </tr>
+          <tr class="history-detail-row" *ngIf="isExpanded(order.id)">
+            <td colspan="5">
+              <table class="table order-items-table mb-0">
+                <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cant.</th>
+                  <th>Precio</th>
+                  <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of order.items">
+                  <td>{{ item.productName }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>Bs.{{ item.unitPrice.toFixed(2) }}</td>
+                  <td>Bs.{{ (item.unitPrice * item.quantity).toFixed(2) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </ng-container>
+        </tbody>
+      </app-admin-table>
+    </div>
+
+  </div>
+</div>

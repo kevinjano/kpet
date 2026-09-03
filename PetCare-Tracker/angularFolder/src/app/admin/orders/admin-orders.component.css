@@ -1,0 +1,222 @@
+@import '../../admin-shared.css';
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.low-stock-banner {
+  background: #FFF7E6;
+  border: 1px solid #F5C563;
+  border-radius: var(--kpet-radius);
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.low-stock-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  color: #92640A;
+  margin-bottom: 0.6rem;
+}
+
+.low-stock-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.low-stock-list {
+  margin: 0;
+  padding-left: 1.4rem;
+  color: #7A5309;
+  font-size: 0.88rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.order-card {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  padding: 1.5rem;
+}
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.order-id {
+  font-weight: 700;
+  color: var(--kpet-ink);
+  margin-right: 0.75rem;
+}
+
+.order-date {
+  color: var(--kpet-ink-soft);
+  font-size: 0.85rem;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-PENDING_CONFIRMATION {
+  background: var(--kpet-yellow-100);
+  color: #92640A;
+}
+
+.status-CONFIRMED {
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+}
+
+.status-COMPLETED {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.status-CANCELLED {
+  background: #FEE2E2;
+  color: var(--kpet-danger);
+}
+
+.order-items-table {
+  font-size: 0.9rem;
+}
+
+.order-items-table th {
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  border-bottom-color: rgba(76, 29, 149, 0.1);
+}
+
+.order-items-table td {
+  border-color: rgba(76, 29, 149, 0.06);
+}
+
+.order-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(76, 29, 149, 0.08);
+}
+
+.receipt-flag {
+  font-size: 0.82rem;
+  color: var(--kpet-ink-soft);
+}
+
+.receipt-flag-yes {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+}
+
+/* ---------- Pendientes / Historial pill switch ---------- */
+.orders-tab-switch {
+  position: relative;
+  display: flex;
+  width: 100%;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius-pill);
+  padding: 5px;
+  margin-bottom: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgba(76, 29, 149, 0.08);
+}
+
+.orders-tab-slider {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc(50% - 5px);
+  height: calc(100% - 10px);
+  border-radius: var(--kpet-radius-pill);
+  background: linear-gradient(120deg, var(--kpet-purple-600) 0%, var(--kpet-purple-500) 55%, var(--kpet-yellow-500) 130%);
+  box-shadow: 0 4px 14px rgba(76, 29, 149, 0.22);
+  transition: transform 380ms cubic-bezier(0.34, 1.15, 0.64, 1);
+  z-index: 0;
+}
+
+.orders-tab-slider.tab-history {
+  transform: translateX(100%);
+}
+
+.orders-tab-btn {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--kpet-ink-soft);
+  border-radius: var(--kpet-radius-pill);
+  cursor: pointer;
+  transition: color 220ms ease;
+}
+
+.orders-tab-btn.active {
+  color: var(--kpet-white);
+}
+
+.orders-column-empty {
+  background: #F7F5FC;
+  border-radius: var(--kpet-radius);
+}
+
+/* ---------- Historial table: click a row to expand its items ---------- */
+.history-row {
+  cursor: pointer;
+  transition: background-color var(--kpet-transition);
+}
+
+.history-row:hover {
+  background: var(--kpet-purple-50);
+}
+
+.history-expand-cell {
+  width: 2rem;
+}
+
+.history-expand-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--kpet-ink-soft);
+  transition: transform var(--kpet-transition);
+}
+
+.history-expand-icon.expanded {
+  transform: rotate(90deg);
+  color: var(--kpet-purple-700);
+}
+
+.history-detail-row td {
+  background: #FBFAFE;
+  padding: 0.75rem 1rem 1.1rem 3rem;
+}
+
+.history-detail-row .order-items-table {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius-sm);
+  overflow: hidden;
+}

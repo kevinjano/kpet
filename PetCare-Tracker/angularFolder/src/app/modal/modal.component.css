@@ -1,0 +1,107 @@
+.kpet-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 7, 100, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 1.25rem;
+}
+
+.kpet-modal {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow-lg);
+  width: 100%;
+  max-width: 380px;
+  max-height: calc(100vh - 2.5rem);
+  overflow-y: auto;
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  animation: kpet-modal-pop 220ms var(--kpet-ease);
+}
+
+@keyframes kpet-modal-pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.kpet-modal-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpet-modal-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.kpet-modal-icon-confirm {
+  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-800));
+  color: var(--kpet-white);
+}
+
+.kpet-modal-icon-info {
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+}
+
+.kpet-modal-icon-success {
+  background: #DCFCE7;
+  color: var(--kpet-success);
+}
+
+.kpet-modal-icon-error {
+  background: #FEE2E2;
+  color: var(--kpet-danger);
+}
+
+.kpet-modal-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+  margin-bottom: 0.4rem;
+  font-size: 1.1rem;
+}
+
+.kpet-modal-message {
+  color: var(--kpet-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.kpet-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.kpet-modal-actions .btn {
+  min-width: 120px;
+  flex: 1 1 auto;
+}
+
+@media (max-width: 420px) {
+  .kpet-modal {
+    padding: 1.5rem 1.1rem 1.25rem;
+  }
+
+  .kpet-modal-actions {
+    flex-direction: column;
+  }
+
+  .kpet-modal-actions .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,174 @@
+<nav class="kpet-nav">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-logo" routerLink="/">
+      <img *ngIf="settings?.logoUrl; else logoPlaceholder" [src]="resolveImageUrl(settings?.logoUrl)" alt="Kpet" height="44">
+      <ng-template #logoPlaceholder>
+        <span class="kpet-logo-text">Kpet<span class="dot">.</span></span>
+      </ng-template>
+    </a>
+
+    <button class="kpet-burger d-lg-none" type="button" (click)="toggleMobileMenu()" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="kpet-nav-content" [class.open]="mobileMenuOpen">
+      <button class="kpet-nav-close d-lg-none" type="button" (click)="closeMobileMenu()" aria-label="Cerrar menú">✕</button>
+
+      <div class="kpet-drawer-greeting d-lg-none" *ngIf="isLoggedIn()">
+        <span class="kpet-drawer-greeting-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <strong>¡Hola, {{ userName }}!</strong>
+      </div>
+
+      <ul class="kpet-category-nav" #categoryNavLinks>
+        <div class="kpet-category-slider d-lg-none" *ngIf="sliderReady" [style.transform]="'translateY(' + sliderTop + 'px)'" [style.height.px]="sliderHeight"></div>
+
+        <li *ngFor="let cat of categories">
+          <a [class.active]="selectedCategory === cat" (click)="selectCategory(cat); onCategoryLinkClick($event)">{{ cat }}</a>
+        </li>
+        <li>
+          <a class="offer-link" [class.active]="showOffersOnly" (click)="selectOffers(); onCategoryLinkClick($event)">Ofertas</a>
+        </li>
+        <li *ngIf="selectedCategory || showOffersOnly">
+          <a (click)="selectCategory(null)">Ver todo</a>
+        </li>
+        <li>
+          <a routerLink="/blog" (click)="closeMobileMenu()">Blog</a>
+        </li>
+        <li>
+          <a routerLink="/distribuidores" (click)="closeMobileMenu()">Distribuidores</a>
+        </li>
+        <li>
+          <a (click)="scrollToAbout(); closeMobileMenu()">Conócenos</a>
+        </li>
+      </ul>
+
+      <div class="kpet-nav-actions">
+        <button class="btn btn-outline-secondary kpet-cart-btn position-relative" routerLink="/carrito" (click)="closeMobileMenu()">
+          <span aria-hidden="true">🛒</span> Carrito
+          <span *ngIf="cartItemCount > 0" class="kpet-cart-badge">{{ cartItemCount }}</span>
+        </button>
+
+        <ng-container *ngIf="!isLoggedIn(); else loggedInMenu">
+          <button class="btn btn-outline-secondary" (click)="openLoginDialog()">Iniciar sesión</button>
+        </ng-container>
+        <ng-template #loggedInMenu>
+          <button class="btn btn-outline-secondary" (click)="goToAccount()">Mi perfil</button>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="kpet-nav-backdrop d-lg-none" *ngIf="mobileMenuOpen" (click)="closeMobileMenu()"></div>
+  </div>
+</nav>
+
+<!-- Hero banner carousel -->
+<div class="hero-wrap">
+  <app-banner-carousel *ngIf="bannerImages.length > 0" [images]="bannerImages">
+    <div class="hero-overlay">
+      <h1 class="kpet-fade-up">Todo para tu mascota<br>en un solo lugar</h1>
+      <p class="kpet-fade-up">Alimento, snacks y accesorios con la mejor calidad para perros y gatos.</p>
+    </div>
+  </app-banner-carousel>
+
+  <div class="hero-placeholder" *ngIf="bannerImages.length === 0">
+    <div class="hero-overlay">
+      <h1 class="kpet-fade-up">Todo para tu mascota<br>en un solo lugar</h1>
+      <p class="kpet-fade-up">Alimento, snacks y accesorios con la mejor calidad para perros y gatos.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5 mb-5">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="section-title mb-0">{{ productsSectionTitle }}</h2>
+    <span class="section-underline"></span>
+  </div>
+
+  <div *ngIf="visibleProducts.length === 0" class="text-muted text-center py-5">
+    No hay productos disponibles en esta categoría por el momento.
+  </div>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="col" *ngFor="let product of visibleProducts; trackBy: trackById">
+      <div class="card h-100 product-card kpet-fade-up">
+        <div class="product-image-wrapper">
+          <img *ngIf="product.imageUrl; else imgPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-image">
+          <ng-template #imgPlaceholder>
+            <div class="product-image-placeholder">🐾</div>
+          </ng-template>
+          <span *ngIf="product.onSale" class="offer-badge">Oferta</span>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <h3 class="product-name">{{ product.name }}</h3>
+          <p class="product-description text-muted">{{ product.description }}</p>
+          <div class="mt-auto">
+            <div class="price-row">
+              <ng-container *ngIf="product.onSale && product.salePrice != null; else regularPrice">
+                <span class="price-old">Bs.{{ product.price.toFixed(2) }}</span>
+                <span class="price-current">Bs.{{ product.salePrice.toFixed(2) }}</span>
+              </ng-container>
+              <ng-template #regularPrice>
+                <span class="price-current">Bs.{{ product.price.toFixed(2) }}</span>
+              </ng-template>
+            </div>
+            <button class="btn btn-outline-secondary w-100 mt-2" (click)="openProductInfo(product)">Información</button>
+            <button class="btn btn-kpet-primary w-100 mt-2 add-to-cart-btn" (click)="addToCart(product)">
+              Añadir al carrito
+              <span *ngIf="getCartQuantity(product.id) > 0" class="add-to-cart-qty">{{ getCartQuantity(product.id) }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <h2 class="section-title mb-3">Conócenos</h2>
+        <p class="about-text" *ngIf="settings?.aboutText">{{ settings?.aboutText }}</p>
+      </div>
+      <div class="col-lg-5">
+        <div class="social-card">
+          <h3 class="social-title">Síguenos</h3>
+          <div class="social-links">
+            <a *ngIf="settings?.instagramUrl" [href]="settings?.instagramUrl" target="_blank" rel="noopener" class="social-link social-instagram">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+              Instagram
+            </a>
+            <a *ngIf="settings?.tiktokUrl" [href]="settings?.tiktokUrl" target="_blank" rel="noopener" class="social-link social-tiktok">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M16.5 2c.4 2.2 1.9 3.9 4 4.4V9.8c-1.5 0-2.9-.5-4-1.3v6.6c0 3.4-2.8 6.1-6.1 5.9-3-.1-5.4-2.6-5.4-5.7 0-3.1 2.5-5.7 5.7-5.7.3 0 .6 0 .9.1v3.4a2.5 2.5 0 1 0 1.9 2.4V2h3Z"/></svg>
+              TikTok
+            </a>
+            <a *ngIf="settings?.youtubeUrl" [href]="settings?.youtubeUrl" target="_blank" rel="noopener" class="social-link social-youtube">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12a29 29 0 0 0-.5-5.6 3 3 0 0 0-2.1-2C17.6 4 12 4 12 4s-5.6 0-7.4.4a3 3 0 0 0-2.1 2A29 29 0 0 0 2 12a29 29 0 0 0 .5 5.6 3 3 0 0 0 2.1 2C6.4 20 12 20 12 20s5.6 0 7.4-.4a3 3 0 0 0 2.1-2A29 29 0 0 0 22 12Z"/><path d="m10 9 5 3-5 3Z" fill="currentColor"/></svg>
+              YouTube
+            </a>
+          </div>
+          <div class="contact-links" *ngIf="settings?.contactEmail || settings?.whatsappNumber">
+            <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail" class="contact-link">✉️ {{ settings?.contactEmail }}</a>
+            <a *ngIf="settings?.whatsappNumber" [href]="'https://wa.me/' + settings?.whatsappNumber" target="_blank" rel="noopener" class="contact-link">💬 WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer-kpet text-center py-4 mt-5">
+  <p class="mb-0">© {{ settings?.storeName || 'Kpet' }} — Todos los derechos reservados</p>
+</footer>
+
+<app-product-detail-modal
+  *ngIf="selectedProduct"
+  [product]="selectedProduct"
+  [allProducts]="products"
+  (close)="closeProductInfo()"
+  (selectProduct)="openProductInfo($event)">
+</app-product-detail-modal>
+
+<app-cart-toast></app-cart-toast>

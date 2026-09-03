@@ -1,0 +1,242 @@
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 240px;
+  background: linear-gradient(190deg, var(--kpet-purple-900) 0%, var(--kpet-purple-800) 55%, var(--kpet-purple-700) 100%);
+  box-shadow: 4px 0 24px rgba(59, 7, 100, 0.18);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.85rem 1.1rem;
+  overflow-y: auto;
+}
+
+.admin-logo {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--kpet-white);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-logo .dot {
+  color: var(--kpet-yellow-400);
+}
+
+.admin-logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.admin-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--kpet-yellow-400);
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  margin-top: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-nav-links {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  margin-top: 2.25rem;
+}
+
+.admin-nav-slider {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(120deg, var(--kpet-purple-600) 0%, var(--kpet-purple-500) 55%, var(--kpet-yellow-500) 130%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  transition: transform 380ms cubic-bezier(0.34, 1.15, 0.64, 1), height 380ms cubic-bezier(0.34, 1.15, 0.64, 1);
+  z-index: 0;
+  will-change: transform;
+}
+
+.admin-nav-links a {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: rgba(255, 255, 255, 0.62);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  transition: color 220ms ease;
+}
+
+.admin-nav-links a .nav-icon {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.admin-nav-links a:hover {
+  color: var(--kpet-white);
+}
+
+.admin-nav-links a.active {
+  color: var(--kpet-white);
+}
+
+.admin-nav-links a.active .nav-icon {
+  opacity: 1;
+}
+
+.admin-logout-btn {
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  color: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: transparent;
+}
+
+.admin-logout-btn .nav-icon {
+  width: 17px;
+  height: 17px;
+}
+
+.admin-logout-btn:hover {
+  color: var(--kpet-white);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- Mobile top bar (burger trigger) ---------- */
+.admin-mobile-topbar {
+  display: none;
+}
+
+/* ---------- Mobile: sidebar becomes an off-canvas drawer ---------- */
+@media (max-width: 767.98px) {
+  .admin-mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 76px;
+    padding: 0 1.25rem;
+    background: linear-gradient(120deg, var(--kpet-purple-900), var(--kpet-purple-700));
+    box-shadow: var(--kpet-shadow-sm);
+    z-index: 120;
+  }
+
+  .admin-mobile-burger {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+
+  .admin-mobile-burger span {
+    width: 22px;
+    height: 2.5px;
+    background: var(--kpet-white);
+    border-radius: 2px;
+  }
+
+  .admin-mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--kpet-white);
+    font-weight: 800;
+    font-size: 1.3rem;
+    text-decoration: none;
+  }
+
+  .admin-mobile-logo .dot {
+    color: var(--kpet-yellow-400);
+  }
+
+  .admin-mobile-logo-img {
+    height: 52px;
+    width: auto;
+    border-radius: 10px;
+    object-fit: contain;
+  }
+
+  .admin-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(59, 7, 100, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 205;
+    animation: admin-sidebar-backdrop-in 220ms var(--kpet-ease);
+  }
+
+  @keyframes admin-sidebar-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .admin-sidebar {
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: min(280px, 85vw);
+    transform: translateX(-100%);
+    transition: transform 320ms var(--kpet-ease);
+    z-index: 210;
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-close {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.1rem;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--kpet-white);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--kpet-transition), transform var(--kpet-transition);
+  }
+
+  .admin-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: rotate(90deg);
+  }
+}

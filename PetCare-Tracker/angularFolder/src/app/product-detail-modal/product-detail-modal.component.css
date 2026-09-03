@@ -1,0 +1,310 @@
+.pdm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 7, 100, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.pdm-modal {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow-lg);
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 1.75rem;
+}
+
+.pdm-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--kpet-purple-50);
+  color: var(--kpet-purple-700);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color var(--kpet-transition), transform var(--kpet-transition);
+  z-index: 2;
+}
+
+.pdm-close:hover {
+  background: var(--kpet-purple-100);
+  transform: rotate(90deg);
+}
+
+.pdm-body {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.pdm-image-wrapper {
+  position: relative;
+  flex: 1 1 280px;
+  min-height: 260px;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pdm-image {
+  max-width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+}
+
+.pdm-image-placeholder {
+  font-size: 5rem;
+  opacity: 0.35;
+}
+
+.pdm-offer-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
+  color: var(--kpet-purple-900);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.pdm-info {
+  flex: 1 1 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdm-category {
+  color: var(--kpet-purple-600);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pdm-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--kpet-ink);
+  margin: 0.25rem 0 0.75rem;
+}
+
+.pdm-description {
+  color: var(--kpet-ink-soft);
+  line-height: 1.55;
+  flex-grow: 1;
+}
+
+.pdm-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+.pdm-price-old {
+  text-decoration: line-through;
+  color: #A79BC4;
+  font-size: 1rem;
+}
+
+.pdm-price-current {
+  font-weight: 800;
+  font-size: 1.7rem;
+  color: var(--kpet-purple-700);
+}
+
+.pdm-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius-pill);
+  padding: 0.35rem 0.6rem;
+}
+
+.qty-control button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--kpet-white);
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  box-shadow: var(--kpet-shadow-sm);
+  cursor: pointer;
+  transition: transform var(--kpet-transition), background-color var(--kpet-transition);
+}
+
+.qty-control button:hover {
+  background: var(--kpet-purple-600);
+  color: white;
+  transform: scale(1.08);
+}
+
+/* ---------- Otros productos ---------- */
+.pdm-others {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(76, 29, 149, 0.1);
+}
+
+.pdm-others-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--kpet-ink);
+  margin-bottom: 0.75rem;
+}
+
+.pdm-others-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--kpet-radius);
+}
+
+.pdm-others-track {
+  display: flex;
+  transition: transform 520ms var(--kpet-ease);
+}
+
+.pdm-other-slide {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--kpet-purple-50);
+  border-radius: var(--kpet-radius);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color var(--kpet-transition);
+}
+
+.pdm-other-slide:hover {
+  background: var(--kpet-purple-100);
+}
+
+.pdm-other-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pdm-other-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.pdm-other-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.pdm-other-name {
+  font-weight: 600;
+  color: var(--kpet-ink);
+}
+
+.pdm-other-price {
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.pdm-other-cta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--kpet-purple-600);
+  white-space: nowrap;
+}
+
+.pdm-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(59, 7, 100, 0.45);
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color 200ms ease;
+}
+
+.pdm-arrow:hover {
+  background: rgba(124, 58, 237, 0.85);
+}
+
+.pdm-arrow-prev { left: 8px; }
+.pdm-arrow-next { right: 8px; }
+
+.pdm-others-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.pdm-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: var(--kpet-purple-100);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 200ms ease, background-color 200ms ease, width 200ms ease;
+}
+
+.pdm-dot.active {
+  background: var(--kpet-yellow-500);
+  width: 18px;
+  border-radius: 999px;
+}
+
+@media (max-width: 575.98px) {
+  .pdm-modal {
+    padding: 1.25rem;
+  }
+  .pdm-actions {
+    flex-wrap: wrap;
+  }
+}

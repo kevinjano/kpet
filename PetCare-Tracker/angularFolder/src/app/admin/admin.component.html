@@ -1,0 +1,78 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Lista de Usuarios</h2>
+
+  <div class="admin-filter-bar">
+    <div class="admin-search-wrap">
+      <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="admin-search-input" placeholder="Buscar por nombre, apellido, correo o teléfono..." [(ngModel)]="searchTerm">
+    </div>
+    <select class="admin-filter-select" [(ngModel)]="roleFilter">
+      <option value="">Todos los roles</option>
+      <option value="Admin">Admin</option>
+      <option value="Client">Cliente</option>
+    </select>
+    <span class="admin-filter-count">{{ filteredUsers.length }} de {{ users.length }}</span>
+  </div>
+
+  <app-admin-table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Apellido</th>
+      <th>Nombre</th>
+      <th>Correo</th>
+      <th>Teléfono</th>
+      <th>Rol</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of filteredUsers; trackBy: trackById">
+      <td>{{ user.id }}</td>
+      <td>{{ user.lastName }}</td>
+      <td>{{ user.firstName }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.noTel }}</td>
+      <td><span class="role-pill" [class.role-admin]="user.role === 'Admin'">{{ user.role }}</span></td>
+      <td class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" *ngIf="user.id !== undefined && user.id !== null" (click)="showUserDetails(user)">Editar</button>
+        <button class="btn btn-sm btn-outline-danger" *ngIf="user.id !== undefined && user.id !== null" (click)="deleteUser(user.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </app-admin-table>
+
+  <h3 class="admin-subtitle pt-5">Editar información</h3>
+  <div class="admin-form-card kpet-fade-up">
+    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(selectedUser!)">
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label for="firstName" class="form-label fw-semibold">Nombre:</label>
+          <input type="text" id="firstName" class="form-control" formControlName="firstName" [value]="selectedUser?.firstName">
+        </div>
+
+        <div class="col-md-6">
+          <label for="lastName" class="form-label fw-semibold">Apellido:</label>
+          <input type="text" id="lastName" class="form-control" formControlName="lastName" [value]="selectedUser?.lastName">
+        </div>
+
+        <div class="col-md-6">
+          <label for="email" class="form-label fw-semibold">Correo:</label>
+          <input type="text" id="email" class="form-control" formControlName="email" [value]="selectedUser?.email">
+        </div>
+
+        <div class="col-md-6">
+          <label for="noTel" class="form-label fw-semibold">Teléfono:</label>
+          <input type="text" id="noTel" class="form-control" formControlName="noTel" [value]="selectedUser?.noTel">
+        </div>
+      </div>
+
+      <div class="d-flex flex-row gap-2 pt-4">
+        <button class="btn btn-kpet-primary" type="button" *ngIf="!isEditingInfo" (click)="onEditButtonClick()">Editar información</button>
+        <button class="btn btn-kpet-primary" type="button" *ngIf="isEditingInfo" (click)="onSubmit(selectedUser!)">Guardar</button>
+        <button class="btn btn-outline-secondary" type="button" *ngIf="isEditingInfo" (click)="cancel()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

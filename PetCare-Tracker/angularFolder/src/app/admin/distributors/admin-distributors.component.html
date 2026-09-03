@@ -1,0 +1,132 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Distribuidores</h2>
+
+  <div class="admin-filter-bar">
+    <div class="admin-search-wrap">
+      <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="admin-search-input" placeholder="Buscar por nombre o dirección..." [(ngModel)]="searchTerm">
+    </div>
+    <select class="admin-filter-select" [(ngModel)]="cityFilter">
+      <option value="">Todas las ciudades</option>
+      <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+    </select>
+    <span class="admin-filter-count">{{ filteredDistributors.length }} de {{ distributors.length }}</span>
+  </div>
+
+  <app-admin-table>
+    <thead>
+    <tr>
+      <th>Imagen</th>
+      <th>Nombre</th>
+      <th>Ciudad</th>
+      <th>Productos</th>
+      <th>Activo</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let dist of filteredDistributors; trackBy: trackById">
+      <td>
+        <img *ngIf="dist.imageUrl" [src]="resolveImageUrl(dist.imageUrl)" [alt]="dist.name" class="admin-thumb">
+        <span *ngIf="!dist.imageUrl" class="text-muted">—</span>
+      </td>
+      <td class="fw-semibold">{{ dist.name }}</td>
+      <td>{{ dist.city }}</td>
+      <td>{{ dist.distributorProducts.length }}</td>
+      <td><span class="role-pill" [class.role-admin]="dist.active">{{ dist.active ? 'Sí' : 'No' }}</span></td>
+      <td class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="editDistributor(dist)">Editar</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteDistributor(dist.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </app-admin-table>
+
+  <h3 class="admin-subtitle pt-5">{{ editingDistributorId ? 'Editar distribuidor' : 'Añadir distribuidor' }}</h3>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="admin-form-card kpet-fade-up">
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Nombre:</label>
+        <input type="text" class="form-control" formControlName="name">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Ciudad:</label>
+        <input type="text" class="form-control" formControlName="city" placeholder="Ej: La Paz, Santa Cruz, Cochabamba...">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Dirección:</label>
+        <input type="text" class="form-control" formControlName="address">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Teléfono:</label>
+        <input type="text" class="form-control" formControlName="phone">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">WhatsApp:</label>
+        <input type="text" class="form-control" formControlName="whatsappNumber" placeholder="Ej: 59171234567">
+        <small class="text-muted">A este número le llegará el mensaje del pedido cuando alguien compre productos de este distribuidor.</small>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Enlace de Google Maps (opcional):</label>
+        <input type="text" class="form-control" formControlName="mapUrl" placeholder="https://maps.google.com/...">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Descripción:</label>
+        <textarea class="form-control" formControlName="description" rows="3" placeholder="Información general sobre este distribuidor..."></textarea>
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <input type="checkbox" id="distActive" class="form-check-input" formControlName="active">
+        <label for="distActive" class="form-check-label fw-semibold mb-0">Activo (visible en el sitio)</label>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Imagen:</label>
+        <input type="file" accept="image/*" class="form-control" (change)="onFileSelected($event)">
+        <img *ngIf="previewUrl" [src]="previewUrl" alt="preview" class="admin-preview mt-2">
+      </div>
+
+      <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between">
+          <label class="form-label fw-semibold mb-0">Productos que ofrece este distribuidor:</label>
+          <span class="selected-count-badge">{{ selectedCount }} seleccionado{{ selectedCount === 1 ? '' : 's' }}</span>
+        </div>
+        <small class="text-muted d-block mb-2">Se listan todos los productos de tu catálogo automáticamente. Las imágenes son las mismas que ya subiste al crear cada producto — no hace falta volver a subirlas.</small>
+        <div class="product-checklist">
+          <div class="product-check-item" *ngFor="let product of allProducts; trackBy: trackById">
+            <label class="product-check-label">
+              <input type="checkbox" [checked]="isSelected(product.id)" (change)="toggleProduct(product.id)">
+              <img *ngIf="product.imageUrl; else productIconPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-check-thumb">
+              <ng-template #productIconPlaceholder><span class="product-check-thumb product-check-thumb-placeholder">🐾</span></ng-template>
+              <span class="product-check-name">{{ product.name }}</span>
+            </label>
+            <div class="qty-control" *ngIf="isSelected(product.id)" [class.qty-control-low]="getQuantity(product.id) < 15">
+              <button type="button" (click)="decrementQuantity(product.id)">−</button>
+              <input type="number" min="0" class="qty-input" [value]="getQuantity(product.id)" (input)="onQuantityInput(product.id, $any($event.target).value)">
+              <button type="button" (click)="incrementQuantity(product.id)">+</button>
+              <span class="qty-label">unidades</span>
+              <svg *ngIf="getQuantity(product.id) < 15" class="qty-low-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Stock bajo (menos de 15)"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </div>
+          </div>
+          <p *ngIf="allProducts.length === 0" class="text-muted mb-0">Todavía no hay productos en el catálogo.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-kpet-primary" [disabled]="form.invalid || saving">
+        {{ editingDistributorId ? 'Guardar cambios' : 'Añadir distribuidor' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary" *ngIf="editingDistributorId" (click)="cancelEdit()">Cancelar</button>
+    </div>
+  </form>
+</div>

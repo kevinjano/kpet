@@ -1,0 +1,74 @@
+<div class="pdm-backdrop" (click)="onBackdropClick()">
+  <div class="pdm-modal kpet-fade-up" (click)="$event.stopPropagation()">
+    <button class="pdm-close" type="button" (click)="close.emit()" aria-label="Cerrar">✕</button>
+
+    <div class="pdm-body">
+      <div class="pdm-image-wrapper">
+        <img *ngIf="product.imageUrl; else pdmPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="pdm-image">
+        <ng-template #pdmPlaceholder>
+          <div class="pdm-image-placeholder">🐾</div>
+        </ng-template>
+        <span *ngIf="product.onSale" class="pdm-offer-badge">Oferta</span>
+      </div>
+
+      <div class="pdm-info">
+        <span class="pdm-category">{{ product.category }}</span>
+        <h2 class="pdm-name">{{ product.name }}</h2>
+        <p class="pdm-description">{{ product.description }}</p>
+
+        <div class="pdm-price-row">
+          <ng-container *ngIf="product.onSale && product.salePrice != null; else pdmRegularPrice">
+            <span class="pdm-price-old">Bs.{{ product.price.toFixed(2) }}</span>
+            <span class="pdm-price-current">Bs.{{ product.salePrice.toFixed(2) }}</span>
+          </ng-container>
+          <ng-template #pdmRegularPrice>
+            <span class="pdm-price-current">Bs.{{ product.price.toFixed(2) }}</span>
+          </ng-template>
+        </div>
+
+        <div class="pdm-actions" *ngIf="!hideAddToCart">
+          <div class="qty-control">
+            <button type="button" (click)="decrement()">−</button>
+            <span>{{ quantity }}</span>
+            <button type="button" (click)="increment()">+</button>
+          </div>
+          <button class="btn btn-kpet-primary flex-grow-1" (click)="addToCart()">Añadir al carrito</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pdm-others" *ngIf="otherProducts.length > 0">
+      <h3 class="pdm-others-title">Otros productos</h3>
+
+      <div class="pdm-others-carousel" (mouseenter)="stopOtherAutoplay()" (mouseleave)="startOtherAutoplay()">
+        <button *ngIf="otherProducts.length > 1" class="pdm-arrow pdm-arrow-prev" type="button" (click)="prevOther()" aria-label="Anterior">‹</button>
+
+        <div class="pdm-others-track" [style.transform]="'translateX(-' + (otherActiveIndex * 100) + '%)'">
+          <div class="pdm-other-slide" *ngFor="let other of otherProducts; trackBy: trackById" (click)="pickOther(other)">
+            <div class="pdm-other-thumb">
+              <img *ngIf="other.imageUrl; else otherPlaceholder" [src]="resolveImageUrl(other.imageUrl)" [alt]="other.name">
+              <ng-template #otherPlaceholder><span>🐾</span></ng-template>
+            </div>
+            <div class="pdm-other-info">
+              <span class="pdm-other-name">{{ other.name }}</span>
+              <span class="pdm-other-price">Bs.{{ unitPrice(other).toFixed(2) }}</span>
+            </div>
+            <span class="pdm-other-cta">Ver producto →</span>
+          </div>
+        </div>
+
+        <button *ngIf="otherProducts.length > 1" class="pdm-arrow pdm-arrow-next" type="button" (click)="nextOther()" aria-label="Siguiente">›</button>
+      </div>
+
+      <div class="pdm-others-dots" *ngIf="otherProducts.length > 1">
+        <button
+          *ngFor="let other of otherProducts; let i = index"
+          class="pdm-dot"
+          [class.active]="i === otherActiveIndex"
+          (click)="goToOther(i)"
+          [attr.aria-label]="'Ver ' + other.name">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

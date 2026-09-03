@@ -1,0 +1,99 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Configuración del sitio</h2>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="admin-form-card kpet-fade-up">
+    <div class="row g-4">
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Nombre de la tienda:</label>
+        <input type="text" class="form-control" formControlName="storeName">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Número de WhatsApp:</label>
+        <input type="text" class="form-control" formControlName="whatsappNumber" placeholder="Ej: 15145551234">
+        <small class="text-muted">Incluye el código de país, solo números (sin +, espacios ni guiones).</small>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Logo:</label>
+        <input type="file" accept="image/*" class="form-control" (change)="onLogoSelected($event)">
+        <div class="mt-2">
+          <img *ngIf="logoPreview || currentLogoUrl" [src]="logoPreview || resolveImageUrl(currentLogoUrl)" alt="logo" class="admin-preview">
+          <span *ngIf="!logoPreview && !currentLogoUrl" class="text-muted">Sin logo todavía</span>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold d-block">Banners del carrusel:</label>
+        <small class="text-muted d-block mb-2">Puedes añadir varios banners; se mostrarán en rotación automática en la página principal.</small>
+
+        <div class="banner-list mb-3">
+          <div class="banner-item" *ngFor="let banner of bannerUrls; let i = index">
+            <img [src]="resolveImageUrl(banner)" alt="Banner {{ i + 1 }}" class="banner-thumb">
+            <div class="banner-item-actions">
+              <button type="button" class="btn btn-sm btn-outline-secondary" (click)="moveBanner(i, -1)" [disabled]="i === 0" title="Mover a la izquierda">←</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" (click)="moveBanner(i, 1)" [disabled]="i === bannerUrls.length - 1" title="Mover a la derecha">→</button>
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeBanner(i)" title="Eliminar">Eliminar</button>
+            </div>
+          </div>
+
+          <p *ngIf="bannerUrls.length === 0" class="text-muted mb-0">Todavía no hay banners. Añade el primero abajo.</p>
+        </div>
+
+        <input type="file" accept="image/*" class="form-control" (change)="onBannerSelected($event)" [disabled]="uploadingBanner">
+        <small *ngIf="uploadingBanner" class="text-muted">Subiendo banner...</small>
+      </div>
+
+      <div class="col-12">
+        <hr>
+        <h3 class="admin-subtitle mb-3">Pagos</h3>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Código QR de pago:</label>
+        <small class="text-muted d-block mb-2">Se muestra al cliente en el carrito después de enviar su pedido por WhatsApp, para que escanee y pague.</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onQrSelected($event)">
+        <div class="mt-2">
+          <img *ngIf="qrPreview || currentQrCodeUrl" [src]="qrPreview || resolveImageUrl(currentQrCodeUrl)" alt="QR de pago" class="admin-preview">
+          <span *ngIf="!qrPreview && !currentQrCodeUrl" class="text-muted">Sin código QR todavía</span>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <hr>
+        <h3 class="admin-subtitle mb-3">Conócenos / Redes sociales</h3>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Sobre nosotros:</label>
+        <textarea class="form-control" formControlName="aboutText" rows="4" placeholder="Cuéntale a tus clientes quién es Kpet..."></textarea>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Instagram (URL):</label>
+        <input type="text" class="form-control" formControlName="instagramUrl" placeholder="https://instagram.com/tu_cuenta">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">TikTok (URL):</label>
+        <input type="text" class="form-control" formControlName="tiktokUrl" placeholder="https://tiktok.com/@tu_cuenta">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">YouTube (URL):</label>
+        <input type="text" class="form-control" formControlName="youtubeUrl" placeholder="https://youtube.com/@tu_canal">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Correo de contacto:</label>
+        <input type="email" class="form-control" formControlName="contactEmail" placeholder="contacto@kpet.com">
+      </div>
+
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-kpet-primary" [disabled]="form.invalid || saving">Guardar configuración</button>
+    </div>
+  </form>
+</div>

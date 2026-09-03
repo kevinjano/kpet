@@ -1,0 +1,84 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/distribuidores">← Volver a distribuidores</a>
+  </div>
+</nav>
+
+<div class="container mt-4 mb-5" *ngIf="notFound">
+  <p class="text-center text-muted py-5">No encontramos este distribuidor.</p>
+</div>
+
+<div *ngIf="distributor">
+  <div class="dist-hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-4" *ngIf="distributor.imageUrl">
+          <img [src]="resolveImageUrl(distributor.imageUrl)" [alt]="distributor.name" class="dist-hero-image">
+        </div>
+        <div class="col-md-8">
+          <span class="dist-city-pill">{{ distributor.city }}</span>
+          <h1 class="dist-hero-title kpet-fade-up">{{ distributor.name }}</h1>
+          <p class="dist-hero-address" *ngIf="distributor.address">📍 {{ distributor.address }}</p>
+          <p class="dist-hero-phone" *ngIf="distributor.phone">📞 {{ distributor.phone }}</p>
+          <div class="d-flex flex-wrap gap-2 mt-2">
+            <a *ngIf="distributor.mapUrl" [href]="distributor.mapUrl" target="_blank" rel="noopener" class="btn btn-kpet-accent">Ver en el mapa</a>
+            <button type="button" class="btn btn-whatsapp" (click)="contactOnWhatsapp()">
+              <span aria-hidden="true">💬</span> Pedir por WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="dist-hero-description mt-4" *ngIf="distributor.description">{{ distributor.description }}</p>
+    </div>
+  </div>
+
+  <div class="container mt-5 mb-5">
+    <h2 class="section-title mb-4">Productos disponibles en {{ distributor.name }}</h2>
+
+    <div *ngIf="distributor.distributorProducts.length === 0" class="text-center text-muted py-5">
+      Este distribuidor todavía no tiene productos asignados.
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <div class="col" *ngFor="let entry of distributor.distributorProducts; trackBy: trackById">
+        <div class="card h-100 product-card kpet-fade-up">
+          <div class="product-image-wrapper">
+            <img *ngIf="entry.product.imageUrl; else imgPlaceholder" [src]="resolveImageUrl(entry.product.imageUrl)" [alt]="entry.product.name" class="product-image">
+            <ng-template #imgPlaceholder>
+              <div class="product-image-placeholder">🐾</div>
+            </ng-template>
+            <span *ngIf="entry.product.onSale" class="offer-badge">Oferta</span>
+            <span class="stock-badge" [class.stock-out]="entry.quantity === 0">
+              {{ entry.quantity > 0 ? entry.quantity + ' disponibles' : 'Agotado' }}
+            </span>
+          </div>
+          <div class="card-body d-flex flex-column">
+            <h3 class="product-name">{{ entry.product.name }}</h3>
+            <p class="product-description text-muted">{{ entry.product.description }}</p>
+            <div class="mt-auto">
+              <div class="price-row">
+                <ng-container *ngIf="entry.product.onSale && entry.product.salePrice != null; else regularPrice">
+                  <span class="price-old">Bs.{{ entry.product.price.toFixed(2) }}</span>
+                  <span class="price-current">Bs.{{ entry.product.salePrice.toFixed(2) }}</span>
+                </ng-container>
+                <ng-template #regularPrice>
+                  <span class="price-current">Bs.{{ entry.product.price.toFixed(2) }}</span>
+                </ng-template>
+              </div>
+              <button class="btn btn-outline-secondary w-100 mt-2" (click)="openProductInfo(entry.product)">Información</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-product-detail-modal
+  *ngIf="selectedProduct && distributor"
+  [product]="selectedProduct"
+  [allProducts]="productList"
+  [hideAddToCart]="true"
+  (close)="closeProductInfo()"
+  (selectProduct)="openProductInfo($event)">
+</app-product-detail-modal>

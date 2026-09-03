@@ -1,0 +1,18 @@
+<div class="kpet-modal-backdrop" *ngIf="state" (click)="cancel()">
+  <div class="kpet-modal" (click)="$event.stopPropagation()">
+    <div class="kpet-modal-icon" [ngClass]="'kpet-modal-icon-' + state.variant">
+      <svg *ngIf="state.variant === 'confirm'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <svg *ngIf="state.variant === 'success'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      <svg *ngIf="state.variant === 'error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+      <svg *ngIf="state.variant === 'info'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    </div>
+
+    <h3 class="kpet-modal-title">{{ state.title }}</h3>
+    <p class="kpet-modal-message">{{ state.message }}</p>
+
+    <div class="kpet-modal-actions">
+      <button *ngIf="state.showCancel" type="button" class="btn btn-outline-secondary" (click)="cancel()">{{ state.cancelText }}</button>
+      <button type="button" class="btn btn-kpet-primary" (click)="confirm()">{{ state.confirmText }}</button>
+    </div>
+  </div>
+</div>
