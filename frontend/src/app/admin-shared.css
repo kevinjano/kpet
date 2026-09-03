@@ -82,7 +82,7 @@
 }
 
 /* .admin-table-card / .admin-table* rules live in AdminTableComponent now
-   (angularFolder/src/app/admin-table) — that component wraps every admin list
+   (src/app/admin-table) — that component wraps every admin list
    table, so those styles only need to exist in one place. */
 .admin-form-card {
   background: #F7F5FC;

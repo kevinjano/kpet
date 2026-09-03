@@ -20,14 +20,15 @@ Kpet is a pet-shop e-commerce site: a public storefront where customers browse a
 
 2. Database:
 
-   From the project root, start MySQL:
    ```
+   cd backend
    docker-compose up -d
    ```
 
 3. Backend:
 
    ```
+   cd backend
    ./mvnw spring-boot:run
    ```
    Runs on `http://localhost:8090`.
@@ -35,7 +36,7 @@ Kpet is a pet-shop e-commerce site: a public storefront where customers browse a
 4. Frontend:
 
    ```
-   cd angularFolder
+   cd frontend
    npm install
    ng serve
    ```

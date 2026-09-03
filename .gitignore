@@ -3,7 +3,7 @@ target/
 uploads/
 
 ### Angular ###
-angularFolder/.angular/
+frontend/.angular/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
