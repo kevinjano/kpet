@@ -9,6 +9,13 @@ export const API_ORIGIN = 'http://localhost:8090';
 // it here only, no backend migration needed since Product.category is a plain string.
 export const PRODUCT_CATEGORIES = ['Perros', 'Gatos', 'Novedades'];
 
+// Shown immediately (no flash of placeholder text/broken image) while each
+// page's site-settings request is still in flight — matches the logo already
+// seeded into site_settings.logoUrl, so in the common case (admin hasn't
+// uploaded a different one) the image never actually changes once the real
+// settings arrive, just the placeholder-vs-real distinction disappears.
+export const DEFAULT_LOGO_URL = '/assets/images/kpet-logo.png';
+
 export function resolveImageUrl(path: string | null | undefined): string | null {
   if (!path) {
     return null;

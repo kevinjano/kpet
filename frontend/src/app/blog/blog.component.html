@@ -2,7 +2,7 @@
   <div class="container d-flex align-items-center justify-content-between py-2">
     <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
     <a class="kpet-logo-text-sm" routerLink="/">
-      <img *ngIf="settings?.logoUrl" [src]="resolveImageUrl(settings?.logoUrl)" alt="Kpet" height="36">
+      <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" height="36">
     </a>
   </div>
 </nav>

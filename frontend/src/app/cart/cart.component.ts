@@ -7,7 +7,7 @@ import { OrderService } from '../services/order-service';
 import { ModalService } from '../services/modal-service';
 import { CartItem } from '../cart-item';
 import { Order } from '../order';
-import { resolveImageUrl } from '../constants';
+import { resolveImageUrl, DEFAULT_LOGO_URL } from '../constants';
 
 @Component({
   selector: 'app-cart',
@@ -28,7 +28,7 @@ export class CartComponent implements OnInit {
   items: CartItem[] = [];
   storeName = 'Kpet';
   whatsappNumber = '';
-  logoUrl: string | null = null;
+  logoUrl: string = DEFAULT_LOGO_URL;
   qrCodeUrl: string | null = null;
   resolveImageUrl = resolveImageUrl;
 
@@ -49,7 +49,7 @@ export class CartComponent implements OnInit {
     this.siteSettingsService.getSettings().subscribe(settings => {
       this.storeName = settings.storeName || 'Kpet';
       this.whatsappNumber = settings.whatsappNumber || '';
-      this.logoUrl = settings.logoUrl;
+      this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
       this.qrCodeUrl = settings.qrCodeUrl;
     });
   }

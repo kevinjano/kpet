@@ -8,7 +8,7 @@ import {RouterLink, RouterLinkActive, Router} from "@angular/router";
 import {AuthService} from "../services/auth-service";
 import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
-import {resolveImageUrl} from "../constants";
+import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 
 @Component({
   selector: 'app-mon-compte',
@@ -32,7 +32,7 @@ export class MonCompteComponent implements OnInit {
   isEditingPassword: boolean = false;
   showCurrentPassword = false;
   showNewPassword = false;
-  logoUrl: string | null = null;
+  logoUrl: string = DEFAULT_LOGO_URL;
   resolveImageUrl = resolveImageUrl;
 
 
@@ -57,7 +57,7 @@ export class MonCompteComponent implements OnInit {
     });
 
     this.siteSettingsService.getSettings().subscribe(settings => {
-      this.logoUrl = settings.logoUrl;
+      this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
     });
   }
 

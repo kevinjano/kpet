@@ -1,8 +1,7 @@
 <nav class="kpet-nav-simple">
   <div class="container d-flex align-items-center justify-content-between py-2 flex-wrap gap-2">
     <a class="kpet-logo-text-sm" routerLink="/">
-      <img *ngIf="logoUrl; else compteLogoText" [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="account-logo-img">
-      <ng-template #compteLogoText>Kpet<span class="dot">.</span></ng-template>
+      <img [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="account-logo-img">
     </a>
     <div class="d-flex align-items-center gap-3">
       <a class="account-nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Tienda</a>

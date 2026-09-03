@@ -1,8 +1,7 @@
 <div class="auth-page">
   <div class="auth-card kpet-fade-up">
     <a routerLink="/" class="auth-logo">
-      <img *ngIf="logoUrl; else registerLogoText" [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="auth-logo-img">
-      <ng-template #registerLogoText>Kpet<span class="dot">.</span></ng-template>
+      <img [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="auth-logo-img">
     </a>
     <h2>Crear cuenta</h2>
     <p class="auth-subtitle">Únete a la familia Kpet</p>

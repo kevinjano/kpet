@@ -5,7 +5,7 @@ import { DistributorService } from '../services/distributor-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { Distributor } from '../distributor';
 import { SiteSettings } from '../site-settings';
-import { resolveImageUrl, trackById } from '../constants';
+import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
 
 @Component({
   selector: 'app-distributors',
@@ -23,6 +23,7 @@ export class DistributorsComponent implements OnInit {
   selectedCity: string | null = null;
   settings: SiteSettings | undefined;
   resolveImageUrl = resolveImageUrl;
+  defaultLogoUrl = DEFAULT_LOGO_URL;
   trackById = trackById;
 
   constructor(

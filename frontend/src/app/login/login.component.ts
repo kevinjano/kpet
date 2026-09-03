@@ -5,7 +5,7 @@ import {Router, RouterLink, RouterLinkActive} from "@angular/router";
 import {AuthService} from "../services/auth-service";
 import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
-import {resolveImageUrl} from "../constants";
+import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 
 
 @Component({
@@ -20,7 +20,7 @@ import {resolveImageUrl} from "../constants";
 // successful login routes by role — Admin to /admin, everyone else to /.
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  logoUrl: string | null = null;
+  logoUrl: string = DEFAULT_LOGO_URL;
   showPassword = false;
   resolveImageUrl = resolveImageUrl;
 
@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.siteSettingsService.getSettings().subscribe(settings => {
-      this.logoUrl = settings.logoUrl;
+      this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
     });
   }
 

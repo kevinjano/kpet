@@ -1,7 +1,7 @@
 <nav class="kpet-topbar">
   <div class="container d-flex align-items-center justify-content-between py-2">
     <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
-    <img *ngIf="settings?.logoUrl" [src]="resolveImageUrl(settings?.logoUrl)" alt="Kpet" class="dist-logo-img">
+    <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" class="dist-logo-img">
   </div>
 </nav>
 

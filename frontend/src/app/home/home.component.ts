@@ -7,7 +7,7 @@ import { CartService } from '../services/cart-service';
 import { AuthService } from '../services/auth-service';
 import { Product } from '../product';
 import { SiteSettings } from '../site-settings';
-import { PRODUCT_CATEGORIES, resolveImageUrl, trackById } from '../constants';
+import { PRODUCT_CATEGORIES, resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
 import { BannerCarouselComponent } from '../banner-carousel/banner-carousel.component';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
 import { CartToastComponent } from '../cart-toast/cart-toast.component';
@@ -35,12 +35,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
   showOffersOnly = false;
 
   products: Product[] = [];
+  // Distinguishes "still loading" from "genuinely empty" so the "no hay
+  // productos" message doesn't flash on screen for a moment before the first
+  // catalog response arrives.
+  productsLoaded = false;
   settings: SiteSettings | undefined;
   bannerImages: string[] = [];
   cartItemCount = 0;
   mobileMenuOpen = false;
   selectedProduct: Product | null = null;
   resolveImageUrl = resolveImageUrl;
+  defaultLogoUrl = DEFAULT_LOGO_URL;
   trackById = trackById;
 
   // productId -> quantity currently in the cart, so each "Añadir al carrito"
@@ -66,6 +71,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.productService.getProducts().subscribe(data => {
       this.products = data.filter(p => p.active);
+      this.productsLoaded = true;
     });
 
     this.siteSettingsService.getSettings().subscribe(data => {

@@ -5,7 +5,7 @@ import { BlogService } from '../services/blog-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { BlogPost } from '../blog-post';
 import { SiteSettings } from '../site-settings';
-import { resolveImageUrl, trackById } from '../constants';
+import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
 
 @Component({
   selector: 'app-blog',
@@ -20,6 +20,7 @@ export class BlogComponent implements OnInit {
   posts: BlogPost[] = [];
   settings: SiteSettings | undefined;
   resolveImageUrl = resolveImageUrl;
+  defaultLogoUrl = DEFAULT_LOGO_URL;
   trackById = trackById;
 
   constructor(

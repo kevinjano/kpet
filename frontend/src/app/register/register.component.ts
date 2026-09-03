@@ -6,7 +6,7 @@ import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import { UserService } from "../services/user-service";
 import { SiteSettingsService } from "../services/site-settings-service";
 import { ModalService } from "../services/modal-service";
-import { resolveImageUrl } from "../constants";
+import { resolveImageUrl, DEFAULT_LOGO_URL } from "../constants";
 
 @Component({
   selector: 'app-register',
@@ -27,7 +27,7 @@ import { resolveImageUrl } from "../constants";
 // self-service way to create an Admin account through the UI.
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
-  logoUrl: string | null = null;
+  logoUrl: string = DEFAULT_LOGO_URL;
   showPassword = false;
   resolveImageUrl = resolveImageUrl;
 
@@ -48,7 +48,7 @@ export class RegisterComponent implements OnInit {
     });
 
     this.siteSettingsService.getSettings().subscribe(settings => {
-      this.logoUrl = settings.logoUrl;
+      this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
     });
   }
 

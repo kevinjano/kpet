@@ -5,7 +5,7 @@ import { Subscription, filter } from 'rxjs';
 import { AuthService } from '../services/auth-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { ModalService } from '../services/modal-service';
-import { resolveImageUrl } from '../constants';
+import { resolveImageUrl, DEFAULT_LOGO_URL } from '../constants';
 
 @Component({
   selector: 'app-admin-nav',
@@ -26,7 +26,7 @@ import { resolveImageUrl } from '../constants';
  * changed the route without a click.
  */
 export class AdminNavComponent implements OnInit, AfterViewInit, OnDestroy {
-  logoUrl: string | null = null;
+  logoUrl: string = DEFAULT_LOGO_URL;
   resolveImageUrl = resolveImageUrl;
 
   sliderTop = 0;
@@ -50,7 +50,7 @@ export class AdminNavComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.siteSettingsService.getSettings().subscribe(settings => {
-      this.logoUrl = settings.logoUrl;
+      this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
     });
 
     // The sidebar is a persistent singleton across /admin/* navigation (it lives

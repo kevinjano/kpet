@@ -1,10 +1,7 @@
 <nav class="kpet-nav">
   <div class="container d-flex align-items-center justify-content-between py-2">
     <a class="kpet-logo" routerLink="/">
-      <img *ngIf="settings?.logoUrl; else logoPlaceholder" [src]="resolveImageUrl(settings?.logoUrl)" alt="Kpet" height="44">
-      <ng-template #logoPlaceholder>
-        <span class="kpet-logo-text">Kpet<span class="dot">.</span></span>
-      </ng-template>
+      <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" height="44">
     </a>
 
     <button class="kpet-burger d-lg-none" type="button" (click)="toggleMobileMenu()" aria-label="Abrir menú">
@@ -86,7 +83,7 @@
     <span class="section-underline"></span>
   </div>
 
-  <div *ngIf="visibleProducts.length === 0" class="text-muted text-center py-5">
+  <div *ngIf="productsLoaded && visibleProducts.length === 0" class="text-muted text-center py-5">
     No hay productos disponibles en esta categoría por el momento.
   </div>
 
