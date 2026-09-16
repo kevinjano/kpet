@@ -14,10 +14,12 @@ import { buildWhatsappUrl } from '../constants';
 })
 // Floating "contact us on WhatsApp" bubble, mounted once at the app root
 // (see app.component.html) — hides itself on /admin/** routes since it's a
-// storefront contact tool, not something the admin backoffice needs.
+// storefront contact tool, not something the admin backoffice needs, and on
+// /login and /register since those are full-screen takeovers where a
+// floating bubble just clutters the card instead of the actual storefront.
 export class WhatsappBubbleComponent implements OnInit {
   whatsappNumber: string | null = null;
-  isAdminRoute = false;
+  hideBubble = false;
   buildWhatsappUrl = buildWhatsappUrl;
 
   constructor(
@@ -30,11 +32,15 @@ export class WhatsappBubbleComponent implements OnInit {
       this.whatsappNumber = settings.whatsappNumber || null;
     });
 
-    this.isAdminRoute = this.router.url.startsWith('/admin');
+    this.hideBubble = this.shouldHide(this.router.url);
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(event => {
-        this.isAdminRoute = event.urlAfterRedirects.startsWith('/admin');
+        this.hideBubble = this.shouldHide(event.urlAfterRedirects);
       });
+  }
+
+  private shouldHide(url: string): boolean {
+    return url.startsWith('/admin') || url.startsWith('/login') || url.startsWith('/register');
   }
 }

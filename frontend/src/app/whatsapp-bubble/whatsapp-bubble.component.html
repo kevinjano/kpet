@@ -1,5 +1,5 @@
 <a
-  *ngIf="whatsappNumber && !isAdminRoute"
+  *ngIf="whatsappNumber && !hideBubble"
   class="wa-bubble"
   [href]="buildWhatsappUrl(whatsappNumber)"
   target="_blank"
