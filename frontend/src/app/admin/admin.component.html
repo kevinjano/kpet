@@ -23,7 +23,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let user of filteredUsers; trackBy: trackById">
+    <tr *ngFor="let user of pagedUsers; trackBy: trackById">
       <td>{{ user.id }}</td>
       <td>{{ user.lastName }}</td>
       <td>{{ user.firstName }}</td>
@@ -37,6 +37,8 @@
     </tr>
     </tbody>
   </app-admin-table>
+
+  <app-pagination [page]="usersPage" [pageSize]="usersPageSize" [totalItems]="filteredUsers.length" (pageChange)="usersPage = $event"></app-pagination>
 
   <h3 class="admin-subtitle pt-5">Editar información</h3>
   <div class="admin-form-card kpet-fade-up">

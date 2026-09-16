@@ -8,6 +8,7 @@ import { trackById, LOW_STOCK_THRESHOLD } from '../../constants';
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
 import { FilterDropdownComponent } from '../../filter-dropdown/filter-dropdown.component';
+import { PaginationComponent } from '../../pagination/pagination.component';
 
 // Flattened {distributor, product, quantity} row for the low-stock warning
 // banner — built from every distributor's per-product quantities, not from
@@ -33,7 +34,7 @@ interface LowStockEntry {
 @Component({
   selector: 'app-admin-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminTableComponent, FilterDropdownComponent],
+  imports: [CommonModule, FormsModule, AdminTableComponent, FilterDropdownComponent, PaginationComponent],
   templateUrl: './admin-orders.component.html',
   styleUrl: './admin-orders.component.css'
 })
@@ -99,6 +100,19 @@ export class AdminOrdersComponent implements OnInit {
   // "Historial" = resolved either way (Finalizado or Cancelado) — read-only from here on.
   get historyOrders(): Order[] {
     return this.filteredOrders.filter(o => o.status === this.STATUS_COMPLETED || o.status === this.STATUS_CANCELLED);
+  }
+
+  // Only "Historial" is paginated — it only grows over time, whereas
+  // "Pendientes" is naturally self-limiting (the admin clears it by acting
+  // on each order) and hiding one behind a second page could mean it's missed.
+  historyPage = 1;
+  historyPageSize = 20;
+
+  get pagedHistoryOrders(): Order[] {
+    const totalPages = Math.max(1, Math.ceil(this.historyOrders.length / this.historyPageSize));
+    const page = Math.min(this.historyPage, totalPages);
+    const start = (page - 1) * this.historyPageSize;
+    return this.historyOrders.slice(start, start + this.historyPageSize);
   }
 
   toggleExpanded(orderId: number): void {

@@ -10,6 +10,7 @@ import {ModalService} from "../services/modal-service";
 import {trackById} from "../constants";
 import {AdminTableComponent} from "../admin-table/admin-table.component";
 import {FilterDropdownComponent} from "../filter-dropdown/filter-dropdown.component";
+import {PaginationComponent} from "../pagination/pagination.component";
 
 @Component({
   selector: 'app-admin',
@@ -22,7 +23,8 @@ import {FilterDropdownComponent} from "../filter-dropdown/filter-dropdown.compon
     ReactiveFormsModule,
     FormsModule,
     AdminTableComponent,
-    FilterDropdownComponent
+    FilterDropdownComponent,
+    PaginationComponent
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
@@ -67,6 +69,16 @@ export class AdminComponent implements OnInit{
         || (u.email ?? '').toLowerCase().includes(term)
         || (u.noTel ?? '').toLowerCase().includes(term);
     });
+  }
+
+  usersPage = 1;
+  usersPageSize = 20;
+
+  get pagedUsers(): User[] {
+    const totalPages = Math.max(1, Math.ceil(this.filteredUsers.length / this.usersPageSize));
+    const page = Math.min(this.usersPage, totalPages);
+    const start = (page - 1) * this.usersPageSize;
+    return this.filteredUsers.slice(start, start + this.usersPageSize);
   }
 
   checkoutForm = this.formBuilder.group({

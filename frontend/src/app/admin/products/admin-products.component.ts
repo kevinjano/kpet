@@ -8,6 +8,7 @@ import { PRODUCT_CATEGORIES, LOW_STOCK_THRESHOLD, resolveImageUrl, extractErrorM
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
 import { FilterDropdownComponent } from '../../filter-dropdown/filter-dropdown.component';
+import { PaginationComponent } from '../../pagination/pagination.component';
 
 // '' = todas, a category name, or 'low-stock' for the stock-bajo filter —
 // they're mutually exclusive so a single field covers both cases.
@@ -16,7 +17,7 @@ type CategoryFilterValue = string;
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, AdminTableComponent, FilterDropdownComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, AdminTableComponent, FilterDropdownComponent, PaginationComponent],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.css'
 })
@@ -74,6 +75,20 @@ export class AdminProductsComponent implements OnInit {
       }
       return p.name.toLowerCase().includes(term) || (p.description ?? '').toLowerCase().includes(term);
     });
+  }
+
+  // Client-side pagination over filteredProducts — the catalog is small
+  // enough that fetching it all in one call is still fine, this just caps
+  // how many rows render/scroll at once. Page auto-clamps if a filter
+  // shrinks the result set below the current page.
+  productsPage = 1;
+  productsPageSize = 20;
+
+  get pagedProducts(): Product[] {
+    const totalPages = Math.max(1, Math.ceil(this.filteredProducts.length / this.productsPageSize));
+    const page = Math.min(this.productsPage, totalPages);
+    const start = (page - 1) * this.productsPageSize;
+    return this.filteredProducts.slice(start, start + this.productsPageSize);
   }
 
   constructor(
