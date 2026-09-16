@@ -2,6 +2,9 @@ package org.kpet.petshop.Models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A catalog item. {@code stock} is the central/warehouse quantity — distinct
  * from the per-distributor quantity tracked in {@link DistributorProduct} — and
@@ -9,6 +12,11 @@ import jakarta.persistence.*;
  * OrderServiceImpl.deductStock). {@code onSale}/{@code salePrice} drive the
  * storefront's strike-through price display; when onSale is false, salePrice is
  * ignored everywhere it's read.
+ *
+ * {@code imageUrl} stays the single "cover" image shown everywhere compact
+ * (product cards, admin table, order line items) — {@code imageUrls} is an
+ * optional extra gallery only the product detail modal renders, so existing
+ * products with just one photo keep working unchanged.
  */
 @Entity
 @Table(name = "products", indexes = {
@@ -43,6 +51,11 @@ public class Product {
     private Integer stock = 0;
 
     private String imageUrl;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean active = true;
@@ -134,6 +147,14 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
     }
 
     public boolean isActive() {

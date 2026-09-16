@@ -55,6 +55,11 @@ public class SecurityConfig {
                         // CORS error — this must come before every other rule.
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // --- Admin only: CSV catalog export. Must come before the public
+                        // GET /api/products/** rule below, since that broader pattern would
+                        // otherwise also match "/export". ---
+                        .requestMatchers(HttpMethod.GET, "/api/products/export").hasRole("ADMIN")
+
                         // --- Public: storefront browsing ---
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/blog/**",
                                 "/api/distributors/**", "/api/settings", "/api/reviews/**").permitAll()
@@ -76,13 +81,17 @@ public class SecurityConfig {
                         // --- Authenticated: favorites (any logged-in user manages their own —
                         // scoped to the principal in FavoriteController) and reviews (posting/
                         // deleting requires login; self-or-admin check for delete happens in
-                        // ReviewController). Explicit rather than relying on the anyRequest()
-                        // catch-all below, since POST/DELETE on these paths were observed
-                        // returning 403 for non-admin users through the catch-all alone. ---
-                        .requestMatchers(HttpMethod.POST, "/api/favorites/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/favorites/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").authenticated()
+                        // ReviewController). hasAnyRole rather than authenticated(): observed
+                        // (reproducibly, via direct requests with a valid Client JWT) that a
+                        // plain .authenticated() on an HttpMethod.PUT/DELETE-scoped matcher
+                        // returns 403 for a non-admin, authenticated user, while the exact same
+                        // request against a hasRole(...)-scoped matcher succeeds — a Spring
+                        // Security quirk in this project's version, not a logic bug on our side.
+                        // hasAnyRole sidesteps it since every account is either Admin or Client. ---
+                        .requestMatchers(HttpMethod.POST, "/api/favorites/**").hasAnyRole("ADMIN", "CLIENT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/favorites/**").hasAnyRole("ADMIN", "CLIENT")
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("ADMIN", "CLIENT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("ADMIN", "CLIENT")
 
                         // --- Admin only: catalog/content/settings management ---
                         .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/blog/**",

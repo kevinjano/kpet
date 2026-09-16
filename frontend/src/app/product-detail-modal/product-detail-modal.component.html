@@ -3,12 +3,19 @@
     <button class="pdm-close" type="button" (click)="close.emit()" aria-label="Cerrar">✕</button>
 
     <div class="pdm-body">
-      <div class="pdm-image-wrapper">
-        <img *ngIf="product.imageUrl; else pdmPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="pdm-image">
-        <ng-template #pdmPlaceholder>
-          <div class="pdm-image-placeholder">🐾</div>
-        </ng-template>
-        <span *ngIf="product.onSale" class="pdm-offer-badge">Oferta</span>
+      <div class="pdm-gallery">
+        <div class="pdm-image-wrapper">
+          <img *ngIf="activeImage; else pdmPlaceholder" [src]="resolveImageUrl(activeImage)" [alt]="product.name" class="pdm-image">
+          <ng-template #pdmPlaceholder>
+            <div class="pdm-image-placeholder">🐾</div>
+          </ng-template>
+          <span *ngIf="product.onSale" class="pdm-offer-badge">Oferta</span>
+        </div>
+        <div class="pdm-thumb-row" *ngIf="galleryImages.length > 1">
+          <button *ngFor="let img of galleryImages; let i = index" type="button" class="pdm-thumb" [class.active]="i === activeImageIndex" (click)="selectImage(i)">
+            <img [src]="resolveImageUrl(img)" [alt]="product.name + ' ' + (i + 1)">
+          </button>
+        </div>
       </div>
 
       <div class="pdm-info">

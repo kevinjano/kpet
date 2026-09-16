@@ -34,6 +34,12 @@ export class AdminProductsComponent implements OnInit {
   previewUrl: string | null = null;
   saving = false;
 
+  // Extra gallery shown in the product detail modal, separate from the single
+  // "cover" image above (selectedFile/previewUrl) — already-uploaded URLs,
+  // since each file uploads as soon as it's picked rather than waiting for save.
+  galleryUrls: string[] = [];
+  uploadingGallery = false;
+
   get filteredProducts(): Product[] {
     const term = this.searchTerm.trim().toLowerCase();
     return this.products.filter(p => {
@@ -65,12 +71,56 @@ export class AdminProductsComponent implements OnInit {
     });
   }
 
+  importing = false;
+
   ngOnInit(): void {
     this.loadProducts();
   }
 
   loadProducts(): void {
     this.productService.getProducts().subscribe(data => this.products = data);
+  }
+
+  exportCsv(): void {
+    this.productService.exportProductsCsv().subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'productos-kpet.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => this.modalService.error('Error al exportar el catálogo.')
+    });
+  }
+
+  onImportFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) {
+      return;
+    }
+
+    this.importing = true;
+    this.productService.importProductsCsv(file).subscribe({
+      next: result => {
+        this.importing = false;
+        this.loadProducts();
+        const summary = `${result.created} producto${result.created === 1 ? '' : 's'} creado${result.created === 1 ? '' : 's'}, `
+          + `${result.updated} actualizado${result.updated === 1 ? '' : 's'}.`;
+        if (result.errors.length > 0) {
+          this.modalService.error(`${summary}\n\nErrores:\n${result.errors.join('\n')}`);
+        } else {
+          this.modalService.success(summary);
+        }
+      },
+      error: err => {
+        this.importing = false;
+        this.modalService.error(extractErrorMessage(err, 'Error al importar el archivo.'));
+      }
+    });
   }
 
   onFileSelected(event: Event): void {
@@ -85,6 +135,7 @@ export class AdminProductsComponent implements OnInit {
     this.editingProductId = product.id;
     this.previewUrl = product.imageUrl ? resolveImageUrl(product.imageUrl) : null;
     this.selectedFile = null;
+    this.galleryUrls = product.imageUrls ? [...product.imageUrls] : [];
     this.form.patchValue({
       name: product.name,
       description: product.description,
@@ -101,7 +152,46 @@ export class AdminProductsComponent implements OnInit {
     this.editingProductId = null;
     this.selectedFile = null;
     this.previewUrl = null;
+    this.galleryUrls = [];
     this.form.reset({name: '', description: '', price: 0, onSale: false, salePrice: null, category: PRODUCT_CATEGORIES[0], stock: 0, active: true});
+  }
+
+  resolveGalleryUrl(url: string): string {
+    return resolveImageUrl(url) ?? url;
+  }
+
+  onGalleryFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files ? Array.from(input.files) : [];
+    input.value = '';
+    if (files.length === 0) {
+      return;
+    }
+
+    this.uploadingGallery = true;
+    let remaining = files.length;
+    files.forEach(file => {
+      this.uploadService.upload(file).subscribe({
+        next: res => {
+          this.galleryUrls.push(res.url);
+          remaining--;
+          if (remaining === 0) {
+            this.uploadingGallery = false;
+          }
+        },
+        error: () => {
+          remaining--;
+          if (remaining === 0) {
+            this.uploadingGallery = false;
+          }
+          this.modalService.error('Error al subir una de las imágenes de la galería.');
+        }
+      });
+    });
+  }
+
+  removeGalleryImage(index: number): void {
+    this.galleryUrls.splice(index, 1);
   }
 
   async deleteProduct(id: number): Promise<void> {
@@ -130,6 +220,7 @@ export class AdminProductsComponent implements OnInit {
       imageUrl: this.editingProductId
         ? this.products.find(p => p.id === this.editingProductId)?.imageUrl ?? null
         : null,
+      imageUrls: this.galleryUrls,
     };
 
     const afterUpload = (imageUrl: string | null) => {

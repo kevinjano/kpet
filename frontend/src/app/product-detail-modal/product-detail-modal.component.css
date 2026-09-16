@@ -50,9 +50,15 @@
   flex-wrap: wrap;
 }
 
+.pdm-gallery {
+  flex: 1 1 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
 .pdm-image-wrapper {
   position: relative;
-  flex: 1 1 280px;
   min-height: 260px;
   background: var(--kpet-purple-50);
   border-radius: var(--kpet-radius);
@@ -60,6 +66,36 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.pdm-thumb-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.pdm-thumb {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: var(--kpet-purple-50);
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--kpet-transition);
+}
+
+.pdm-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdm-thumb.active {
+  border-color: var(--kpet-purple-600);
 }
 
 .pdm-image {

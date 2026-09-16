@@ -4,6 +4,12 @@ import {Observable} from 'rxjs';
 import {Product} from '../product';
 import {API_ORIGIN} from '../constants';
 
+export interface ProductImportResult {
+  created: number;
+  updated: number;
+  errors: string[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,5 +40,17 @@ export class ProductService {
 
   deleteProduct(id: number): Observable<any> {
     return this.httpClient.delete(`${this.apiUrl}/delete/${id}`);
+  }
+
+  // Blob response so the caller can trigger a browser download — a plain
+  // <a href> can't carry the Authorization header this admin-only endpoint needs.
+  exportProductsCsv(): Observable<Blob> {
+    return this.httpClient.get(`${this.apiUrl}/export`, { responseType: 'blob' });
+  }
+
+  importProductsCsv(file: File): Observable<ProductImportResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.httpClient.post<ProductImportResult>(`${this.apiUrl}/import`, formData);
   }
 }

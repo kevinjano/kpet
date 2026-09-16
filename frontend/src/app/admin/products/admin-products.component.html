@@ -1,5 +1,14 @@
 <div class="mb-5">
-  <h2 class="admin-title pb-2">Productos</h2>
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2">
+    <h2 class="admin-title mb-0">Productos</h2>
+    <div class="admin-csv-actions">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="exportCsv()">⬇ Exportar CSV</button>
+      <label class="btn btn-outline-secondary btn-sm mb-0" [class.disabled]="importing">
+        {{ importing ? 'Importando...' : '⬆ Importar CSV' }}
+        <input type="file" accept=".csv" hidden (change)="onImportFileSelected($event)" [disabled]="importing">
+      </label>
+    </div>
+  </div>
 
   <div class="admin-filter-bar">
     <div class="admin-search-wrap">
@@ -97,9 +106,21 @@
       </div>
 
       <div class="col-12">
-        <label class="form-label fw-semibold">Imagen:</label>
+        <label class="form-label fw-semibold">Imagen principal:</label>
         <input type="file" accept="image/*" class="form-control" (change)="onFileSelected($event)">
         <img *ngIf="previewUrl" [src]="previewUrl" alt="preview" class="admin-preview mt-2">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Galería adicional (opcional):</label>
+        <input type="file" accept="image/*" multiple class="form-control" (change)="onGalleryFilesSelected($event)" [disabled]="uploadingGallery">
+        <small class="text-muted" *ngIf="uploadingGallery">Subiendo imágenes...</small>
+        <div class="admin-gallery-grid mt-2" *ngIf="galleryUrls.length > 0">
+          <div class="admin-gallery-thumb" *ngFor="let url of galleryUrls; let i = index">
+            <img [src]="resolveGalleryUrl(url)" alt="Imagen de galería">
+            <button type="button" class="admin-gallery-remove" (click)="removeGalleryImage(i)" aria-label="Quitar imagen">✕</button>
+          </div>
+        </div>
       </div>
 
     </div>

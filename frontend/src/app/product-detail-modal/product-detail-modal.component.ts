@@ -56,14 +56,34 @@ export class ProductDetailModalComponent implements OnChanges, OnDestroy {
     private router: Router,
   ) {}
 
+  activeImageIndex = 0;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product'] || changes['allProducts']) {
       this.quantity = 1;
+      this.activeImageIndex = 0;
       this.otherProducts = this.pickRandomOthers(6);
       this.otherActiveIndex = 0;
       this.startOtherAutoplay();
       this.loadReviews();
     }
+  }
+
+  // Cover image first, then the extra gallery — de-duplicated in case the
+  // same URL somehow ended up in both (e.g. an old product edited before
+  // the gallery field existed).
+  get galleryImages(): string[] {
+    const images = [this.product?.imageUrl, ...(this.product?.imageUrls ?? [])]
+      .filter((url): url is string => !!url);
+    return [...new Set(images)];
+  }
+
+  get activeImage(): string | null {
+    return this.galleryImages[this.activeImageIndex] ?? null;
+  }
+
+  selectImage(index: number): void {
+    this.activeImageIndex = index;
   }
 
   // A fresh random sample of up to `count` other products every time the

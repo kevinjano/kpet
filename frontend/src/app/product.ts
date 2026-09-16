@@ -10,5 +10,6 @@ export interface Product {
   category: string;
   stock: number;
   imageUrl: string | null;
+  imageUrls: string[];
   active: boolean;
 }
