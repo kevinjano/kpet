@@ -23,6 +23,7 @@
             "assets": [
               "src/favicon.png",
               "src/_redirects",
+              "src/robots.txt",
               "src/assets/images/logo_kpet_no_background.png",
               "src/assets"
             ],

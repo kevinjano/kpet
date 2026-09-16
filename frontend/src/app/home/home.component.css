@@ -753,3 +753,22 @@
   background: linear-gradient(135deg, var(--kpet-purple-900), var(--kpet-purple-700));
   color: rgba(255, 255, 255, 0.85);
 }
+
+.footer-legal-links {
+  font-size: 0.82rem;
+}
+
+.footer-legal-links a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+}
+
+.footer-legal-links a:hover {
+  color: var(--kpet-white);
+  text-decoration: underline;
+}
+
+.footer-legal-sep {
+  margin: 0 0.5rem;
+  color: rgba(255, 255, 255, 0.4);
+}

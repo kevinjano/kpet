@@ -16,6 +16,8 @@ export const routes: Routes = [
     {path: 'blog', loadComponent: () => import('./blog/blog.component').then(m => m.BlogComponent)},
     {path: 'distribuidores', loadComponent: () => import('./distributors/distributors.component').then(m => m.DistributorsComponent)},
     {path: 'distribuidores/:id', loadComponent: () => import('./distributor-detail/distributor-detail.component').then(m => m.DistributorDetailComponent)},
+    {path: 'terminos', loadComponent: () => import('./terminos/terminos.component').then(m => m.TerminosComponent)},
+    {path: 'privacidad', loadComponent: () => import('./privacidad/privacidad.component').then(m => m.PrivacidadComponent)},
     {
         path: 'mon-compte',
         loadComponent: () => import('./mon-compte/mon-compte.component').then(m => m.MonCompteComponent),

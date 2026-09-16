@@ -1,0 +1,55 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
+    <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" height="36">
+  </div>
+</nav>
+
+<div class="legal-page">
+  <div class="container">
+    <h1 class="legal-title kpet-fade-up">Política de Privacidad</h1>
+    <p class="legal-updated">Última actualización: {{ lastUpdated }}</p>
+
+    <div class="legal-content kpet-fade-up">
+      <section>
+        <h2>1. Qué datos recopilamos</h2>
+        <p>Cuando creás una cuenta, guardamos tu nombre, apellido, correo electrónico y número de teléfono. Cuando hacés un pedido, guardamos los productos, cantidades y el total de esa compra.</p>
+      </section>
+
+      <section>
+        <h2>2. Cómo usamos tus datos</h2>
+        <p>Usamos tus datos únicamente para procesar tus pedidos, contactarte por WhatsApp o correo sobre tu compra, y mejorar el servicio de la tienda. No usamos tus datos con fines distintos a estos.</p>
+      </section>
+
+      <section>
+        <h2>3. Con quién compartimos tus datos</h2>
+        <p>No vendemos ni compartimos tus datos personales con terceros, salvo que sea necesario para cumplir con la ley.</p>
+      </section>
+
+      <section>
+        <h2>4. Seguridad de tus datos</h2>
+        <p>Tu contraseña se guarda siempre encriptada — nunca la almacenamos ni la vemos en texto plano. Trabajamos para mantener tu información protegida, aunque ningún sistema es 100% infalible.</p>
+      </section>
+
+      <section>
+        <h2>5. Cookies y almacenamiento local</h2>
+        <p>El sitio guarda información técnica en tu propio navegador (como tu sesión iniciada o el contenido de tu carrito) para que la página funcione correctamente. No usamos esta información para rastrearte en otros sitios.</p>
+      </section>
+
+      <section>
+        <h2>6. Tus derechos</h2>
+        <p>Podés ver y actualizar tus datos personales, o eliminar tu cuenta por completo, en cualquier momento desde "Mi Perfil".</p>
+      </section>
+
+      <section>
+        <h2>7. Cambios a esta política</h2>
+        <p>Podemos actualizar esta Política de Privacidad en cualquier momento. Te recomendamos revisarla periódicamente.</p>
+      </section>
+
+      <section>
+        <h2>8. Contacto</h2>
+        <p>Si tenés dudas sobre el uso de tus datos, escribinos por WhatsApp o al correo <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail">{{ settings?.contactEmail }}</a><span *ngIf="!settings?.contactEmail">de contacto de la tienda</span>.</p>
+      </section>
+    </div>
+  </div>
+</div>

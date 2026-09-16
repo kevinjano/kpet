@@ -1,0 +1,60 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
+    <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" height="36">
+  </div>
+</nav>
+
+<div class="legal-page">
+  <div class="container">
+    <h1 class="legal-title kpet-fade-up">Términos y Condiciones</h1>
+    <p class="legal-updated">Última actualización: {{ lastUpdated }}</p>
+
+    <div class="legal-content kpet-fade-up">
+      <section>
+        <h2>1. Aceptación de los términos</h2>
+        <p>Al navegar y realizar compras en {{ settings?.storeName || 'Kpet' }}, aceptás los presentes Términos y Condiciones. Si no estás de acuerdo con alguno de estos puntos, te pedimos no utilizar el sitio.</p>
+      </section>
+
+      <section>
+        <h2>2. Sobre la tienda</h2>
+        <p>{{ settings?.storeName || 'Kpet' }} es una tienda en línea de snacks, alimentos y accesorios para mascotas. Los productos, precios, disponibilidad y stock mostrados en el sitio pueden cambiar sin previo aviso.</p>
+      </section>
+
+      <section>
+        <h2>3. Pedidos y pagos</h2>
+        <p>Los pedidos se confirman a través de WhatsApp. Una vez armado el carrito, se te redirige a WhatsApp para coordinar el pago y la entrega directamente con la tienda. Los precios están expresados en bolivianos (Bs.) e incluyen los impuestos aplicables, salvo que se indique lo contrario.</p>
+      </section>
+
+      <section>
+        <h2>4. Entregas</h2>
+        <p>Las condiciones de entrega (lugar, costo y tiempo estimado) se coordinan directamente por WhatsApp al momento de confirmar el pedido.</p>
+      </section>
+
+      <section>
+        <h2>5. Cambios y devoluciones</h2>
+        <p>Si recibiste un producto en mal estado o distinto al que pediste, contactanos por WhatsApp dentro de las 48 horas posteriores a la entrega para coordinar un cambio o solución.</p>
+      </section>
+
+      <section>
+        <h2>6. Cuentas de usuario</h2>
+        <p>Si creás una cuenta, sos responsable de mantener tu contraseña segura y de toda actividad realizada desde tu cuenta. Podés editar tus datos o eliminar tu cuenta en cualquier momento desde "Mi Perfil".</p>
+      </section>
+
+      <section>
+        <h2>7. Propiedad intelectual</h2>
+        <p>El contenido de este sitio (textos, imágenes, logo) pertenece a {{ settings?.storeName || 'Kpet' }} y no puede reproducirse sin autorización.</p>
+      </section>
+
+      <section>
+        <h2>8. Cambios a estos términos</h2>
+        <p>Podemos actualizar estos Términos y Condiciones en cualquier momento. Te recomendamos revisarlos periódicamente.</p>
+      </section>
+
+      <section>
+        <h2>9. Contacto</h2>
+        <p>Ante cualquier consulta sobre estos términos, escribinos por WhatsApp o al correo <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail">{{ settings?.contactEmail }}</a><span *ngIf="!settings?.contactEmail">de contacto de la tienda</span>.</p>
+      </section>
+    </div>
+  </div>
+</div>
