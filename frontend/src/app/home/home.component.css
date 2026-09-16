@@ -304,9 +304,29 @@
 }
 
 /* ---------- Hero ---------- */
+/* Banners are wide landscape images, so a fixed height (tuned for desktop)
+   crops most of their width away on narrow screens once object-fit:cover
+   forces that same height on a much narrower box. Scaling by aspect-ratio
+   instead — taller on phones, wider as the viewport grows — keeps a much
+   larger share of each banner visible at every size. */
 .hero-wrap {
-  height: 420px;
-  max-height: 55vh;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 60vh;
+}
+
+@media (min-width: 576px) {
+  .hero-wrap {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 992px) {
+  .hero-wrap {
+    aspect-ratio: unset;
+    height: 420px;
+    max-height: 55vh;
+  }
 }
 
 .hero-placeholder {
@@ -330,8 +350,14 @@
 
 .hero-overlay h1 {
   font-weight: 800;
-  font-size: 2.6rem;
+  font-size: 1.7rem;
   line-height: 1.15;
+}
+
+@media (min-width: 576px) {
+  .hero-overlay h1 {
+    font-size: 2.6rem;
+  }
 }
 
 .hero-overlay p {
