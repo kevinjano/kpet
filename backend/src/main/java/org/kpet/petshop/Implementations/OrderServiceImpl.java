@@ -38,8 +38,25 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(id);
     }
 
+    // Checked against current stock at order-creation time — the frontend
+    // cart already caps quantities against the stock it knew about, but that
+    // snapshot can go stale (another customer bought the last units, the
+    // admin adjusted stock, two people racing for the same low-stock item),
+    // so this is the actual guarantee that a customer can't order more than
+    // what's available, not just a UI nicety.
     @Override
     public Order createOrder(Order order) {
+        for (OrderItem item : order.getItems()) {
+            if (item.getProductId() == null || item.getQuantity() == null) {
+                continue;
+            }
+            Product product = productRepository.findById(item.getProductId()).orElse(null);
+            if (product != null && product.getStock() != null && item.getQuantity() > product.getStock()) {
+                throw new IllegalArgumentException(
+                        "No hay suficiente stock de \"" + product.getName() + "\" (disponible: " + product.getStock() + ").");
+            }
+        }
+
         order.setId(null);
         order.setStatus(Order.PENDING_CONFIRMATION);
         order.setReceiptSent(false);

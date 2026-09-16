@@ -59,12 +59,16 @@ public class OrderController {
     // so it shows up under "Mis pedidos" later. Never trusted from the request
     // body — always read from the authenticated principal, not client input.
     @RequestMapping(value = "/create", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Order> createOrder(@RequestBody Order order, Authentication authentication) {
+    public ResponseEntity<?> createOrder(@RequestBody Order order, Authentication authentication) {
         if (authentication != null) {
             order.setUserId(Long.valueOf(authentication.getName()));
         }
-        Order saved = orderService.createOrder(order);
-        return ResponseEntity.created(URI.create("/api/orders/" + saved.getId())).body(saved);
+        try {
+            Order saved = orderService.createOrder(order);
+            return ResponseEntity.created(URI.create("/api/orders/" + saved.getId())).body(saved);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @RequestMapping(value = "/{id}/receipt-sent", produces = "application/json", method = RequestMethod.PUT)
