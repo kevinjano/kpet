@@ -58,12 +58,20 @@ public class FileStorageService {
         }
 
         try {
+            byte[] bytes = file.getBytes();
+            if (!looksLikeImage(bytes)) {
+                // Extension alone is trivial to fake (rename anything to .jpg) — this
+                // checks the file's actual magic bytes match a real image format
+                // before it's allowed onto disk under a trusted-looking URL.
+                throw new IllegalArgumentException("El archivo no es una imagen válida");
+            }
+
             Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
             Files.createDirectories(uploadPath);
 
             String storedFilename = UUID.randomUUID() + "." + extension;
             Path targetPath = uploadPath.resolve(storedFilename);
-            writeResized(file, extension, targetPath);
+            writeResized(bytes, extension, targetPath);
 
             return "/uploads/" + storedFilename;
         } catch (IOException e) {
@@ -71,13 +79,27 @@ public class FileStorageService {
         }
     }
 
-    private void writeResized(MultipartFile file, String extension, Path targetPath) throws IOException {
-        BufferedImage original = ImageIO.read(file.getInputStream());
+    // Checks the file's actual header bytes against the known signatures for the
+    // formats we accept, rather than trusting the claimed extension/content-type.
+    private boolean looksLikeImage(byte[] bytes) {
+        if (bytes.length < 12) {
+            return false;
+        }
+        boolean isPng = (bytes[0] & 0xFF) == 0x89 && bytes[1] == 'P' && bytes[2] == 'N' && bytes[3] == 'G';
+        boolean isJpeg = (bytes[0] & 0xFF) == 0xFF && (bytes[1] & 0xFF) == 0xD8 && (bytes[2] & 0xFF) == 0xFF;
+        boolean isGif = bytes[0] == 'G' && bytes[1] == 'I' && bytes[2] == 'F' && bytes[3] == '8';
+        boolean isWebp = bytes[0] == 'R' && bytes[1] == 'I' && bytes[2] == 'F' && bytes[3] == 'F'
+                && bytes[8] == 'W' && bytes[9] == 'E' && bytes[10] == 'B' && bytes[11] == 'P';
+        return isPng || isJpeg || isGif || isWebp;
+    }
+
+    private void writeResized(byte[] bytes, String extension, Path targetPath) throws IOException {
+        BufferedImage original = ImageIO.read(new java.io.ByteArrayInputStream(bytes));
         if (original == null) {
-            // Not a format ImageIO can decode (e.g. some GIFs/animated files) —
-            // fall back to storing the original bytes untouched rather than
-            // failing the whole upload over an optimization.
-            Files.write(targetPath, file.getBytes());
+            // A real image (looksLikeImage passed) in a format ImageIO has no reader
+            // for (e.g. WebP on some JVMs) — store the original bytes untouched
+            // rather than failing the upload over an optimization.
+            Files.write(targetPath, bytes);
             return;
         }
 
@@ -86,7 +108,7 @@ public class FileStorageService {
         double scale = Math.min(1.0, (double) MAX_DIMENSION / Math.max(width, height));
 
         if (scale >= 1.0) {
-            Files.write(targetPath, file.getBytes());
+            Files.write(targetPath, bytes);
             return;
         }
 
@@ -105,7 +127,7 @@ public class FileStorageService {
         String formatName = extension.equals("jpg") ? "jpeg" : extension;
         if (!ImageIO.write(scaled, formatName, targetPath.toFile())) {
             // No writer for this format (e.g. webp on some JVMs) — store the original instead.
-            Files.write(targetPath, file.getBytes());
+            Files.write(targetPath, bytes);
         }
     }
 }

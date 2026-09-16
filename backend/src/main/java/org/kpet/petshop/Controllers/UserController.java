@@ -61,19 +61,30 @@ public class UserController {
         return isAdmin || authentication.getName().equals(String.valueOf(targetUserId));
     }
 
-    // Get all users (Admin only — see SecurityConfig)
+    // Get all users (Admin only — see SecurityConfig). Pinned to GET specifically:
+    // a bare @RequestMapping here would also answer POST/PUT/DELETE, which
+    // SecurityConfig only locks to ADMIN for GET on this path — any other verb
+    // would've fallen through to its "just authenticated" catch-all.
     @Transactional
-    @RequestMapping(value = "/findAll", produces = "application/json")
+    @GetMapping(value = "/findAll", produces = "application/json")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Create a new user (registration) — password is hashed inside UserService.saveUser
+    // Create a new user (registration) — password is hashed inside UserService.saveUser.
+    // This endpoint is public (see SecurityConfig), so the role is never trusted from
+    // the request body: without this, anyone could POST {"role":"Admin", ...} here and
+    // self-provision a full admin account. Every self-registration is a Client; the only
+    // way to become Admin is a direct DB change (see KpetPetshopApplication's seed data).
     @Transactional
     @RequestMapping(value = "/create", produces = "application/json", method = RequestMethod.POST)
-    public User createUser(@RequestBody User user) {
+    public ResponseEntity<?> createUser(@RequestBody User user) {
         log.info("Received user data: " + user);
-        return userService.saveUser(user);
+        user.setRole("Client");
+        if (user.getPassword() == null || user.getPassword().length() < 6) {
+            return ResponseEntity.badRequest().body(Map.of("error", "La contraseña debe tener al menos 6 caracteres."));
+        }
+        return ResponseEntity.ok(userService.saveUser(user));
     }
 
     // User login: rate-limited (LoginAttemptService) and issues a JWT on success.

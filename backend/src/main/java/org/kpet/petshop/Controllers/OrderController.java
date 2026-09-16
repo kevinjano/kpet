@@ -29,7 +29,10 @@ public class OrderController {
         this.orderRepository = orderRepository;
     }
 
-    @RequestMapping(value = "/findAll", produces = "application/json")
+    // Admin only (see SecurityConfig). Pinned to GET specifically: a bare
+    // @RequestMapping here would also answer POST/PUT/DELETE, which
+    // SecurityConfig only locks to ADMIN for GET on this path.
+    @GetMapping(value = "/findAll", produces = "application/json")
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

@@ -1,5 +1,6 @@
 package org.kpet.petshop.Models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 /**
@@ -26,7 +27,12 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String noTel;
+    // WRITE_ONLY: accepted when creating/deserializing a User (registration), but
+    // never included in an outgoing response — every other endpoint that returns
+    // a User (findAll, get by id, update) was otherwise shipping the BCrypt hash
+    // to the client for no reason.
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @Column(nullable = false)
     private String role;
