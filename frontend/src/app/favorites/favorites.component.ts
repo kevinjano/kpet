@@ -25,6 +25,10 @@ export class FavoritesComponent implements OnInit {
   defaultLogoUrl = DEFAULT_LOGO_URL;
   trackById = trackById;
 
+  // productId -> quantity currently in the cart — same map as HomeComponent,
+  // so the "Añadir al carrito" button here also turns into a +/- stepper.
+  cartQuantities = new Map<number, number>();
+
   constructor(
     public favoriteService: FavoriteService,
     public cartService: CartService,
@@ -37,6 +41,13 @@ export class FavoritesComponent implements OnInit {
     this.siteSettingsService.getSettings().subscribe(settings => {
       this.settings = settings;
     });
+    this.cartService.cart$.subscribe(items => {
+      this.cartQuantities = new Map(items.map(item => [item.product.id, item.quantity]));
+    });
+  }
+
+  getCartQuantity(productId: number): number {
+    return this.cartQuantities.get(productId) ?? 0;
   }
 
   removeFavorite(product: Product, event: Event): void {
@@ -46,5 +57,15 @@ export class FavoritesComponent implements OnInit {
 
   addToCart(product: Product): void {
     this.cartService.addToCart(product, 1);
+  }
+
+  incrementCartQty(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.cartService.updateQuantity(product.id, this.getCartQuantity(product.id) + 1);
+  }
+
+  decrementCartQty(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.cartService.updateQuantity(product.id, this.getCartQuantity(product.id) - 1);
   }
 }

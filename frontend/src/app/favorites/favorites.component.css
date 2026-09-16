@@ -185,3 +185,43 @@
 .favorite-btn:hover {
   transform: scale(1.1);
 }
+
+/* Quantity stepper shown once a product is already in the cart — mirrors
+   HomeComponent's .card-qty-stepper so both screens behave the same way. */
+.card-qty-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  background: var(--kpet-purple-50);
+  border-radius: 999px;
+  padding: 0.4rem 0.6rem;
+}
+
+.card-qty-stepper span {
+  min-width: 1.2rem;
+  text-align: center;
+  font-weight: 800;
+  color: var(--kpet-purple-800, var(--kpet-purple-700));
+}
+
+.card-qty-stepper button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--kpet-white);
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  box-shadow: var(--kpet-shadow-sm);
+  cursor: pointer;
+  transition: transform var(--kpet-transition), background-color var(--kpet-transition), color var(--kpet-transition);
+}
+
+.card-qty-stepper button:hover {
+  background: var(--kpet-purple-600);
+  color: var(--kpet-white);
+  transform: scale(1.08);
+}

@@ -1,5 +1,6 @@
 package org.kpet.petshop.Configurations;
 
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,6 +47,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // When a controller throws, Spring re-dispatches internally to the
+                        // error view under DispatcherType.ERROR — if that internal dispatch
+                        // isn't explicitly allowed, this filter chain evaluates it too and
+                        // blocks it, so a real 500 comes back to the client as an opaque,
+                        // empty-body 403 that has nothing to do with authorization. Must be
+                        // the first rule so it isn't shadowed by anything below.
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+
                         // Browsers send an unauthenticated OPTIONS "preflight" request before
                         // any cross-origin POST/PUT/DELETE (or any request carrying our
                         // Authorization header) to ask permission before sending the real one.
@@ -80,18 +89,10 @@ public class SecurityConfig {
 
                         // --- Authenticated: favorites (any logged-in user manages their own —
                         // scoped to the principal in FavoriteController) and reviews (posting/
-                        // deleting requires login; self-or-admin check for delete happens in
-                        // ReviewController). hasAnyRole rather than authenticated(): observed
-                        // (reproducibly, via direct requests with a valid Client JWT) that a
-                        // plain .authenticated() on an HttpMethod.PUT/DELETE-scoped matcher
-                        // returns 403 for a non-admin, authenticated user, while the exact same
-                        // request against a hasRole(...)-scoped matcher succeeds — a Spring
-                        // Security quirk in this project's version, not a logic bug on our side.
-                        // hasAnyRole sidesteps it since every account is either Admin or Client. ---
+                        // removing requires login; self-or-admin check for delete happens in
+                        // ReviewController). Add and remove are both POST. ---
                         .requestMatchers(HttpMethod.POST, "/api/favorites/**").hasAnyRole("ADMIN", "CLIENT")
-                        .requestMatchers(HttpMethod.DELETE, "/api/favorites/**").hasAnyRole("ADMIN", "CLIENT")
-                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("ADMIN", "CLIENT")
-                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("ADMIN", "CLIENT")
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasAnyRole("ADMIN", "CLIENT")
 
                         // --- Admin only: catalog/content/settings management ---
                         .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/blog/**",

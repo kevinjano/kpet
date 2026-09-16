@@ -37,7 +37,7 @@ public class FavoriteController {
         return productRepository.findAllById(productIds);
     }
 
-    @PostMapping("/{productId}")
+    @PostMapping("/add/{productId}")
     public ResponseEntity<Void> addFavorite(@PathVariable Long productId, Authentication authentication) {
         Long userId = Long.valueOf(authentication.getName());
         if (!favoriteRepository.existsByUserIdAndProductId(userId, productId)) {
@@ -46,7 +46,7 @@ public class FavoriteController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{productId}")
+    @PostMapping("/remove/{productId}")
     public ResponseEntity<Void> removeFavorite(@PathVariable Long productId, Authentication authentication) {
         Long userId = Long.valueOf(authentication.getName());
         favoriteRepository.deleteByUserIdAndProductId(userId, productId);

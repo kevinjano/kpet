@@ -28,6 +28,6 @@ export class ReviewService {
   }
 
   deleteReview(id: number): Observable<void> {
-    return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
+    return this.httpClient.post<void>(`${this.apiUrl}/remove/${id}`, {});
   }
 }

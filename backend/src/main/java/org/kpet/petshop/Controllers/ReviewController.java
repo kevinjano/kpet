@@ -84,7 +84,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewRepository.save(review));
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/remove/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable Long id, Authentication authentication) {
         return reviewRepository.findById(id)
                 .map(review -> {
