@@ -74,7 +74,7 @@
       <button type="button" *ngFor="let opt of chartRangeOptions" role="tab" [class.active]="chartRange === opt.value" [attr.aria-selected]="chartRange === opt.value" (click)="setChartRange(opt.value)">{{ opt.label }}</button>
     </div>
     <div class="dash-chart-bars" *ngIf="loaded">
-      <div class="dash-chart-col" *ngFor="let bucket of salesChartData; let i = index">
+      <div class="dash-chart-col" *ngFor="let bucket of salesChartData; let i = index; trackBy: trackByChartIndex">
         <span class="dash-chart-value" *ngIf="bucket.total > 0">{{ bucket.total.toFixed(0) }}</span>
         <div class="dash-chart-bar" [class.zero]="bucket.total === 0" [class.active]="activeBarIndex === i" [style.height.%]="(bucket.total / salesChartMax) * 100"
              (mouseenter)="setActiveBar(i)" (mouseleave)="clearActiveBar()" (click)="setActiveBar(i)">

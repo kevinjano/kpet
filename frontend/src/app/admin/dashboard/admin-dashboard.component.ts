@@ -68,6 +68,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   setChartRange(range: ChartRange): void {
     this.chartRange = range;
     this.activeBarIndex = null;
+    this.refreshChartData();
   }
 
   // Which chart bar's tooltip is showing — set on hover (desktop) and on tap
@@ -125,6 +126,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.orderService.getOrders().subscribe(orders => {
       this.orders = orders;
       this.loaded = true;
+      this.refreshChartData();
     });
   }
 
@@ -210,14 +212,28 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // One bucket per day/week/month depending on chartRange, each with the
   // total Bs. and order count from CONFIRMED/COMPLETED orders placed in that
   // bucket — feeds the "Ventas confirmadas" bar chart.
-  get salesChartData(): ChartBucket[] {
+  //
+  // This is a plain field, recomputed explicitly by refreshChartData()
+  // (called from loadOrders() and setChartRange()), NOT a getter. A getter
+  // here would rebuild a brand-new array/objects on every change-detection
+  // run — and since hovering a bar fires (mouseenter)/(mouseleave) on every
+  // pointer move, that's very often. With no trackBy, Angular would then see
+  // a whole new array each time and destroy+recreate every bar element,
+  // restarting the CSS "grow" animation — which looked like the bars
+  // flickering/reloading in a loop while hovering.
+  salesChartData: ChartBucket[] = [];
+  trackByChartIndex = (i: number) => i;
+
+  private refreshChartData(): void {
     switch (this.chartRange) {
       case 'week':
-        return this.buildChartBuckets(8, 'week');
+        this.salesChartData = this.buildChartBuckets(8, 'week');
+        break;
       case 'month':
-        return this.buildChartBuckets(6, 'month');
+        this.salesChartData = this.buildChartBuckets(6, 'month');
+        break;
       default:
-        return this.buildChartBuckets(7, 'day');
+        this.salesChartData = this.buildChartBuckets(7, 'day');
     }
   }
 
