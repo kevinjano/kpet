@@ -218,15 +218,19 @@
   display: block;
   font-size: 1.55rem;
   font-weight: 800;
-  color: var(--kpet-white);
   line-height: 1.2;
+  background: linear-gradient(135deg, var(--kpet-yellow-400), var(--kpet-yellow-600));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .dash-stat-label {
   display: block;
   font-size: 0.78rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(253, 224, 71, 0.8);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   margin-top: 0.15rem;

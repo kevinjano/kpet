@@ -68,7 +68,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
       </span>
       <h3>Ventas confirmadas</h3>
-      <span class="dash-chart-total">Bs.{{ totalRevenue.toFixed(2) }}</span>
+      <span class="dash-chart-total">Bs.{{ salesChartTotal.toFixed(2) }}</span>
     </div>
     <div class="dash-chart-range-tabs" role="tablist">
       <button type="button" *ngFor="let opt of chartRangeOptions" role="tab" [class.active]="chartRange === opt.value" [attr.aria-selected]="chartRange === opt.value" (click)="setChartRange(opt.value)">{{ opt.label }}</button>

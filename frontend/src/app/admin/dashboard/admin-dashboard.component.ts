@@ -117,12 +117,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return new Date().toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' });
   }
 
-  get totalRevenue(): number {
-    return this.orders
-      .filter(o => o.status === ORDER_STATUS_CONFIRMED || o.status === ORDER_STATUS_COMPLETED)
-      .reduce((sum, o) => sum + o.total, 0);
-  }
-
   get pendingOrdersCount(): number {
     return this.orders.filter(o => o.status === ORDER_STATUS_PENDING).length;
   }
@@ -207,6 +201,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   get salesChartMax(): number {
     return Math.max(1, ...this.salesChartData.map(b => b.total));
+  }
+
+  // Sum of exactly what's plotted for the selected range (last 7 days, 8
+  // weeks, or 6 months) — shown next to the title, so it moves with the
+  // Día/Semana/Mes tabs instead of always being the all-time total.
+  get salesChartTotal(): number {
+    return this.salesChartData.reduce((sum, b) => sum + b.total, 0);
   }
 
   private buildChartBuckets(count: number, unit: ChartRange): ChartBucket[] {
