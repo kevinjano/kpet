@@ -84,20 +84,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Best-effort: items without a resolvable productId (e.g. legacy orders placed
-    // before OrderItem.productId existed) or whose product was since deleted are
-    // silently skipped rather than failing the whole status update. Stock is
-    // floored at 0 instead of going negative if oversold.
+    // before OrderItem.productId existed) are silently skipped rather than failing
+    // the whole status update; a deleted product's id just matches zero rows.
+    // The actual subtraction happens in one atomic UPDATE (see
+    // ProductRepository.deductStock) rather than a separate find + setStock +
+    // save, so two orders confirming at the same moment can't race each other
+    // into a lost update. Stock is floored at 0 instead of going negative if
+    // oversold (same CASE guard as before, now inside the UPDATE itself).
     private void deductStock(List<OrderItem> items) {
         for (OrderItem item : items) {
             if (item.getProductId() == null || item.getQuantity() == null) {
                 continue;
             }
-            productRepository.findById(item.getProductId()).ifPresent(product -> {
-                int currentStock = product.getStock() != null ? product.getStock() : 0;
-                int newStock = currentStock - item.getQuantity();
-                product.setStock(Math.max(newStock, 0));
-                productRepository.save(product);
-            });
+            productRepository.deductStock(item.getProductId(), item.getQuantity());
         }
     }
 
@@ -106,11 +105,7 @@ public class OrderServiceImpl implements OrderService {
             if (item.getProductId() == null || item.getQuantity() == null) {
                 continue;
             }
-            productRepository.findById(item.getProductId()).ifPresent(product -> {
-                int currentStock = product.getStock() != null ? product.getStock() : 0;
-                product.setStock(currentStock + item.getQuantity());
-                productRepository.save(product);
-            });
+            productRepository.restockProduct(item.getProductId(), item.getQuantity());
         }
     }
 }
