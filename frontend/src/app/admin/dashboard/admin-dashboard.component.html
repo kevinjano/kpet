@@ -21,8 +21,8 @@
   </div>
 
   <div class="dash-stats kpet-fade-up">
-    <div class="dash-stat-card accent-users">
-      <span class="dash-stat-icon dash-icon-users">
+    <div class="dash-stat-card">
+      <span class="dash-stat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </span>
       <div>
@@ -31,8 +31,8 @@
       </div>
     </div>
 
-    <div class="dash-stat-card accent-pending">
-      <span class="dash-stat-icon dash-icon-pending">
+    <div class="dash-stat-card">
+      <span class="dash-stat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       </span>
       <div>
@@ -41,8 +41,8 @@
       </div>
     </div>
 
-    <div class="dash-stat-card accent-stock">
-      <span class="dash-stat-icon dash-icon-stock">
+    <div class="dash-stat-card">
+      <span class="dash-stat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </span>
       <div>
@@ -51,8 +51,8 @@
       </div>
     </div>
 
-    <div class="dash-stat-card accent-rating">
-      <span class="dash-stat-icon dash-icon-rating">
+    <div class="dash-stat-card">
+      <span class="dash-stat-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
       </span>
       <div>
@@ -68,16 +68,16 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
       </span>
       <h3>Ventas confirmadas</h3>
-      <div class="dash-chart-stats">
-        <span class="dash-chart-stat"><strong>Bs.{{ totalRevenue.toFixed(2) }}</strong> total</span>
-        <span class="dash-chart-stat"><strong>Bs.{{ averageTicket.toFixed(2) }}</strong> ticket prom.</span>
-      </div>
+      <span class="dash-chart-total">Bs.{{ totalRevenue.toFixed(2) }}</span>
+    </div>
+    <div class="dash-chart-range-tabs" role="tablist">
+      <button type="button" *ngFor="let opt of chartRangeOptions" role="tab" [class.active]="chartRange === opt.value" [attr.aria-selected]="chartRange === opt.value" (click)="setChartRange(opt.value)">{{ opt.label }}</button>
     </div>
     <div class="dash-chart-bars" *ngIf="loaded">
-      <div class="dash-chart-col" *ngFor="let day of salesByDay">
-        <span class="dash-chart-value" *ngIf="day.total > 0">{{ day.total.toFixed(0) }}</span>
-        <div class="dash-chart-bar" [class.zero]="day.total === 0" [style.height.%]="(day.total / salesByDayMax) * 100" [title]="day.label + ': Bs.' + day.total.toFixed(2) + ' (' + day.count + ' pedido' + (day.count === 1 ? '' : 's') + ')'"></div>
-        <span class="dash-chart-label">{{ day.label }}</span>
+      <div class="dash-chart-col" *ngFor="let bucket of salesChartData">
+        <span class="dash-chart-value" *ngIf="bucket.total > 0">{{ bucket.total.toFixed(0) }}</span>
+        <div class="dash-chart-bar" [class.zero]="bucket.total === 0" [style.height.%]="(bucket.total / salesChartMax) * 100" [title]="bucket.label + ': Bs.' + bucket.total.toFixed(2) + ' (' + bucket.count + ' pedido' + (bucket.count === 1 ? '' : 's') + ')'"></div>
+        <span class="dash-chart-label">{{ bucket.label }}</span>
       </div>
     </div>
   </div>

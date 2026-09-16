@@ -33,6 +33,12 @@ export class AdminProductsComponent implements OnInit {
   categoryFilterMenuOpen = false;
   trackById = trackById;
 
+  // Distinguishes "still loading" from "genuinely empty" so the table shows
+  // skeleton rows instead of flashing an empty "0 de 0" table right before
+  // the real rows (and their images) pop in.
+  productsLoaded = false;
+  skeletonRows = [1, 2, 3, 4, 5];
+
   get categoryFilterOptions(): { value: CategoryFilterValue; label: string }[] {
     return [
       { value: '', label: 'Todas las categorías' },
@@ -121,7 +127,10 @@ export class AdminProductsComponent implements OnInit {
   }
 
   loadProducts(): void {
-    this.productService.getProducts().subscribe(data => this.products = data);
+    this.productService.getProducts().subscribe(data => {
+      this.products = data;
+      this.productsLoaded = true;
+    });
   }
 
   exportCsv(): void {

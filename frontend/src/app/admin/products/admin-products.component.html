@@ -26,7 +26,7 @@
         </li>
       </ul>
     </div>
-    <span class="admin-filter-count">{{ filteredProducts.length }} de {{ products.length }}</span>
+    <span class="admin-filter-count" *ngIf="productsLoaded">{{ filteredProducts.length }} de {{ products.length }}</span>
   </div>
 
   <app-admin-table>
@@ -43,25 +43,39 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let product of filteredProducts; trackBy: trackById">
-      <td>
-        <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="admin-thumb" loading="lazy">
-        <span *ngIf="!product.imageUrl" class="text-muted">—</span>
-      </td>
-      <td class="fw-semibold">{{ product.name }}</td>
-      <td>{{ product.category }}</td>
-      <td>
-        <span *ngIf="product.onSale" class="text-decoration-line-through text-muted me-1">Bs.{{ product.price.toFixed(2) }}</span>
-        <span class="fw-semibold">Bs.{{ (product.onSale && product.salePrice != null ? product.salePrice : product.price).toFixed(2) }}</span>
-      </td>
-      <td><span class="role-pill" [class.role-admin]="product.onSale">{{ product.onSale ? 'Sí' : 'No' }}</span></td>
-      <td>{{ product.stock }}</td>
-      <td>{{ product.active ? 'Sí' : 'No' }}</td>
-      <td class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-secondary" (click)="editProduct(product)">Editar</button>
-        <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.id)">Eliminar</button>
-      </td>
-    </tr>
+    <ng-container *ngIf="!productsLoaded">
+      <tr class="admin-skeleton-row" *ngFor="let i of skeletonRows">
+        <td><span class="admin-skeleton admin-skeleton-thumb"></span></td>
+        <td><span class="admin-skeleton" style="width: 65%"></span></td>
+        <td><span class="admin-skeleton" style="width: 45%"></span></td>
+        <td><span class="admin-skeleton" style="width: 40%"></span></td>
+        <td><span class="admin-skeleton" style="width: 30%"></span></td>
+        <td><span class="admin-skeleton" style="width: 25%"></span></td>
+        <td><span class="admin-skeleton" style="width: 25%"></span></td>
+        <td><span class="admin-skeleton" style="width: 70%"></span></td>
+      </tr>
+    </ng-container>
+    <ng-container *ngIf="productsLoaded">
+      <tr *ngFor="let product of filteredProducts; trackBy: trackById">
+        <td>
+          <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="admin-thumb" loading="lazy">
+          <span *ngIf="!product.imageUrl" class="text-muted">—</span>
+        </td>
+        <td class="fw-semibold">{{ product.name }}</td>
+        <td>{{ product.category }}</td>
+        <td>
+          <span *ngIf="product.onSale" class="text-decoration-line-through text-muted me-1">Bs.{{ product.price.toFixed(2) }}</span>
+          <span class="fw-semibold">Bs.{{ (product.onSale && product.salePrice != null ? product.salePrice : product.price).toFixed(2) }}</span>
+        </td>
+        <td><span class="role-pill" [class.role-admin]="product.onSale">{{ product.onSale ? 'Sí' : 'No' }}</span></td>
+        <td>{{ product.stock }}</td>
+        <td>{{ product.active ? 'Sí' : 'No' }}</td>
+        <td class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" (click)="editProduct(product)">Editar</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.id)">Eliminar</button>
+        </td>
+      </tr>
+    </ng-container>
     </tbody>
   </app-admin-table>
 

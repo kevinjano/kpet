@@ -20,12 +20,14 @@ interface TopProductRow {
   quantitySold: number;
 }
 
-interface DayRevenue {
+interface ChartBucket {
   date: Date;
   label: string;
   total: number;
   count: number;
 }
+
+type ChartRange = 'day' | 'week' | 'month';
 
 /**
  * Admin landing page ("Inicio") — a quick at-a-glance summary computed
@@ -53,6 +55,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // "Stock bajo" panel shows only the 5 lowest by default; this toggles the
   // full list inline instead of navigating away.
   showAllLowStock = false;
+
+  // "Ventas confirmadas" chart granularity — día/semana/mes, switched via the
+  // tabs in the chart panel header.
+  chartRange: ChartRange = 'day';
+  chartRangeOptions: { value: ChartRange; label: string }[] = [
+    { value: 'day', label: 'Día' },
+    { value: 'week', label: 'Semana' },
+    { value: 'month', label: 'Mes' },
+  ];
+
+  setChartRange(range: ChartRange): void {
+    this.chartRange = range;
+  }
 
   private refreshHandle?: ReturnType<typeof setInterval>;
 
@@ -121,16 +136,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return this.orders.filter(o => new Date(o.createdAt).toDateString() === today).length;
   }
 
-  // Average value of an order that actually went through — a more honest
-  // "how much does a typical sale bring in" figure than total revenue alone.
-  get averageTicket(): number {
-    const closed = this.orders.filter(o => o.status === ORDER_STATUS_CONFIRMED || o.status === ORDER_STATUS_COMPLETED);
-    if (closed.length === 0) {
-      return 0;
-    }
-    return closed.reduce((sum, o) => sum + o.total, 0) / closed.length;
-  }
-
   // Store-wide average across every product that has at least one review,
   // weighted by how many reviews each product has (not a plain average of
   // averages, so one product with a single 5-star review doesn't count as
@@ -186,40 +191,78 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       .slice(0, 8);
   }
 
-  // Last 7 days (oldest to newest, today included), each with the total Bs.
-  // and order count from CONFIRMED/COMPLETED orders placed that day — feeds
-  // the "Ventas confirmadas" bar chart.
-  get salesByDay(): DayRevenue[] {
-    const days: DayRevenue[] = [];
+  // One bucket per day/week/month depending on chartRange, each with the
+  // total Bs. and order count from CONFIRMED/COMPLETED orders placed in that
+  // bucket — feeds the "Ventas confirmadas" bar chart.
+  get salesChartData(): ChartBucket[] {
+    switch (this.chartRange) {
+      case 'week':
+        return this.buildChartBuckets(8, 'week');
+      case 'month':
+        return this.buildChartBuckets(6, 'month');
+      default:
+        return this.buildChartBuckets(7, 'day');
+    }
+  }
+
+  get salesChartMax(): number {
+    return Math.max(1, ...this.salesChartData.map(b => b.total));
+  }
+
+  private buildChartBuckets(count: number, unit: ChartRange): ChartBucket[] {
+    const buckets: ChartBucket[] = [];
     const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      days.push({
-        date,
-        label: date.toLocaleDateString('es-BO', { weekday: 'short', day: 'numeric' }),
-        total: 0,
-        count: 0,
-      });
+
+    for (let i = count - 1; i >= 0; i--) {
+      let date: Date;
+      let label: string;
+      if (unit === 'day') {
+        date = new Date(today);
+        date.setDate(date.getDate() - i);
+        label = date.toLocaleDateString('es-BO', { weekday: 'short', day: 'numeric' });
+      } else if (unit === 'week') {
+        date = this.startOfWeek(today);
+        date.setDate(date.getDate() - i * 7);
+        label = date.toLocaleDateString('es-BO', { day: 'numeric', month: 'short' });
+      } else {
+        date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        label = date.toLocaleDateString('es-BO', { month: 'short' });
+      }
+      buckets.push({ date, label, total: 0, count: 0 });
     }
 
     for (const order of this.orders) {
       if (order.status !== ORDER_STATUS_CONFIRMED && order.status !== ORDER_STATUS_COMPLETED) {
         continue;
       }
-      const orderDate = new Date(order.createdAt).toDateString();
-      const day = days.find(d => d.date.toDateString() === orderDate);
-      if (day) {
-        day.total += order.total;
-        day.count += 1;
+      const orderDate = new Date(order.createdAt);
+      const bucket = buckets.find(b => this.sameBucket(b.date, orderDate, unit));
+      if (bucket) {
+        bucket.total += order.total;
+        bucket.count += 1;
       }
     }
 
-    return days;
+    return buckets;
   }
 
-  get salesByDayMax(): number {
-    return Math.max(1, ...this.salesByDay.map(d => d.total));
+  private sameBucket(bucketDate: Date, orderDate: Date, unit: ChartRange): boolean {
+    if (unit === 'day') {
+      return bucketDate.toDateString() === orderDate.toDateString();
+    }
+    if (unit === 'week') {
+      return this.startOfWeek(bucketDate).toDateString() === this.startOfWeek(orderDate).toDateString();
+    }
+    return bucketDate.getFullYear() === orderDate.getFullYear() && bucketDate.getMonth() === orderDate.getMonth();
+  }
+
+  // Monday of the week containing the given date, at midnight.
+  private startOfWeek(d: Date): Date {
+    const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const day = date.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    date.setDate(date.getDate() + diff);
+    return date;
   }
 
   // Ranks products by total units sold across every order that actually went
