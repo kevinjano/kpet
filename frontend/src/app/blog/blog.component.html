@@ -7,24 +7,34 @@
   </div>
 </nav>
 
-<div class="container mt-4 mb-5">
-  <h1 class="blog-title kpet-fade-up">Blog Kpet</h1>
-  <p class="blog-subtitle">Novedades, eventos y fotos de la familia Kpet.</p>
+<header class="blog-hero">
+  <span class="blog-hero-blob blog-hero-blob-1"></span>
+  <span class="blog-hero-blob blog-hero-blob-2"></span>
+  <span class="blog-hero-paw blog-hero-paw-1">🐾</span>
+  <span class="blog-hero-paw blog-hero-paw-2">🐾</span>
+  <div class="container">
+    <h1 class="blog-title kpet-fade-up">Blog Kpet</h1>
+    <p class="blog-subtitle kpet-fade-up">Novedades, eventos y fotos de la familia Kpet 🐶🐱</p>
+  </div>
+</header>
 
+<div class="container mb-5">
   <div *ngIf="posts.length === 0" class="text-center text-muted py-5">
     Todavía no hay publicaciones. ¡Vuelve pronto!
   </div>
 
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-2">
-    <div class="col" *ngFor="let post of posts; trackBy: trackById">
-      <article class="blog-card kpet-fade-up">
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let post of posts; let i = index; trackBy: trackById">
+      <article class="blog-card kpet-fade-up" [class.blog-card-alt]="i % 2 === 1" [style.animation-delay.ms]="i * 70">
         <div class="blog-card-image">
           <img *ngIf="post.imageUrl; else blogPlaceholder" [src]="resolveImageUrl(post.imageUrl)" [alt]="post.title">
           <ng-template #blogPlaceholder><span>🐾</span></ng-template>
+          <span class="blog-date-badge">
+            <strong>{{ (post.eventDate || post.createdAt) | date:'d' }}</strong>
+            <small>{{ (post.eventDate || post.createdAt) | date:'MMM' }}</small>
+          </span>
         </div>
         <div class="blog-card-body">
-          <span class="blog-date" *ngIf="post.eventDate">{{ post.eventDate | date:'d MMM y' }}</span>
-          <span class="blog-date" *ngIf="!post.eventDate">{{ post.createdAt | date:'d MMM y' }}</span>
           <h2 class="blog-card-title">{{ post.title }}</h2>
           <p class="blog-card-content">{{ post.content }}</p>
         </div>

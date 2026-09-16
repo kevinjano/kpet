@@ -5,12 +5,13 @@ import { RouterModule} from '@angular/router';
 import { SiteSettingsService } from './services/site-settings-service';
 import { resolveImageUrl } from './constants';
 import { ModalComponent } from './modal/modal.component';
+import { WhatsappBubbleComponent } from './whatsapp-bubble/whatsapp-bubble.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule, ModalComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule, ModalComponent, WhatsappBubbleComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

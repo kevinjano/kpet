@@ -513,22 +513,70 @@
 
 /* ---------- Conócenos / Social ---------- */
 .about-section {
-  background: var(--kpet-purple-50);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--kpet-purple-50) 0%, var(--kpet-purple-50) 60%, var(--kpet-purple-100) 140%);
   padding: 3.5rem 0;
   margin-top: 3rem;
 }
 
+.about-paw {
+  position: absolute;
+  font-size: 5rem;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.about-paw-1 {
+  top: -1rem;
+  left: -1rem;
+  transform: rotate(-15deg);
+}
+
+.about-paw-2 {
+  bottom: -1.5rem;
+  right: -1rem;
+  font-size: 7rem;
+  transform: rotate(20deg);
+}
+
+.about-section > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.about-underline {
+  flex: 1;
+  max-width: 90px;
+  height: 4px;
+  margin-left: 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
+}
+
 .about-text {
+  position: relative;
   color: var(--kpet-ink-soft);
-  line-height: 1.7;
+  line-height: 1.75;
   white-space: pre-line;
+  padding-left: 1.1rem;
+  border-left: 3px solid var(--kpet-purple-200, var(--kpet-purple-100));
 }
 
 .social-card {
+  position: relative;
   background: var(--kpet-white);
   border-radius: var(--kpet-radius);
   box-shadow: var(--kpet-shadow-sm);
   padding: 1.75rem;
+  border-top: 4px solid transparent;
+  border-image: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500)) 1;
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.social-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--kpet-shadow);
 }
 
 .social-title {

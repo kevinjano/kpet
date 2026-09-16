@@ -123,13 +123,18 @@
 </div>
 
 <section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
+  <span class="about-paw about-paw-1">🐾</span>
+  <span class="about-paw about-paw-2">🐾</span>
   <div class="container">
     <div class="row align-items-center g-4">
-      <div class="col-lg-7">
-        <h2 class="section-title mb-3">Conócenos</h2>
+      <div class="col-lg-7 kpet-fade-up">
+        <div class="d-flex align-items-center mb-3">
+          <h2 class="section-title mb-0">Conócenos</h2>
+          <span class="about-underline"></span>
+        </div>
         <p class="about-text" *ngIf="settings?.aboutText">{{ settings?.aboutText }}</p>
       </div>
-      <div class="col-lg-5">
+      <div class="col-lg-5 kpet-fade-up">
         <div class="social-card">
           <h3 class="social-title">Síguenos</h3>
           <div class="social-links">
@@ -148,7 +153,7 @@
           </div>
           <div class="contact-links" *ngIf="settings?.contactEmail || settings?.whatsappNumber">
             <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail" class="contact-link">✉️ {{ settings?.contactEmail }}</a>
-            <a *ngIf="settings?.whatsappNumber" [href]="'https://wa.me/' + settings?.whatsappNumber" target="_blank" rel="noopener" class="contact-link">💬 WhatsApp</a>
+            <a *ngIf="settings?.whatsappNumber" [href]="'https://wa.me/' + settings?.whatsappNumber" target="_blank" rel="noopener" class="contact-link">💬 Comunícate con nosotros</a>
           </div>
         </div>
       </div>
