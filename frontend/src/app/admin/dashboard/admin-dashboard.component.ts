@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../services/order-service';
@@ -67,6 +67,28 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   setChartRange(range: ChartRange): void {
     this.chartRange = range;
+    this.activeBarIndex = null;
+  }
+
+  // Which chart bar's tooltip is showing — set on hover (desktop) and on tap
+  // (mobile, since touch devices don't fire mouseenter/mouseleave); cleared
+  // on mouseleave or by tapping anywhere outside the chart.
+  activeBarIndex: number | null = null;
+
+  setActiveBar(i: number): void {
+    this.activeBarIndex = i;
+  }
+
+  clearActiveBar(): void {
+    this.activeBarIndex = null;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClickForChart(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dash-chart-col')) {
+      this.activeBarIndex = null;
+    }
   }
 
   private refreshHandle?: ReturnType<typeof setInterval>;

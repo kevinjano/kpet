@@ -500,6 +500,7 @@
 }
 
 .dash-chart-bar {
+  position: relative;
   width: 55%;
   min-width: 18px;
   min-height: 4px;
@@ -507,11 +508,13 @@
   background: linear-gradient(180deg, var(--kpet-purple-400, var(--kpet-purple-500)), var(--kpet-purple-700));
   box-shadow: 0 6px 14px -6px rgba(124, 58, 237, 0.45);
   transform-origin: bottom;
+  cursor: pointer;
   animation: dash-bar-grow 700ms var(--kpet-ease) backwards;
   transition: height 500ms var(--kpet-ease), transform 200ms var(--kpet-ease), box-shadow 200ms var(--kpet-ease);
 }
 
-.dash-chart-bar:hover {
+.dash-chart-bar:hover,
+.dash-chart-bar.active {
   transform: scaleX(1.15);
   box-shadow: 0 8px 18px -6px rgba(124, 58, 237, 0.55);
 }
@@ -519,6 +522,84 @@
 .dash-chart-bar.zero {
   background: var(--kpet-purple-100);
   box-shadow: none;
+}
+
+/* ---------- Chart bar tooltip (hover on desktop, tap on mobile) ---------- */
+.dash-chart-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  background: var(--kpet-white);
+  border-radius: 10px;
+  box-shadow: var(--kpet-shadow);
+  padding: 0.5rem 0.8rem;
+  white-space: nowrap;
+  animation: dash-tooltip-in 140ms var(--kpet-ease);
+}
+
+.dash-chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-top-color: var(--kpet-white);
+}
+
+@keyframes dash-tooltip-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dash-chart-tooltip-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--kpet-ink-soft);
+  text-transform: capitalize;
+}
+
+.dash-chart-tooltip-amount {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--kpet-purple-700);
+}
+
+.dash-chart-tooltip-count {
+  font-size: 0.72rem;
+  color: var(--kpet-ink-soft);
+}
+
+/* Keep the first/last tooltips from overflowing past the panel's edges —
+   anchor them to the bar's own edge instead of centering. */
+.dash-chart-col:first-child .dash-chart-tooltip {
+  left: 0;
+  transform: none;
+}
+
+.dash-chart-col:first-child .dash-chart-tooltip::after {
+  left: 14px;
+  transform: none;
+}
+
+.dash-chart-col:last-child .dash-chart-tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.dash-chart-col:last-child .dash-chart-tooltip::after {
+  left: auto;
+  right: 14px;
+  transform: none;
 }
 
 @keyframes dash-bar-grow {

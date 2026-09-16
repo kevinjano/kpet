@@ -74,9 +74,16 @@
       <button type="button" *ngFor="let opt of chartRangeOptions" role="tab" [class.active]="chartRange === opt.value" [attr.aria-selected]="chartRange === opt.value" (click)="setChartRange(opt.value)">{{ opt.label }}</button>
     </div>
     <div class="dash-chart-bars" *ngIf="loaded">
-      <div class="dash-chart-col" *ngFor="let bucket of salesChartData">
+      <div class="dash-chart-col" *ngFor="let bucket of salesChartData; let i = index">
         <span class="dash-chart-value" *ngIf="bucket.total > 0">{{ bucket.total.toFixed(0) }}</span>
-        <div class="dash-chart-bar" [class.zero]="bucket.total === 0" [style.height.%]="(bucket.total / salesChartMax) * 100" [title]="bucket.label + ': Bs.' + bucket.total.toFixed(2) + ' (' + bucket.count + ' pedido' + (bucket.count === 1 ? '' : 's') + ')'"></div>
+        <div class="dash-chart-bar" [class.zero]="bucket.total === 0" [class.active]="activeBarIndex === i" [style.height.%]="(bucket.total / salesChartMax) * 100"
+             (mouseenter)="setActiveBar(i)" (mouseleave)="clearActiveBar()" (click)="setActiveBar(i)">
+          <div class="dash-chart-tooltip" *ngIf="activeBarIndex === i">
+            <span class="dash-chart-tooltip-label">{{ bucket.label }}</span>
+            <strong class="dash-chart-tooltip-amount">Bs.{{ bucket.total.toFixed(2) }}</strong>
+            <span class="dash-chart-tooltip-count">{{ bucket.count }} pedido{{ bucket.count === 1 ? '' : 's' }}</span>
+          </div>
+        </div>
         <span class="dash-chart-label">{{ bucket.label }}</span>
       </div>
     </div>
