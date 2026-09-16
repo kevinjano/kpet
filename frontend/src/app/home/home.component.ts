@@ -7,7 +7,7 @@ import { CartService } from '../services/cart-service';
 import { AuthService } from '../services/auth-service';
 import { Product } from '../product';
 import { SiteSettings } from '../site-settings';
-import { PRODUCT_CATEGORIES, resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
+import { PRODUCT_CATEGORIES, resolveImageUrl, trackById, DEFAULT_LOGO_URL, buildWhatsappUrl } from '../constants';
 import { BannerCarouselComponent } from '../banner-carousel/banner-carousel.component';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
 import { CartToastComponent } from '../cart-toast/cart-toast.component';
@@ -46,6 +46,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   selectedProduct: Product | null = null;
   resolveImageUrl = resolveImageUrl;
   defaultLogoUrl = DEFAULT_LOGO_URL;
+  buildWhatsappUrl = buildWhatsappUrl;
   trackById = trackById;
 
   // productId -> quantity currently in the cart, so each "Añadir al carrito"

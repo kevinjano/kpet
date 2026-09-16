@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { SiteSettingsService } from '../services/site-settings-service';
+import { buildWhatsappUrl } from '../constants';
 
 @Component({
   selector: 'app-whatsapp-bubble',
@@ -17,6 +18,7 @@ import { SiteSettingsService } from '../services/site-settings-service';
 export class WhatsappBubbleComponent implements OnInit {
   whatsappNumber: string | null = null;
   isAdminRoute = false;
+  buildWhatsappUrl = buildWhatsappUrl;
 
   constructor(
     private siteSettingsService: SiteSettingsService,

@@ -153,7 +153,7 @@
             <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail" class="contact-link">
               <span class="contact-link-icon">✉️</span> {{ settings?.contactEmail }}
             </a>
-            <a *ngIf="settings?.whatsappNumber" [href]="'https://wa.me/' + settings?.whatsappNumber" target="_blank" rel="noopener" class="contact-link">
+            <a *ngIf="settings?.whatsappNumber" [href]="buildWhatsappUrl(settings!.whatsappNumber)" target="_blank" rel="noopener" class="contact-link">
               <span class="contact-link-icon">💬</span> Comunícate con nosotros
             </a>
           </div>

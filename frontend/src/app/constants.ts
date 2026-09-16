@@ -26,6 +26,15 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
   return path.startsWith('/uploads/') ? `${API_ORIGIN}${path}` : path;
 }
 
+// Pre-filled into wa.me links (the WhatsApp bubble and the Conócenos contact
+// link) so a tap opens the chat with this already typed in, instead of a
+// blank conversation the visitor has to start from scratch.
+const WHATSAPP_DEFAULT_MESSAGE = 'Hola, vi su página web y quiero más información.';
+
+export function buildWhatsappUrl(number: string): string {
+  return `https://wa.me/${number}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE)}`;
+}
+
 // Backend error responses are shaped {error: "message"} (see e.g.
 // UploadController's exception handlers) — falls back to a generic message for
 // anything else (network failure, unexpected response shape).

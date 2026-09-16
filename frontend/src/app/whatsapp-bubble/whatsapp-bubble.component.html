@@ -1,7 +1,7 @@
 <a
   *ngIf="whatsappNumber && !isAdminRoute"
   class="wa-bubble"
-  [href]="'https://wa.me/' + whatsappNumber"
+  [href]="buildWhatsappUrl(whatsappNumber)"
   target="_blank"
   rel="noopener"
   aria-label="Comunícate con nosotros por WhatsApp">
