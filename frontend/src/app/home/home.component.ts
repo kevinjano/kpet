@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -15,6 +15,8 @@ import { PRODUCT_CATEGORIES, resolveImageUrl, trackById, DEFAULT_LOGO_URL, build
 import { BannerCarouselComponent } from '../banner-carousel/banner-carousel.component';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
 import { CartToastComponent } from '../cart-toast/cart-toast.component';
+
+type SortOption = 'relevancia' | 'precio-asc' | 'precio-desc' | 'nuevos';
 
 @Component({
   selector: 'app-home',
@@ -39,7 +41,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   selectedCategory: string | null = null;
   showOffersOnly = false;
   searchTerm = '';
-  sortOption: 'relevancia' | 'precio-asc' | 'precio-desc' | 'nuevos' = 'relevancia';
+  sortOption: SortOption = 'relevancia';
+  sortMenuOpen = false;
+  sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'relevancia', label: 'Más relevantes' },
+    { value: 'nuevos', label: 'Más nuevos' },
+    { value: 'precio-asc', label: 'Precio: menor a mayor' },
+    { value: 'precio-desc', label: 'Precio: mayor a menor' },
+  ];
 
   products: Product[] = [];
   // Distinguishes "still loading" from "genuinely empty" so the "no hay
@@ -194,6 +203,32 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.searchTerm = '';
   }
 
+  get sortLabel(): string {
+    return this.sortOptions.find(o => o.value === this.sortOption)?.label ?? 'Más relevantes';
+  }
+
+  toggleSortMenu(): void {
+    this.sortMenuOpen = !this.sortMenuOpen;
+  }
+
+  selectSort(option: SortOption): void {
+    this.sortOption = option;
+    this.sortMenuOpen = false;
+  }
+
+  // Closes the custom sort dropdown when clicking anywhere outside it —
+  // native <select> gets this for free, a hand-rolled one doesn't.
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.sortMenuOpen) {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (!target.closest('.products-sort')) {
+      this.sortMenuOpen = false;
+    }
+  }
+
   selectCategory(category: string | null): void {
     this.selectedCategory = category;
     this.showOffersOnly = false;
@@ -208,6 +243,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   addToCart(product: Product): void {
     this.cartService.addToCart(product, 1);
+  }
+
+  incrementCartQty(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.cartService.updateQuantity(product.id, this.getCartQuantity(product.id) + 1);
+  }
+
+  decrementCartQty(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.cartService.updateQuantity(product.id, this.getCartQuantity(product.id) - 1);
   }
 
   toggleFavorite(product: Product, event: Event): void {

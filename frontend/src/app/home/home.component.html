@@ -92,12 +92,17 @@
       <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar productos..." aria-label="Buscar productos">
       <button *ngIf="searchTerm" type="button" class="products-search-clear" (click)="clearSearch()" aria-label="Limpiar búsqueda">✕</button>
     </div>
-    <select class="products-sort" [(ngModel)]="sortOption" aria-label="Ordenar productos">
-      <option value="relevancia">Más relevantes</option>
-      <option value="nuevos">Más nuevos</option>
-      <option value="precio-asc">Precio: menor a mayor</option>
-      <option value="precio-desc">Precio: mayor a menor</option>
-    </select>
+    <div class="products-sort" [class.open]="sortMenuOpen">
+      <button type="button" class="products-sort-trigger" (click)="toggleSortMenu()" aria-haspopup="listbox" [attr.aria-expanded]="sortMenuOpen">
+        <span>{{ sortLabel }}</span>
+        <svg class="products-sort-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="products-sort-menu" role="listbox" *ngIf="sortMenuOpen">
+        <li *ngFor="let opt of sortOptions" role="option" [attr.aria-selected]="opt.value === sortOption">
+          <button type="button" [class.active]="opt.value === sortOption" (click)="selectSort(opt.value)">{{ opt.label }}</button>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <div *ngIf="productsLoaded && visibleProducts.length === 0" class="text-muted text-center py-5">
@@ -144,10 +149,14 @@
               </ng-template>
             </div>
             <button class="btn btn-outline-secondary w-100 mt-2" (click)="openProductInfo(product)">Información</button>
-            <button class="btn btn-kpet-primary w-100 mt-2 add-to-cart-btn" (click)="addToCart(product)">
+            <button *ngIf="getCartQuantity(product.id) === 0" class="btn btn-kpet-primary w-100 mt-2" (click)="addToCart(product)">
               Añadir al carrito
-              <span *ngIf="getCartQuantity(product.id) > 0" class="add-to-cart-qty">{{ getCartQuantity(product.id) }}</span>
             </button>
+            <div *ngIf="getCartQuantity(product.id) > 0" class="card-qty-stepper mt-2">
+              <button type="button" (click)="decrementCartQty(product, $event)" aria-label="Quitar uno">−</button>
+              <span>{{ getCartQuantity(product.id) }}</span>
+              <button type="button" (click)="incrementCartQty(product, $event)" aria-label="Agregar uno">+</button>
+            </div>
           </div>
         </div>
       </div>

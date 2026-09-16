@@ -73,6 +73,17 @@ public class SecurityConfig {
                         // wrongly require ADMIN for it. ---
                         .requestMatchers(HttpMethod.GET, "/api/orders/mine").authenticated()
 
+                        // --- Authenticated: favorites (any logged-in user manages their own —
+                        // scoped to the principal in FavoriteController) and reviews (posting/
+                        // deleting requires login; self-or-admin check for delete happens in
+                        // ReviewController). Explicit rather than relying on the anyRequest()
+                        // catch-all below, since POST/DELETE on these paths were observed
+                        // returning 403 for non-admin users through the catch-all alone. ---
+                        .requestMatchers(HttpMethod.POST, "/api/favorites/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/favorites/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").authenticated()
+
                         // --- Admin only: catalog/content/settings management ---
                         .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/blog/**",
                                 "/api/distributors/**").hasRole("ADMIN")

@@ -5,23 +5,35 @@
   </div>
 </nav>
 
-<div class="favorites-page">
+<header class="favorites-hero">
+  <span class="fav-heart fav-heart-1">♥</span>
+  <span class="fav-heart fav-heart-2">♥</span>
+  <span class="fav-heart fav-heart-3">♥</span>
   <div class="container">
     <h1 class="favorites-title kpet-fade-up">Mis favoritos</h1>
+    <p class="favorites-subtitle kpet-fade-up" *ngIf="authService.isLoggedIn() && (favoriteService.favorites$ | async) as favs">
+      {{ favs.length }} producto{{ favs.length === 1 ? '' : 's' }} guardado{{ favs.length === 1 ? '' : 's' }}
+    </p>
+  </div>
+</header>
 
+<div class="favorites-page">
+  <div class="container">
     <div *ngIf="!authService.isLoggedIn()" class="favorites-empty kpet-fade-up">
+      <span class="favorites-empty-icon">♡</span>
       <p>Iniciá sesión para ver y guardar tus productos favoritos.</p>
       <a routerLink="/login" class="btn btn-kpet-primary">Iniciar sesión</a>
     </div>
 
     <div *ngIf="authService.isLoggedIn() && (favoriteService.favorites$ | async)?.length === 0" class="favorites-empty kpet-fade-up">
+      <span class="favorites-empty-icon">♡</span>
       <p>Todavía no guardaste ningún producto. Tocá el ♡ en cualquier producto de la tienda para guardarlo acá.</p>
       <a routerLink="/" class="btn btn-kpet-primary">Ver productos</a>
     </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" *ngIf="authService.isLoggedIn()">
-      <div class="col" *ngFor="let product of (favoriteService.favorites$ | async); trackBy: trackById">
-        <div class="card h-100 product-card kpet-fade-up">
+      <div class="col" *ngFor="let product of (favoriteService.favorites$ | async); let i = index; trackBy: trackById">
+        <div class="card h-100 product-card kpet-fade-up" [style.animation-delay.ms]="i * 60">
           <div class="product-image-wrapper">
             <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-image" loading="lazy">
             <button type="button" class="favorite-btn active" (click)="removeFavorite(product, $event)" aria-label="Quitar de favoritos">

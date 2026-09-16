@@ -1,16 +1,37 @@
-<div class="dash-header kpet-fade-up">
-  <h1>Inicio</h1>
-  <p>Un vistazo rápido a cómo va la tienda.</p>
+<div class="dash-hero kpet-fade-up">
+  <span class="dash-hero-blob dash-hero-blob-1"></span>
+  <span class="dash-hero-blob dash-hero-blob-2"></span>
+  <div class="dash-hero-content">
+    <span class="dash-hero-icon">🐾</span>
+    <div>
+      <h1>{{ greeting }}</h1>
+      <p class="dash-hero-date">{{ todayLabel }}</p>
+    </div>
+  </div>
+  <div class="dash-hero-today" *ngIf="loaded">
+    <strong>{{ todayOrdersCount }}</strong>
+    <span>pedido{{ todayOrdersCount === 1 ? '' : 's' }} hoy</span>
+  </div>
 </div>
 
 <div class="dash-stats kpet-fade-up">
-  <div class="dash-stat-card">
+  <div class="dash-stat-card dash-card-revenue">
     <span class="dash-stat-icon dash-icon-revenue">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     </span>
     <div>
       <span class="dash-stat-value">Bs.{{ totalRevenue.toFixed(2) }}</span>
       <span class="dash-stat-label">Ventas confirmadas</span>
+    </div>
+  </div>
+
+  <div class="dash-stat-card">
+    <span class="dash-stat-icon dash-icon-ticket">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    </span>
+    <div>
+      <span class="dash-stat-value">Bs.{{ averageTicket.toFixed(2) }}</span>
+      <span class="dash-stat-label">Ticket promedio</span>
     </div>
   </div>
 
@@ -31,6 +52,16 @@
     <div>
       <span class="dash-stat-value">{{ lowStockProducts.length }}</span>
       <span class="dash-stat-label">Productos con stock bajo</span>
+    </div>
+  </div>
+
+  <div class="dash-stat-card">
+    <span class="dash-stat-icon dash-icon-rating">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
+    </span>
+    <div>
+      <span class="dash-stat-value">{{ overallRating.count > 0 ? overallRating.average.toFixed(1) : '—' }}</span>
+      <span class="dash-stat-label">Calificación general ({{ overallRating.count }})</span>
     </div>
   </div>
 
@@ -61,12 +92,12 @@
 
   <div class="dash-panel kpet-fade-up">
     <div class="dash-panel-header">
-      <h3>Productos más vendidos</h3>
+      <h3>🏆 Productos más vendidos</h3>
       <a routerLink="/admin/productos">Ver catálogo →</a>
     </div>
     <div *ngIf="loaded && topProducts.length === 0" class="text-muted py-3">Todavía no hay ventas confirmadas.</div>
     <div class="dash-top-row" *ngFor="let row of topProducts; let i = index">
-      <span class="dash-top-rank">{{ i + 1 }}</span>
+      <span class="dash-top-rank" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">{{ i + 1 }}</span>
       <span class="dash-top-name">{{ row.name }}</span>
       <span class="dash-top-qty">{{ row.quantitySold }} vendidos</span>
     </div>

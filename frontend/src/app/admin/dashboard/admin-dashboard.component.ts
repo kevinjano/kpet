@@ -4,8 +4,10 @@ import { RouterLink } from '@angular/router';
 import { OrderService } from '../../services/order-service';
 import { ProductService } from '../../services/product-service';
 import { UserService } from '../../services/user-service';
+import { ReviewService } from '../../services/review-service';
 import { Order, ORDER_STATUS_LABELS, ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRMED, ORDER_STATUS_CANCELLED, ORDER_STATUS_COMPLETED } from '../../order';
 import { Product } from '../../product';
+import { RatingSummary } from '../../review';
 import { trackById } from '../../constants';
 
 const LOW_STOCK_THRESHOLD = 15;
@@ -34,6 +36,7 @@ export class AdminDashboardComponent implements OnInit {
   orders: Order[] = [];
   products: Product[] = [];
   usersCount = 0;
+  ratingSummaries: RatingSummary[] = [];
   loaded = false;
   statusLabels = ORDER_STATUS_LABELS;
   trackById = trackById;
@@ -42,6 +45,7 @@ export class AdminDashboardComponent implements OnInit {
     private orderService: OrderService,
     private productService: ProductService,
     private userService: UserService,
+    private reviewService: ReviewService,
   ) {}
 
   ngOnInit(): void {
@@ -55,6 +59,20 @@ export class AdminDashboardComponent implements OnInit {
     this.userService.getUsers().subscribe(users => {
       this.usersCount = users.length;
     });
+    this.reviewService.getRatingSummary().subscribe(summaries => {
+      this.ratingSummaries = summaries;
+    });
+  }
+
+  get greeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Buenos días';
+    if (hour < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  }
+
+  get todayLabel(): string {
+    return new Date().toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' });
   }
 
   get totalRevenue(): number {
@@ -69,6 +87,34 @@ export class AdminDashboardComponent implements OnInit {
 
   get cancelledOrdersCount(): number {
     return this.orders.filter(o => o.status === ORDER_STATUS_CANCELLED).length;
+  }
+
+  get todayOrdersCount(): number {
+    const today = new Date().toDateString();
+    return this.orders.filter(o => new Date(o.createdAt).toDateString() === today).length;
+  }
+
+  // Average value of an order that actually went through — a more honest
+  // "how much does a typical sale bring in" figure than total revenue alone.
+  get averageTicket(): number {
+    const closed = this.orders.filter(o => o.status === ORDER_STATUS_CONFIRMED || o.status === ORDER_STATUS_COMPLETED);
+    if (closed.length === 0) {
+      return 0;
+    }
+    return closed.reduce((sum, o) => sum + o.total, 0) / closed.length;
+  }
+
+  // Store-wide average across every product that has at least one review,
+  // weighted by how many reviews each product has (not a plain average of
+  // averages, so one product with a single 5-star review doesn't count as
+  // much as one with fifty reviews).
+  get overallRating(): { average: number; count: number } {
+    const totalCount = this.ratingSummaries.reduce((sum, r) => sum + r.count, 0);
+    if (totalCount === 0) {
+      return { average: 0, count: 0 };
+    }
+    const weightedSum = this.ratingSummaries.reduce((sum, r) => sum + r.average * r.count, 0);
+    return { average: weightedSum / totalCount, count: totalCount };
   }
 
   get lowStockProducts(): Product[] {

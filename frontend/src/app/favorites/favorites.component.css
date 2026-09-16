@@ -17,16 +17,69 @@
   color: var(--kpet-purple-900);
 }
 
+/* ---------- Hero ---------- */
+.favorites-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--kpet-purple-700) 0%, #BE185D 65%, #E11D48 130%);
+  padding: 2.75rem 0;
+}
+
+.fav-heart {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.18);
+  font-size: 2.2rem;
+  animation: fav-heart-float 4.5s ease-in-out infinite;
+}
+
+.fav-heart-1 {
+  top: 15%;
+  left: 8%;
+  font-size: 2.8rem;
+  animation-delay: 0s;
+}
+
+.fav-heart-2 {
+  bottom: 10%;
+  right: 12%;
+  font-size: 3.5rem;
+  animation-delay: 1.2s;
+}
+
+.fav-heart-3 {
+  top: 55%;
+  right: 30%;
+  font-size: 1.6rem;
+  opacity: 0.6;
+  animation-delay: 2.1s;
+}
+
+@keyframes fav-heart-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.08); }
+}
+
+.favorites-title {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  color: var(--kpet-white);
+  margin-bottom: 0.25rem;
+}
+
+.favorites-subtitle {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ---------- Page body ---------- */
 .favorites-page {
   background: var(--kpet-purple-50);
   min-height: calc(100vh - 65px);
   padding: 2.5rem 0 3.5rem;
-}
-
-.favorites-title {
-  font-weight: 800;
-  color: var(--kpet-ink);
-  margin-bottom: 1.75rem;
 }
 
 .favorites-empty {
@@ -38,6 +91,13 @@
   max-width: 480px;
 }
 
+.favorites-empty-icon {
+  display: block;
+  font-size: 3rem;
+  color: #FBCFE8;
+  margin-bottom: 0.75rem;
+}
+
 .favorites-empty p {
   color: var(--kpet-ink-soft);
   margin-bottom: 1.25rem;
@@ -46,12 +106,14 @@
 /* ---------- Product cards (mirrors home's product-card) ---------- */
 .product-card {
   border-color: rgba(76, 29, 149, 0.08);
-  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+  border-bottom: 3px solid transparent;
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition), border-color var(--kpet-transition);
 }
 
 .product-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--kpet-shadow-lg);
+  border-bottom-color: #E11D48;
 }
 
 .product-image-wrapper {

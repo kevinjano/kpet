@@ -394,11 +394,15 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-width: 0;
 }
 
 .pdm-other-name {
   font-weight: 600;
   color: var(--kpet-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pdm-other-price {
@@ -471,5 +475,27 @@
   }
   .pdm-actions {
     flex-wrap: wrap;
+  }
+  .pdm-other-slide {
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+  }
+  .pdm-other-thumb {
+    width: 46px;
+    height: 46px;
+  }
+  .pdm-other-name {
+    font-size: 0.88rem;
+  }
+  .pdm-other-cta {
+    display: none;
+  }
+  .pdm-review-form {
+    padding: 0.75rem;
+  }
+  .pdm-review-date {
+    margin-left: 0;
+    flex-basis: 100%;
+    order: 3;
   }
 }

@@ -59,11 +59,25 @@ export class ProductDetailModalComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product'] || changes['allProducts']) {
       this.quantity = 1;
-      this.otherProducts = this.allProducts.filter(p => p.id !== this.product?.id);
+      this.otherProducts = this.pickRandomOthers(6);
       this.otherActiveIndex = 0;
       this.startOtherAutoplay();
       this.loadReviews();
     }
+  }
+
+  // A fresh random sample of up to `count` other products every time the
+  // modal opens/changes product, rather than the full catalog in order — so
+  // "Otros productos" surfaces different things across visits instead of
+  // always the same first few by id.
+  private pickRandomOthers(count: number): Product[] {
+    const candidates = this.allProducts.filter(p => p.id !== this.product?.id);
+    const shuffled = [...candidates];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, count);
   }
 
   private loadReviews(): void {
