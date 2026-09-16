@@ -1,13 +1,19 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Product } from '../product';
+import { Review } from '../review';
 import { CartService } from '../services/cart-service';
+import { ReviewService } from '../services/review-service';
+import { AuthService } from '../services/auth-service';
+import { ModalService } from '../services/modal-service';
 import { resolveImageUrl, trackById } from '../constants';
 
 @Component({
   selector: 'app-product-detail-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './product-detail-modal.component.html',
   styleUrl: './product-detail-modal.component.css'
 })
@@ -36,7 +42,19 @@ export class ProductDetailModalComponent implements OnChanges, OnDestroy {
   otherActiveIndex = 0;
   private otherTimer: ReturnType<typeof setInterval> | undefined;
 
-  constructor(private cartService: CartService) {}
+  reviews: Review[] = [];
+  reviewsLoaded = false;
+  newRating = 0;
+  newComment = '';
+  submittingReview = false;
+
+  constructor(
+    private cartService: CartService,
+    private reviewService: ReviewService,
+    private authService: AuthService,
+    private modalService: ModalService,
+    private router: Router,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product'] || changes['allProducts']) {
@@ -44,7 +62,88 @@ export class ProductDetailModalComponent implements OnChanges, OnDestroy {
       this.otherProducts = this.allProducts.filter(p => p.id !== this.product?.id);
       this.otherActiveIndex = 0;
       this.startOtherAutoplay();
+      this.loadReviews();
     }
+  }
+
+  private loadReviews(): void {
+    this.reviewsLoaded = false;
+    this.newRating = 0;
+    this.newComment = '';
+    this.reviewService.getReviewsForProduct(this.product.id).subscribe(reviews => {
+      this.reviews = reviews;
+      this.reviewsLoaded = true;
+    });
+  }
+
+  get averageRating(): number {
+    if (this.reviews.length === 0) {
+      return 0;
+    }
+    return this.reviews.reduce((sum, r) => sum + r.rating, 0) / this.reviews.length;
+  }
+
+  get myUserId(): number {
+    return Number(localStorage.getItem('userId'));
+  }
+
+  get hasReviewed(): boolean {
+    return this.reviews.some(r => r.userId === this.myUserId);
+  }
+
+  canDelete(review: Review): boolean {
+    return review.userId === this.myUserId || localStorage.getItem('role') === 'Admin';
+  }
+
+  setRating(rating: number): void {
+    this.newRating = rating;
+  }
+
+  async submitReview(): Promise<void> {
+    if (!this.authService.isLoggedIn()) {
+      const goToLogin = await this.modalService.confirm({
+        title: 'Inicia sesión',
+        message: 'Necesitas iniciar sesión para dejar una reseña.',
+        confirmText: 'Iniciar sesión',
+      });
+      if (goToLogin) {
+        this.close.emit();
+        this.router.navigate(['/login']);
+      }
+      return;
+    }
+    if (this.newRating < 1) {
+      this.modalService.error('Elegí una calificación de 1 a 5 estrellas.');
+      return;
+    }
+
+    this.submittingReview = true;
+    this.reviewService.createReview(this.product.id, this.newRating, this.newComment).subscribe({
+      next: review => {
+        this.reviews = [review, ...this.reviews];
+        this.newRating = 0;
+        this.newComment = '';
+        this.submittingReview = false;
+      },
+      error: err => {
+        this.submittingReview = false;
+        this.modalService.error(err?.error?.error || 'Error al enviar la reseña.');
+      }
+    });
+  }
+
+  async deleteReview(review: Review): Promise<void> {
+    const confirmed = await this.modalService.confirm({
+      title: 'Eliminar reseña',
+      message: '¿Eliminar tu reseña de este producto?',
+      confirmText: 'Eliminar',
+    });
+    if (!confirmed) {
+      return;
+    }
+    this.reviewService.deleteReview(review.id).subscribe(() => {
+      this.reviews = this.reviews.filter(r => r.id !== review.id);
+    });
   }
 
   ngOnDestroy(): void {

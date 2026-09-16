@@ -6,6 +6,8 @@ import { ProductService } from '../services/product-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { CartService } from '../services/cart-service';
 import { FavoriteService } from '../services/favorite-service';
+import { ReviewService } from '../services/review-service';
+import { RatingSummary } from '../review';
 import { AuthService } from '../services/auth-service';
 import { Product } from '../product';
 import { SiteSettings } from '../site-settings';
@@ -58,6 +60,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // button can show how many of that product are already in there.
   cartQuantities = new Map<number, number>();
 
+  // productId -> {average, count}, fetched once so every card can show a
+  // star rating without one request per product.
+  ratingSummaries = new Map<number, RatingSummary>();
+
   // Mobile drawer's sliding active-category pill — same offsetTop/offsetHeight
   // mechanic as the admin sidebar's pill (see AdminNavComponent), just vertical
   // here too since the drawer's category list is also a vertical stack.
@@ -71,6 +77,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private siteSettingsService: SiteSettingsService,
     public cartService: CartService,
     public favoriteService: FavoriteService,
+    private reviewService: ReviewService,
     private authService: AuthService,
     private router: Router,
   ) {}
@@ -92,10 +99,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.cartItemCount = this.cartService.getItemCount();
       this.cartQuantities = new Map(items.map(item => [item.product.id, item.quantity]));
     });
+
+    this.reviewService.getRatingSummary().subscribe(summaries => {
+      this.ratingSummaries = new Map(summaries.map(s => [s.productId, s]));
+    });
   }
 
   getCartQuantity(productId: number): number {
     return this.cartQuantities.get(productId) ?? 0;
+  }
+
+  getRatingSummary(productId: number): RatingSummary | undefined {
+    return this.ratingSummaries.get(productId);
   }
 
   ngAfterViewInit(): void {

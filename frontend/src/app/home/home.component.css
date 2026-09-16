@@ -577,6 +577,33 @@
   color: var(--kpet-ink);
 }
 
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.product-stars {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.product-star {
+  color: rgba(76, 29, 149, 0.18);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.product-star.filled {
+  color: var(--kpet-yellow-500);
+}
+
+.product-rating-count {
+  color: var(--kpet-ink-soft);
+  font-size: 0.75rem;
+}
+
 .product-description {
   font-size: 0.85rem;
   overflow: hidden;

@@ -57,7 +57,7 @@ public class SecurityConfig {
 
                         // --- Public: storefront browsing ---
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/blog/**",
-                                "/api/distributors/**", "/api/settings").permitAll()
+                                "/api/distributors/**", "/api/settings", "/api/reviews/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
 
                         // --- Public: account creation + login ---
