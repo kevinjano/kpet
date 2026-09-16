@@ -1,0 +1,9 @@
+<button type="button" class="filter-dropdown-trigger" (click)="toggle()" aria-haspopup="listbox" [attr.aria-expanded]="open">
+  <span>{{ selectedLabel }}</span>
+  <svg class="filter-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+</button>
+<ul class="filter-dropdown-menu" role="listbox" *ngIf="open">
+  <li *ngFor="let opt of options" role="option" [attr.aria-selected]="opt.value === value">
+    <button type="button" [class.active]="opt.value === value" (click)="select(opt.value)">{{ opt.label }}</button>
+  </li>
+</ul>

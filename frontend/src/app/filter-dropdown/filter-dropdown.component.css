@@ -1,0 +1,92 @@
+/* Matches the storefront's sort dropdown (HomeComponent's .products-sort)
+   so every list-page filter across the app looks and behaves the same. */
+:host {
+  display: block;
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 190px;
+}
+
+.filter-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border: 1px solid rgba(76, 29, 149, 0.14);
+  border-radius: var(--kpet-radius-pill);
+  padding: 0.55rem 0.9rem;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--kpet-ink);
+  background: var(--kpet-white);
+  cursor: pointer;
+  transition: border-color var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.filter-dropdown-trigger:hover {
+  border-color: var(--kpet-purple-300, var(--kpet-purple-200, var(--kpet-purple-100)));
+}
+
+:host(.open) .filter-dropdown-trigger,
+.filter-dropdown-trigger:focus {
+  outline: none;
+  border-color: var(--kpet-purple-500);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
+}
+
+.filter-dropdown-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform var(--kpet-transition);
+}
+
+:host(.open) .filter-dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.filter-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-lg);
+  border: 1px solid rgba(76, 29, 149, 0.08);
+  animation: filter-dropdown-menu-in 160ms var(--kpet-ease);
+}
+
+@keyframes filter-dropdown-menu-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.filter-dropdown-menu button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--kpet-ink);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color var(--kpet-transition), color var(--kpet-transition);
+}
+
+.filter-dropdown-menu button:hover {
+  background: var(--kpet-purple-50);
+}
+
+.filter-dropdown-menu button.active {
+  background: linear-gradient(120deg, var(--kpet-purple-600), var(--kpet-purple-700));
+  color: var(--kpet-white);
+  font-weight: 700;
+}

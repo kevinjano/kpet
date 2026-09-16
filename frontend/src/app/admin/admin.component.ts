@@ -9,6 +9,7 @@ import {AuthService} from "../services/auth-service";
 import {ModalService} from "../services/modal-service";
 import {trackById} from "../constants";
 import {AdminTableComponent} from "../admin-table/admin-table.component";
+import {FilterDropdownComponent} from "../filter-dropdown/filter-dropdown.component";
 
 @Component({
   selector: 'app-admin',
@@ -20,7 +21,8 @@ import {AdminTableComponent} from "../admin-table/admin-table.component";
     RouterLinkActive,
     ReactiveFormsModule,
     FormsModule,
-    AdminTableComponent
+    AdminTableComponent,
+    FilterDropdownComponent
   ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
@@ -36,6 +38,12 @@ export class AdminComponent implements OnInit{
   searchTerm = '';
   roleFilter = '';
   trackById = trackById;
+
+  roleFilterOptions = [
+    { value: '', label: 'Todos los roles' },
+    { value: 'Admin', label: 'Admin' },
+    { value: 'Client', label: 'Cliente' },
+  ];
 
   constructor(
     private userService: UserService,

@@ -57,22 +57,6 @@
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
 }
 
-.admin-filter-select {
-  padding: 0.55rem 2rem 0.55rem 0.9rem;
-  border-radius: var(--kpet-radius-pill);
-  border: 1px solid rgba(76, 29, 149, 0.14);
-  background: var(--kpet-white);
-  font-size: 0.87rem;
-  font-weight: 600;
-  color: var(--kpet-ink);
-  min-width: 170px;
-}
-
-.admin-filter-select:focus {
-  outline: none;
-  border-color: var(--kpet-purple-500);
-}
-
 .admin-filter-count {
   font-size: 0.82rem;
   font-weight: 600;

@@ -9,6 +9,7 @@ import { Product } from '../../product';
 import { resolveImageUrl, extractErrorMessage, trackById } from '../../constants';
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
+import { FilterDropdownComponent } from '../../filter-dropdown/filter-dropdown.component';
 
 /**
  * Admin "Distribuidores" screen. The product-picker in the create/edit form
@@ -21,7 +22,7 @@ import { AdminTableComponent } from '../../admin-table/admin-table.component';
 @Component({
   selector: 'app-admin-distributors',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, AdminTableComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, AdminTableComponent, FilterDropdownComponent],
   templateUrl: './admin-distributors.component.html',
   styleUrl: './admin-distributors.component.css'
 })
@@ -44,6 +45,13 @@ export class AdminDistributorsComponent implements OnInit {
 
   get cities(): string[] {
     return Array.from(new Set(this.distributors.map(d => d.city).filter(c => !!c))).sort();
+  }
+
+  get cityFilterOptions() {
+    return [
+      { value: '', label: 'Todas las ciudades' },
+      ...this.cities.map(city => ({ value: city, label: city })),
+    ];
   }
 
   get filteredDistributors(): Distributor[] {

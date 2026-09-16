@@ -7,6 +7,7 @@ import { Order, ORDER_STATUS_LABELS, ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRME
 import { trackById, LOW_STOCK_THRESHOLD } from '../../constants';
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
+import { FilterDropdownComponent } from '../../filter-dropdown/filter-dropdown.component';
 
 // Flattened {distributor, product, quantity} row for the low-stock warning
 // banner — built from every distributor's per-product quantities, not from
@@ -32,7 +33,7 @@ interface LowStockEntry {
 @Component({
   selector: 'app-admin-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminTableComponent],
+  imports: [CommonModule, FormsModule, AdminTableComponent, FilterDropdownComponent],
   templateUrl: './admin-orders.component.html',
   styleUrl: './admin-orders.component.css'
 })
@@ -49,6 +50,16 @@ export class AdminOrdersComponent implements OnInit {
   searchTerm = '';
   statusFilter = '';
   trackById = trackById;
+
+  get statusFilterOptions() {
+    return [
+      { value: '', label: 'Todos los estados' },
+      { value: this.STATUS_PENDING, label: this.statusLabels[this.STATUS_PENDING] },
+      { value: this.STATUS_CONFIRMED, label: this.statusLabels[this.STATUS_CONFIRMED] },
+      { value: this.STATUS_COMPLETED, label: this.statusLabels[this.STATUS_COMPLETED] },
+      { value: this.STATUS_CANCELLED, label: this.statusLabels[this.STATUS_CANCELLED] },
+    ];
+  }
 
   constructor(
     private orderService: OrderService,
