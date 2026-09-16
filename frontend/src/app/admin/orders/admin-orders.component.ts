@@ -4,11 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order-service';
 import { DistributorService } from '../../services/distributor-service';
 import { Order, ORDER_STATUS_LABELS, ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRMED, ORDER_STATUS_COMPLETED, ORDER_STATUS_CANCELLED } from '../../order';
-import { trackById } from '../../constants';
+import { trackById, LOW_STOCK_THRESHOLD } from '../../constants';
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
-
-const LOW_STOCK_THRESHOLD = 15;
 
 // Flattened {distributor, product, quantity} row for the low-stock warning
 // banner — built from every distributor's per-product quantities, not from

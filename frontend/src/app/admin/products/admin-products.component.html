@@ -15,10 +15,17 @@
       <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" class="admin-search-input" placeholder="Buscar por nombre o descripción..." [(ngModel)]="searchTerm">
     </div>
-    <select class="admin-filter-select" [(ngModel)]="categoryFilter">
-      <option value="">Todas las categorías</option>
-      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-    </select>
+    <div class="admin-filter-dropdown" [class.open]="categoryFilterMenuOpen">
+      <button type="button" class="admin-filter-trigger" (click)="toggleCategoryFilterMenu()" aria-haspopup="listbox" [attr.aria-expanded]="categoryFilterMenuOpen">
+        <span>{{ categoryFilterLabel }}</span>
+        <svg class="admin-filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="admin-filter-menu" role="listbox" *ngIf="categoryFilterMenuOpen">
+        <li *ngFor="let opt of categoryFilterOptions" role="option" [attr.aria-selected]="opt.value === categoryFilter">
+          <button type="button" [class.active]="opt.value === categoryFilter" (click)="selectCategoryFilter(opt.value)">{{ opt.label }}</button>
+        </li>
+      </ul>
+    </div>
     <span class="admin-filter-count">{{ filteredProducts.length }} de {{ products.length }}</span>
   </div>
 

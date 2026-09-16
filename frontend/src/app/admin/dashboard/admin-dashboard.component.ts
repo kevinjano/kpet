@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../services/order-service';
@@ -8,14 +8,23 @@ import { ReviewService } from '../../services/review-service';
 import { Order, ORDER_STATUS_LABELS, ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRMED, ORDER_STATUS_CANCELLED, ORDER_STATUS_COMPLETED } from '../../order';
 import { Product } from '../../product';
 import { RatingSummary } from '../../review';
-import { trackById } from '../../constants';
+import { trackById, LOW_STOCK_THRESHOLD } from '../../constants';
 
-const LOW_STOCK_THRESHOLD = 15;
+// Recent orders are refetched on this interval so "Pedidos recientes" and the
+// sales chart reflect new orders without the admin needing to reload the page.
+const ORDERS_REFRESH_MS = 25000;
 
 interface TopProductRow {
   productId: number;
   name: string;
   quantitySold: number;
+}
+
+interface DayRevenue {
+  date: Date;
+  label: string;
+  total: number;
+  count: number;
 }
 
 /**
@@ -32,7 +41,7 @@ interface TopProductRow {
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   orders: Order[] = [];
   products: Product[] = [];
   usersCount = 0;
@@ -40,6 +49,12 @@ export class AdminDashboardComponent implements OnInit {
   loaded = false;
   statusLabels = ORDER_STATUS_LABELS;
   trackById = trackById;
+
+  // "Stock bajo" panel shows only the 5 lowest by default; this toggles the
+  // full list inline instead of navigating away.
+  showAllLowStock = false;
+
+  private refreshHandle?: ReturnType<typeof setInterval>;
 
   constructor(
     private orderService: OrderService,
@@ -49,10 +64,7 @@ export class AdminDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.orderService.getOrders().subscribe(orders => {
-      this.orders = orders;
-      this.loaded = true;
-    });
+    this.loadOrders();
     this.productService.getProducts().subscribe(products => {
       this.products = products;
     });
@@ -61,6 +73,21 @@ export class AdminDashboardComponent implements OnInit {
     });
     this.reviewService.getRatingSummary().subscribe(summaries => {
       this.ratingSummaries = summaries;
+    });
+
+    this.refreshHandle = setInterval(() => this.loadOrders(), ORDERS_REFRESH_MS);
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshHandle) {
+      clearInterval(this.refreshHandle);
+    }
+  }
+
+  private loadOrders(): void {
+    this.orderService.getOrders().subscribe(orders => {
+      this.orders = orders;
+      this.loaded = true;
     });
   }
 
@@ -117,18 +144,82 @@ export class AdminDashboardComponent implements OnInit {
     return { average: weightedSum / totalCount, count: totalCount };
   }
 
+  // Lowest stock first, so both the "5 más bajos" default view and the
+  // expanded view read as a worst-first priority list.
   get lowStockProducts(): Product[] {
-    return this.products.filter(p => p.active && p.stock < LOW_STOCK_THRESHOLD);
+    return this.products
+      .filter(p => p.active && p.stock < LOW_STOCK_THRESHOLD)
+      .sort((a, b) => a.stock - b.stock);
+  }
+
+  get lowStockDisplayed(): Product[] {
+    return this.showAllLowStock ? this.lowStockProducts : this.lowStockProducts.slice(0, 5);
+  }
+
+  toggleLowStockView(): void {
+    this.showAllLowStock = !this.showAllLowStock;
   }
 
   get activeProductsCount(): number {
     return this.products.filter(p => p.active).length;
   }
 
+  // Proportional breakdown of every order by status, for the status bar —
+  // percentages of the whole order count, not just the closed ones.
+  get statusBreakdown(): { status: string; label: string; count: number; percent: number }[] {
+    const total = this.orders.length;
+    if (total === 0) {
+      return [];
+    }
+    const statuses = [ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRMED, ORDER_STATUS_COMPLETED, ORDER_STATUS_CANCELLED];
+    return statuses
+      .map(status => {
+        const count = this.orders.filter(o => o.status === status).length;
+        return { status, label: this.statusLabels[status] || status, count, percent: (count / total) * 100 };
+      })
+      .filter(row => row.count > 0);
+  }
+
   get recentOrders(): Order[] {
     return [...this.orders]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5);
+      .slice(0, 8);
+  }
+
+  // Last 7 days (oldest to newest, today included), each with the total Bs.
+  // and order count from CONFIRMED/COMPLETED orders placed that day — feeds
+  // the "Ventas confirmadas" bar chart.
+  get salesByDay(): DayRevenue[] {
+    const days: DayRevenue[] = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      days.push({
+        date,
+        label: date.toLocaleDateString('es-BO', { weekday: 'short', day: 'numeric' }),
+        total: 0,
+        count: 0,
+      });
+    }
+
+    for (const order of this.orders) {
+      if (order.status !== ORDER_STATUS_CONFIRMED && order.status !== ORDER_STATUS_COMPLETED) {
+        continue;
+      }
+      const orderDate = new Date(order.createdAt).toDateString();
+      const day = days.find(d => d.date.toDateString() === orderDate);
+      if (day) {
+        day.total += order.total;
+        day.count += 1;
+      }
+    }
+
+    return days;
+  }
+
+  get salesByDayMax(): number {
+    return Math.max(1, ...this.salesByDay.map(d => d.total));
   }
 
   // Ranks products by total units sold across every order that actually went

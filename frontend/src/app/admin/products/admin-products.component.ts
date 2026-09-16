@@ -1,12 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductService } from '../../services/product-service';
 import { UploadService } from '../../services/upload-service';
 import { Product } from '../../product';
-import { PRODUCT_CATEGORIES, resolveImageUrl, extractErrorMessage, trackById } from '../../constants';
+import { PRODUCT_CATEGORIES, LOW_STOCK_THRESHOLD, resolveImageUrl, extractErrorMessage, trackById } from '../../constants';
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
+
+// '' = todas, a category name, or 'low-stock' for the stock-bajo filter —
+// they're mutually exclusive so a single field covers both cases.
+type CategoryFilterValue = string;
 
 @Component({
   selector: 'app-admin-products',
@@ -25,8 +29,43 @@ export class AdminProductsComponent implements OnInit {
   categories = PRODUCT_CATEGORIES;
   resolveImageUrl = resolveImageUrl;
   searchTerm = '';
-  categoryFilter = '';
+  categoryFilter: CategoryFilterValue = '';
+  categoryFilterMenuOpen = false;
   trackById = trackById;
+
+  get categoryFilterOptions(): { value: CategoryFilterValue; label: string }[] {
+    return [
+      { value: '', label: 'Todas las categorías' },
+      ...this.categories.map(cat => ({ value: cat, label: cat })),
+      { value: 'low-stock', label: 'Stock bajo' },
+    ];
+  }
+
+  get categoryFilterLabel(): string {
+    return this.categoryFilterOptions.find(o => o.value === this.categoryFilter)?.label ?? 'Todas las categorías';
+  }
+
+  toggleCategoryFilterMenu(): void {
+    this.categoryFilterMenuOpen = !this.categoryFilterMenuOpen;
+  }
+
+  selectCategoryFilter(value: CategoryFilterValue): void {
+    this.categoryFilter = value;
+    this.categoryFilterMenuOpen = false;
+  }
+
+  // Closes the custom filter dropdown when clicking outside it — same pattern
+  // as HomeComponent's sort dropdown.
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.categoryFilterMenuOpen) {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (!target.closest('.admin-filter-dropdown')) {
+      this.categoryFilterMenuOpen = false;
+    }
+  }
 
   form: FormGroup;
   editingProductId: number | null = null;
@@ -43,7 +82,11 @@ export class AdminProductsComponent implements OnInit {
   get filteredProducts(): Product[] {
     const term = this.searchTerm.trim().toLowerCase();
     return this.products.filter(p => {
-      if (this.categoryFilter && p.category !== this.categoryFilter) {
+      if (this.categoryFilter === 'low-stock') {
+        if (p.stock >= LOW_STOCK_THRESHOLD) {
+          return false;
+        }
+      } else if (this.categoryFilter && p.category !== this.categoryFilter) {
         return false;
       }
       if (!term) {

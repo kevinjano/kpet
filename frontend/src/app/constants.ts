@@ -9,6 +9,11 @@ export const API_ORIGIN = 'http://localhost:8090';
 // it here only, no backend migration needed since Product.category is a plain string.
 export const PRODUCT_CATEGORIES = ['Perros', 'Gatos', 'Novedades'];
 
+// Below this stock count, a product counts as "low stock" — shared by the
+// admin dashboard's KPI/alert panel, the low-stock warning on order creation,
+// and the admin products page's stock filter, so all three agree on the cutoff.
+export const LOW_STOCK_THRESHOLD = 15;
+
 // Shown immediately (no flash of placeholder text/broken image) while each
 // page's site-settings request is still in flight — matches the logo already
 // seeded into site_settings.logoUrl, so in the common case (admin hasn't
