@@ -9,6 +9,7 @@ import {AuthService} from "../services/auth-service";
 import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
 import {OrderService} from "../services/order-service";
+import {FavoriteService} from "../services/favorite-service";
 import {Order, ORDER_STATUS_LABELS} from "../order";
 import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 
@@ -48,6 +49,7 @@ export class MonCompteComponent implements OnInit {
     private siteSettingsService: SiteSettingsService,
     private modalService: ModalService,
     private orderService: OrderService,
+    private favoriteService: FavoriteService,
     private formBuilder: FormBuilder,
     private router: Router,
   ) {}
@@ -119,6 +121,7 @@ export class MonCompteComponent implements OnInit {
       confirmText: 'Cerrar sesión',
     });
     if (confirmed) {
+      this.favoriteService.clear();
       this.authService.logout();
     }
   }

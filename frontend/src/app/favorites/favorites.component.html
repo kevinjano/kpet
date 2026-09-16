@@ -1,0 +1,50 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
+    <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" height="36">
+  </div>
+</nav>
+
+<div class="favorites-page">
+  <div class="container">
+    <h1 class="favorites-title kpet-fade-up">Mis favoritos</h1>
+
+    <div *ngIf="!authService.isLoggedIn()" class="favorites-empty kpet-fade-up">
+      <p>Iniciá sesión para ver y guardar tus productos favoritos.</p>
+      <a routerLink="/login" class="btn btn-kpet-primary">Iniciar sesión</a>
+    </div>
+
+    <div *ngIf="authService.isLoggedIn() && (favoriteService.favorites$ | async)?.length === 0" class="favorites-empty kpet-fade-up">
+      <p>Todavía no guardaste ningún producto. Tocá el ♡ en cualquier producto de la tienda para guardarlo acá.</p>
+      <a routerLink="/" class="btn btn-kpet-primary">Ver productos</a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" *ngIf="authService.isLoggedIn()">
+      <div class="col" *ngFor="let product of (favoriteService.favorites$ | async); trackBy: trackById">
+        <div class="card h-100 product-card kpet-fade-up">
+          <div class="product-image-wrapper">
+            <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-image" loading="lazy">
+            <button type="button" class="favorite-btn active" (click)="removeFavorite(product, $event)" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+            </button>
+          </div>
+          <div class="card-body d-flex flex-column">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <div class="mt-auto">
+              <div class="price-row">
+                <ng-container *ngIf="product.onSale && product.salePrice != null; else regularPrice">
+                  <span class="price-old">Bs.{{ product.price.toFixed(2) }}</span>
+                  <span class="price-current">Bs.{{ product.salePrice.toFixed(2) }}</span>
+                </ng-container>
+                <ng-template #regularPrice>
+                  <span class="price-current">Bs.{{ product.price.toFixed(2) }}</span>
+                </ng-template>
+              </div>
+              <button class="btn btn-kpet-primary w-100 mt-2" (click)="addToCart(product)">Añadir al carrito</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

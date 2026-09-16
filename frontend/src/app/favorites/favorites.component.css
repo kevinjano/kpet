@@ -1,0 +1,125 @@
+.kpet-topbar {
+  background: var(--kpet-white);
+  border-bottom: 1px solid rgba(76, 29, 149, 0.08);
+  box-shadow: var(--kpet-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.kpet-back-link {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.kpet-back-link:hover {
+  color: var(--kpet-purple-900);
+}
+
+.favorites-page {
+  background: var(--kpet-purple-50);
+  min-height: calc(100vh - 65px);
+  padding: 2.5rem 0 3.5rem;
+}
+
+.favorites-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+  margin-bottom: 1.75rem;
+}
+
+.favorites-empty {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow-sm);
+  padding: 3rem 2rem;
+  text-align: center;
+  max-width: 480px;
+}
+
+.favorites-empty p {
+  color: var(--kpet-ink-soft);
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Product cards (mirrors home's product-card) ---------- */
+.product-card {
+  border-color: rgba(76, 29, 149, 0.08);
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--kpet-shadow-lg);
+}
+
+.product-image-wrapper {
+  position: relative;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--kpet-purple-50);
+  border-top-left-radius: var(--kpet-radius);
+  border-top-right-radius: var(--kpet-radius);
+  overflow: hidden;
+}
+
+.product-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.product-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--kpet-ink);
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.price-old {
+  text-decoration: line-through;
+  color: #A79BC4;
+  font-size: 0.85rem;
+}
+
+.price-current {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--kpet-purple-700);
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #FEE2E2;
+  color: #E11D48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--kpet-shadow-sm);
+  cursor: pointer;
+  transition: transform var(--kpet-transition);
+}
+
+.favorite-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+}

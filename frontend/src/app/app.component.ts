@@ -6,6 +6,7 @@ import { SiteSettingsService } from './services/site-settings-service';
 import { resolveImageUrl } from './constants';
 import { ModalComponent } from './modal/modal.component';
 import { WhatsappBubbleComponent } from './whatsapp-bubble/whatsapp-bubble.component';
+import { FavoriteService } from './services/favorite-service';
 
 
 @Component({
@@ -22,10 +23,13 @@ export class AppComponent implements OnInit {
 
   constructor(
     private siteSettingsService: SiteSettingsService,
+    private favoriteService: FavoriteService,
     @Inject(DOCUMENT) private document: Document,
   ) {}
 
   ngOnInit(): void {
+    this.favoriteService.loadFavorites();
+
     // Keep the browser tab icon in sync with whatever logo the admin has configured,
     // so changing it in Configuración takes effect without touching any code.
     this.siteSettingsService.getSettings().subscribe(settings => {

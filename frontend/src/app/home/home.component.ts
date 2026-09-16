@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ProductService } from '../services/product-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { CartService } from '../services/cart-service';
+import { FavoriteService } from '../services/favorite-service';
 import { AuthService } from '../services/auth-service';
 import { Product } from '../product';
 import { SiteSettings } from '../site-settings';
@@ -69,6 +70,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private productService: ProductService,
     private siteSettingsService: SiteSettingsService,
     public cartService: CartService,
+    public favoriteService: FavoriteService,
     private authService: AuthService,
     private router: Router,
   ) {}
@@ -191,6 +193,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   addToCart(product: Product): void {
     this.cartService.addToCart(product, 1);
+  }
+
+  toggleFavorite(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.favoriteService.toggleFavorite(product);
   }
 
   openProductInfo(product: Product): void {

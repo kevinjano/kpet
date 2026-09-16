@@ -537,6 +537,39 @@
   box-shadow: var(--kpet-shadow-sm);
 }
 
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--kpet-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--kpet-shadow-sm);
+  cursor: pointer;
+  transition: transform var(--kpet-transition), color var(--kpet-transition), background-color var(--kpet-transition);
+}
+
+.favorite-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+  color: #E11D48;
+}
+
+.favorite-btn.active {
+  background: #FEE2E2;
+  color: #E11D48;
+}
+
 .product-name {
   font-size: 1rem;
   font-weight: 700;

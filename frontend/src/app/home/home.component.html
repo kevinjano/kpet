@@ -42,6 +42,9 @@
       </ul>
 
       <div class="kpet-nav-actions">
+        <button class="btn btn-outline-secondary kpet-cart-btn position-relative" routerLink="/favoritos" (click)="closeMobileMenu()">
+          <span aria-hidden="true">♡</span> Favoritos
+        </button>
         <button class="btn btn-outline-secondary kpet-cart-btn position-relative" routerLink="/carrito" (click)="closeMobileMenu()">
           <span aria-hidden="true">🛒</span> Carrito
           <span *ngIf="cartItemCount > 0" class="kpet-cart-badge">{{ cartItemCount }}</span>
@@ -115,6 +118,11 @@
             <div class="product-image-placeholder">🐾</div>
           </ng-template>
           <span *ngIf="product.onSale" class="offer-badge">Oferta</span>
+          <button type="button" class="favorite-btn" [class.active]="favoriteService.isFavorite(product.id)"
+                  (click)="toggleFavorite(product, $event)"
+                  [attr.aria-label]="favoriteService.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'">
+            <svg viewBox="0 0 24 24" [attr.fill]="favoriteService.isFavorite(product.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+          </button>
         </div>
         <div class="card-body d-flex flex-column">
           <h3 class="product-name">{{ product.name }}</h3>

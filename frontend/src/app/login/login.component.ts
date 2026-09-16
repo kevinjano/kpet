@@ -5,6 +5,7 @@ import {Router, RouterLink, RouterLinkActive} from "@angular/router";
 import {AuthService} from "../services/auth-service";
 import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
+import {FavoriteService} from "../services/favorite-service";
 import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 
 
@@ -29,6 +30,7 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private siteSettingsService: SiteSettingsService,
     private modalService: ModalService,
+    private favoriteService: FavoriteService,
     private router: Router
   ) {}
 
@@ -56,6 +58,7 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(loginData.email, loginData.password).subscribe({
       next: (response) => {
+        this.favoriteService.loadFavorites();
         if (response.role === 'Admin') {
           this.router.navigate(['/admin']);
         } else {
