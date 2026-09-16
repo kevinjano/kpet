@@ -75,15 +75,26 @@
             <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Bundles JUnit 5, Mockito, AssertJ and Spring's test context support —
+             replaces the old bare junit4 + spring-boot-test combo, which had no
+             JUnit 5 runner or mocking library wired in. Logging is excluded to
+             match this project's log4j setup (see the other starters above). -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-test</artifactId>
-            <version>3.2.2</version>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- In-memory DB for @DataJpaTest repository tests — real SQL execution
+             without needing the MySQL docker container running just to test. -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
