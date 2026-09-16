@@ -23,6 +23,80 @@
   object-fit: contain;
 }
 
+/* ---------- Hero: distinct "store locator" header ---------- */
+.dist-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(200deg, var(--kpet-purple-900) 0%, var(--kpet-purple-700) 55%, var(--kpet-purple-600) 100%);
+  padding: 3rem 0 2.5rem;
+}
+
+.dist-route {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.dist-pin {
+  position: absolute;
+  font-size: 1.8rem;
+  opacity: 0.4;
+  animation: dist-pin-drop 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.dist-pin-1 { top: 18%; left: 12%; animation-delay: 0s; }
+.dist-pin-2 { top: 55%; right: 16%; font-size: 1.4rem; animation-delay: 0.8s; }
+.dist-pin-3 { top: 30%; right: 32%; font-size: 1.1rem; opacity: 0.28; animation-delay: 1.6s; }
+
+@keyframes dist-pin-drop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.dist-title {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  color: var(--kpet-white);
+  margin-bottom: 0.35rem;
+}
+
+.dist-subtitle {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 1.25rem;
+}
+
+.dist-stats {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dist-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(4px);
+  color: var(--kpet-white);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.dist-stat strong {
+  color: var(--kpet-yellow-500);
+  font-weight: 800;
+}
+
 .dist-page {
   position: relative;
   overflow: hidden;
@@ -59,6 +133,7 @@
 .dist-page > .container {
   position: relative;
   z-index: 1;
+  padding-top: 1.75rem;
 }
 
 @keyframes dist-blob-float {
@@ -101,24 +176,11 @@
   50% { transform: translateY(-12px) rotate(var(--rot, 0deg)); }
 }
 
-.dist-title {
-  position: relative;
-  z-index: 1;
-  font-weight: 800;
-  color: var(--kpet-ink);
-  margin-bottom: 0.25rem;
-}
-
-.dist-subtitle {
-  color: var(--kpet-ink-soft);
-  margin-bottom: 1.5rem;
-}
-
 .city-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-  margin-bottom: 1rem;
+  margin: 1.5rem 0 1rem;
 }
 
 .city-chip {
@@ -163,7 +225,21 @@
   color: inherit;
 }
 
+/* Cards "drop in" like a map pin dropping onto a location, instead of the
+   generic fade-up used elsewhere — a small motion signature of its own. */
+.dist-card-drop {
+  opacity: 0;
+  animation: dist-card-drop-in 620ms var(--kpet-ease) forwards;
+}
+
+@keyframes dist-card-drop-in {
+  0% { opacity: 0; transform: translateY(-26px) scale(0.94); }
+  60% { opacity: 1; transform: translateY(4px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .dist-card-image {
+  position: relative;
   height: 160px;
   background: var(--kpet-purple-50);
   display: flex;
@@ -188,21 +264,28 @@
   opacity: 0.35;
 }
 
-.dist-card-body {
-  padding: 1.25rem;
-}
-
-.dist-city-pill {
-  display: inline-block;
-  background: linear-gradient(120deg, var(--kpet-purple-600), var(--kpet-purple-700));
+.dist-card-pin {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(59, 7, 100, 0.72);
+  backdrop-filter: blur(3px);
   color: var(--kpet-white);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  padding: 0.25rem 0.75rem;
+  padding: 0.3rem 0.7rem;
   border-radius: 999px;
-  margin-bottom: 0.5rem;
+}
+
+.dist-card-body {
+  position: relative;
+  padding: 1.25rem;
+  padding-bottom: 1.6rem;
 }
 
 .dist-card-title {
@@ -223,4 +306,21 @@
   font-weight: 600;
   font-size: 0.85rem;
   margin-bottom: 0;
+}
+
+.dist-card-cta {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 0.6rem;
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 220ms var(--kpet-ease), transform 220ms var(--kpet-ease);
+}
+
+.dist-card:hover .dist-card-cta {
+  opacity: 1;
+  transform: translateX(0);
 }
