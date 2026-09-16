@@ -54,8 +54,8 @@
           <span class="fw-semibold">Total</span>
           <span class="fw-bold fs-4 total-amount">Bs.{{ total.toFixed(2) }}</span>
         </div>
-        <button class="btn btn-whatsapp w-100" (click)="checkoutOnWhatsapp()">
-          <span aria-hidden="true">💬</span> Finalizar por WhatsApp
+        <button class="btn btn-whatsapp w-100" (click)="proceedToPayment()">
+          Continuar con mi pedido
         </button>
       </div>
     </div>
@@ -67,7 +67,7 @@
 
     <ng-container *ngIf="!receiptConfirmed; else thanksBlock">
       <h2 class="payment-title">¡Ya casi terminamos!</h2>
-      <p class="payment-subtitle">Tu pedido se envió por WhatsApp. Ahora escanea el código QR y envía tu comprobante de pago por ese mismo chat.</p>
+      <p class="payment-subtitle">Escanea el código QR para pagar tu pedido. Cuando hayas pagado, tocá el botón para enviarnos el detalle de tu pedido por WhatsApp — ahí mismo adjunta tu comprobante de pago.</p>
 
       <div class="qr-wrapper" *ngIf="qrCodeUrl; else noQr">
         <img [src]="resolveImageUrl(qrCodeUrl)" alt="Código QR de pago" class="qr-image">
@@ -76,8 +76,8 @@
         <p class="text-muted">La tienda todavía no ha configurado un código QR de pago. Coordina el pago directamente por WhatsApp.</p>
       </ng-template>
 
-      <button class="btn btn-kpet-primary mt-3" (click)="confirmReceiptSent()" [disabled]="confirmingReceipt">
-        {{ confirmingReceipt ? 'Confirmando...' : 'Ya envié mi comprobante' }}
+      <button class="btn btn-whatsapp mt-3" (click)="sendReceiptOnWhatsapp()" [disabled]="confirmingReceipt">
+        <span aria-hidden="true">💬</span> {{ confirmingReceipt ? 'Enviando...' : 'Enviar comprobante por WhatsApp' }}
       </button>
     </ng-container>
 

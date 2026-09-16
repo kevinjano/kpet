@@ -17,11 +17,15 @@ import { resolveImageUrl, DEFAULT_LOGO_URL } from '../constants';
   styleUrl: './cart.component.css'
 })
 /**
- * Central store cart + checkout. Flow: build a WhatsApp message from the cart
- * contents, open wa.me, then (regardless of whether the backend call
- * succeeds — see checkoutOnWhatsapp's comment) advance to the QR payment step
- * and clear the cart. There is no "did the customer actually pay" signal here;
- * that's confirmed manually by the admin in the Pedidos screen.
+ * Central store cart + checkout. Flow: create the order, advance to the QR
+ * payment step, and clear the cart — WhatsApp is NOT opened yet at this
+ * point. Only once the customer has seen the QR and paid do they tap "Enviar
+ * comprobante por WhatsApp", which opens wa.me with the order pre-filled;
+ * they attach the payment screenshot manually once inside WhatsApp (a wa.me
+ * link can't attach a file for them). Opening WhatsApp any earlier used to
+ * cover the QR with the new tab/window before the customer had a chance to
+ * pay. There is no "did the customer actually pay" signal here; that's
+ * confirmed manually by the admin in the Pedidos screen.
  */
 export class CartComponent implements OnInit {
 
@@ -36,6 +40,11 @@ export class CartComponent implements OnInit {
   currentOrder: Order | null = null;
   receiptConfirmed = false;
   confirmingReceipt = false;
+
+  // Built once when the order is created (while items/total are still known)
+  // and reused when the customer taps "Enviar comprobante por WhatsApp" —
+  // by then the cart has already been cleared.
+  private pendingWhatsappMessage = '';
 
   constructor(
     private cartService: CartService,
@@ -82,7 +91,10 @@ export class CartComponent implements OnInit {
     this.cartService.removeFromCart(item.product.id);
   }
 
-  checkoutOnWhatsapp(): void {
+  // Step 1 (cart screen): create the order and move to the QR payment step.
+  // Does NOT open WhatsApp — that used to happen here and its new tab/window
+  // would cover the QR before the customer had a chance to pay.
+  proceedToPayment(): void {
     if (this.items.length === 0) {
       return;
     }
@@ -103,19 +115,15 @@ export class CartComponent implements OnInit {
       `${item.quantity}x ${item.product.name} - Bs.${this.lineTotal(item).toFixed(2)}`
     );
 
-    const message = [
+    this.pendingWhatsappMessage = [
       `¡Hola! Quiero hacer un pedido en ${this.storeName}:`,
       '',
       ...lines,
       '',
       `Total: Bs.${totalSnapshot.toFixed(2)}`,
       '',
-      'Gracias!'
+      'Ya realicé el pago, adjunto mi comprobante.'
     ].join('\n');
-
-    const digitsOnly = this.whatsappNumber.replace(/\D/g, '');
-    const url = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
 
     this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}).subscribe({
       next: order => {
@@ -125,15 +133,25 @@ export class CartComponent implements OnInit {
       },
       error: err => {
         console.error('Error creating order:', err);
-        // The WhatsApp message already went out; the order record is just for tracking,
-        // so a backend hiccup here shouldn't block the sale.
+        // The order record is just for tracking — a backend hiccup here
+        // shouldn't block the customer from paying and reaching out.
         this.checkoutStep = 'payment';
         this.cartService.clearCart();
       }
     });
   }
 
-  confirmReceiptSent(): void {
+  // Step 2 (QR payment screen): only now does WhatsApp open, with the order
+  // pre-filled — the customer attaches their payment screenshot manually
+  // once inside the chat, since a wa.me link can't attach a file for them.
+  sendReceiptOnWhatsapp(): void {
+    const digitsOnly = this.whatsappNumber.replace(/\D/g, '');
+    const url = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(this.pendingWhatsappMessage)}`;
+    window.open(url, '_blank');
+    this.confirmReceiptSent();
+  }
+
+  private confirmReceiptSent(): void {
     if (!this.currentOrder) {
       this.receiptConfirmed = true;
       return;
