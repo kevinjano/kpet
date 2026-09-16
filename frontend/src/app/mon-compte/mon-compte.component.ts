@@ -8,6 +8,8 @@ import {RouterLink, RouterLinkActive, Router} from "@angular/router";
 import {AuthService} from "../services/auth-service";
 import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
+import {OrderService} from "../services/order-service";
+import {Order, ORDER_STATUS_LABELS} from "../order";
 import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 
 @Component({
@@ -35,12 +37,17 @@ export class MonCompteComponent implements OnInit {
   logoUrl: string = DEFAULT_LOGO_URL;
   resolveImageUrl = resolveImageUrl;
 
+  myOrders: Order[] = [];
+  ordersLoaded = false;
+  statusLabels = ORDER_STATUS_LABELS;
+  expandedOrderIds = new Set<number>();
 
   constructor(
     private userService: UserService,
     private authService: AuthService,
     private siteSettingsService: SiteSettingsService,
     private modalService: ModalService,
+    private orderService: OrderService,
     private formBuilder: FormBuilder,
     private router: Router,
   ) {}
@@ -59,6 +66,28 @@ export class MonCompteComponent implements OnInit {
     this.siteSettingsService.getSettings().subscribe(settings => {
       this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
     });
+
+    this.orderService.getMyOrders().subscribe({
+      next: orders => {
+        this.myOrders = orders;
+        this.ordersLoaded = true;
+      },
+      error: () => {
+        this.ordersLoaded = true;
+      }
+    });
+  }
+
+  toggleOrderExpanded(orderId: number): void {
+    if (this.expandedOrderIds.has(orderId)) {
+      this.expandedOrderIds.delete(orderId);
+    } else {
+      this.expandedOrderIds.add(orderId);
+    }
+  }
+
+  isOrderExpanded(orderId: number): boolean {
+    return this.expandedOrderIds.has(orderId);
   }
 
   checkoutForm = this.formBuilder.group({

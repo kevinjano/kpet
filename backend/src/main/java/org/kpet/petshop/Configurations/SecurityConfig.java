@@ -67,6 +67,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders/create").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/orders/*/receipt-sent").permitAll()
 
+                        // --- Authenticated: a logged-in customer's own order history.
+                        // Must come before the /api/orders/* ADMIN rule below, since that
+                        // single-segment wildcard would otherwise also match "/mine" and
+                        // wrongly require ADMIN for it. ---
+                        .requestMatchers(HttpMethod.GET, "/api/orders/mine").authenticated()
+
                         // --- Admin only: catalog/content/settings management ---
                         .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/blog/**",
                                 "/api/distributors/**").hasRole("ADMIN")

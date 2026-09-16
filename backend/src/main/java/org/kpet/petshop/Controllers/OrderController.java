@@ -5,6 +5,7 @@ import org.kpet.petshop.Models.Order;
 import org.kpet.petshop.Repositories.OrderRepository;
 import org.kpet.petshop.Services.OrderService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -44,8 +45,24 @@ public class OrderController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // A logged-in customer's own order history ("Mis pedidos" in Mi Perfil).
+    // Authenticated-only (see SecurityConfig) — every Client sees just their
+    // own orders, scoped by the authenticated principal, never a client-supplied id.
+    @GetMapping(value = "/mine", produces = "application/json")
+    public List<Order> getMyOrders(Authentication authentication) {
+        Long userId = Long.valueOf(authentication.getName());
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    // Public (guest checkout never needs an account — see SecurityConfig), but
+    // if the caller happens to be logged in, the order is tagged with their id
+    // so it shows up under "Mis pedidos" later. Never trusted from the request
+    // body — always read from the authenticated principal, not client input.
     @RequestMapping(value = "/create", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+    public ResponseEntity<Order> createOrder(@RequestBody Order order, Authentication authentication) {
+        if (authentication != null) {
+            order.setUserId(Long.valueOf(authentication.getName()));
+        }
         Order saved = orderService.createOrder(order);
         return ResponseEntity.created(URI.create("/api/orders/" + saved.getId())).body(saved);
     }

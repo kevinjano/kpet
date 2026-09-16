@@ -19,6 +19,12 @@ export class OrderService {
     return this.httpClient.get<Order[]>(`${this.apiUrl}/findAll`);
   }
 
+  // The logged-in customer's own orders ("Mis pedidos" in Mi Perfil) — scoped
+  // server-side to the authenticated user, not a client-supplied id.
+  getMyOrders(): Observable<Order[]> {
+    return this.httpClient.get<Order[]>(`${this.apiUrl}/mine`);
+  }
+
   createOrder(order: Partial<Order>): Observable<Order> {
     return this.httpClient.post<Order>(`${this.apiUrl}/create`, order);
   }

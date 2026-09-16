@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ProductService } from '../services/product-service';
 import { SiteSettingsService } from '../services/site-settings-service';
@@ -19,6 +20,7 @@ import { CartToastComponent } from '../cart-toast/cart-toast.component';
   styleUrl: './home.component.css',
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
     BannerCarouselComponent,
     ProductDetailModalComponent,
@@ -33,6 +35,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   categories = PRODUCT_CATEGORIES;
   selectedCategory: string | null = null;
   showOffersOnly = false;
+  searchTerm = '';
+  sortOption: 'relevancia' | 'precio-asc' | 'precio-desc' | 'nuevos' = 'relevancia';
 
   products: Product[] = [];
   // Distinguishes "still loading" from "genuinely empty" so the "no hay
@@ -124,14 +128,39 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   get visibleProducts(): Product[] {
-    return this.products.filter(p => {
+    const term = this.searchTerm.trim().toLowerCase();
+    const filtered = this.products.filter(p => {
       const matchesCategory = !this.selectedCategory || p.category === this.selectedCategory;
       const matchesOffer = !this.showOffersOnly || p.onSale;
-      return matchesCategory && matchesOffer;
+      const matchesSearch = !term
+        || p.name.toLowerCase().includes(term)
+        || p.description.toLowerCase().includes(term);
+      return matchesCategory && matchesOffer && matchesSearch;
     });
+
+    const sorted = [...filtered];
+    switch (this.sortOption) {
+      case 'precio-asc':
+        sorted.sort((a, b) => this.effectivePrice(a) - this.effectivePrice(b));
+        break;
+      case 'precio-desc':
+        sorted.sort((a, b) => this.effectivePrice(b) - this.effectivePrice(a));
+        break;
+      case 'nuevos':
+        sorted.sort((a, b) => b.id - a.id);
+        break;
+    }
+    return sorted;
+  }
+
+  private effectivePrice(product: Product): number {
+    return product.onSale && product.salePrice != null ? product.salePrice : product.price;
   }
 
   get productsSectionTitle(): string {
+    if (this.searchTerm.trim()) {
+      return `Resultados para "${this.searchTerm.trim()}"`;
+    }
     if (this.showOffersOnly) {
       return 'Productos en oferta';
     }
@@ -142,6 +171,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return `Productos para ${this.selectedCategory}`;
     }
     return 'Productos';
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
   }
 
   selectCategory(category: string | null): void {

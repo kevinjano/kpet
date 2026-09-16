@@ -17,6 +17,7 @@ export interface Order {
   status: string;
   receiptSent: boolean;
   createdAt: string;
+  userId: number | null;
 }
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {

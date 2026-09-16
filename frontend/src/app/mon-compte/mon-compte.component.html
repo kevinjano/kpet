@@ -105,6 +105,40 @@
 
     </div>
 
+    <div class="profile-card orders-card kpet-fade-up">
+      <div class="profile-card-header">
+        <span class="profile-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        <h3>Mis pedidos</h3>
+      </div>
+
+      <div *ngIf="ordersLoaded && myOrders.length === 0" class="text-muted py-3">
+        Todavía no hiciste ningún pedido.
+      </div>
+
+      <div class="orders-list" *ngIf="myOrders.length > 0">
+        <div class="order-row" *ngFor="let order of myOrders">
+          <button type="button" class="order-row-summary" (click)="toggleOrderExpanded(order.id)">
+            <div class="order-row-main">
+              <strong>Pedido #{{ order.id }}</strong>
+              <span class="order-row-date">{{ order.createdAt | date:'d MMM y, HH:mm' }}</span>
+            </div>
+            <span class="order-status-pill" [class]="'status-' + order.status">{{ statusLabels[order.status] || order.status }}</span>
+            <span class="order-row-total">Bs.{{ order.total.toFixed(2) }}</span>
+            <span class="order-row-chevron" [class.open]="isOrderExpanded(order.id)">▾</span>
+          </button>
+
+          <div class="order-row-details" *ngIf="isOrderExpanded(order.id)">
+            <div class="order-item-line" *ngFor="let item of order.items">
+              <span>{{ item.quantity }}x {{ item.productName }}</span>
+              <span>Bs.{{ (item.unitPrice * item.quantity).toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="profile-actions-row kpet-fade-up">
       <button class="profile-action-btn profile-action-logout" type="button" (click)="openLogoutConfirm()">
         <span class="profile-action-icon">

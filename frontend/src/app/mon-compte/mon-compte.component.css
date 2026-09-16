@@ -206,3 +206,106 @@
     text-align: center;
   }
 }
+
+/* ---------- Mis pedidos ---------- */
+.orders-card {
+  margin-top: 1.5rem;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-row {
+  border: 1px solid rgba(76, 29, 149, 0.1);
+  border-radius: var(--kpet-radius);
+  overflow: hidden;
+}
+
+.order-row-summary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--kpet-purple-50);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.order-row-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.order-row-main strong {
+  color: var(--kpet-ink);
+  font-size: 0.95rem;
+}
+
+.order-row-date {
+  color: var(--kpet-ink-soft);
+  font-size: 0.78rem;
+}
+
+.order-status-pill {
+  display: inline-block;
+  padding: 0.28rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-PENDING_CONFIRMATION {
+  background: var(--kpet-yellow-100);
+  color: #92640A;
+}
+
+.status-CONFIRMED {
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+}
+
+.status-COMPLETED {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.status-CANCELLED {
+  background: #FEE2E2;
+  color: var(--kpet-danger);
+}
+
+.order-row-total {
+  font-weight: 800;
+  color: var(--kpet-purple-700);
+  white-space: nowrap;
+}
+
+.order-row-chevron {
+  color: var(--kpet-ink-soft);
+  transition: transform var(--kpet-transition);
+}
+
+.order-row-chevron.open {
+  transform: rotate(180deg);
+}
+
+.order-row-details {
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid rgba(76, 29, 149, 0.08);
+}
+
+.order-item-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: var(--kpet-ink-soft);
+  padding: 0.3rem 0;
+}

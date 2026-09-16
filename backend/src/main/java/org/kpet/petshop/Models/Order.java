@@ -50,6 +50,14 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Null for guest checkouts (the common case — see CartComponent). Set from
+    // the authenticated principal in OrderController.createOrder when the
+    // customer happened to be logged in at checkout time, purely so they can
+    // later see it under "Mis pedidos" — never required, never trusted from
+    // client input.
+    @Column(nullable = true)
+    private Long userId;
+
     public Order() {
     }
 
@@ -108,5 +116,13 @@ public class Order {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
