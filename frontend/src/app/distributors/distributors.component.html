@@ -6,9 +6,9 @@
 </nav>
 
 <header class="dist-hero">
-  <svg class="dist-route" viewBox="0 0 800 120" preserveAspectRatio="none">
-    <path d="M0,90 C150,20 250,110 400,60 C550,10 650,100 800,40" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-dasharray="2 14" stroke-linecap="round"/>
-  </svg>
+  <div class="dist-paw-trail">
+    <span class="dist-paw-track" *ngFor="let p of pawTrail; let i = index" [style.left.%]="p.left" [style.top.%]="p.top" [style.--r.deg]="p.rot" [style.animation-delay.ms]="i * 90">🐾</span>
+  </div>
   <span class="dist-pin dist-pin-1">📍</span>
   <span class="dist-pin dist-pin-2">📍</span>
   <span class="dist-pin dist-pin-3">📍</span>
@@ -47,9 +47,9 @@
           <div class="dist-card-image">
             <img *ngIf="dist.imageUrl; else distPlaceholder" [src]="resolveImageUrl(dist.imageUrl)" [alt]="dist.name">
             <ng-template #distPlaceholder><span>🏬</span></ng-template>
-            <span class="dist-card-pin">📍 {{ dist.city }}</span>
           </div>
           <div class="dist-card-body">
+            <span class="dist-card-pin">📍 {{ dist.city }}</span>
             <h2 class="dist-card-title">{{ dist.name }}</h2>
             <p class="dist-card-address" *ngIf="dist.address">{{ dist.address }}</p>
             <p class="dist-card-count">{{ dist.distributorProducts.length }} producto{{ dist.distributorProducts.length === 1 ? '' : 's' }} disponible{{ dist.distributorProducts.length === 1 ? '' : 's' }}</p>

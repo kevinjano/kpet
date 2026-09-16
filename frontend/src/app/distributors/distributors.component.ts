@@ -26,6 +26,23 @@ export class DistributorsComponent implements OnInit {
   defaultLogoUrl = DEFAULT_LOGO_URL;
   trackById = trackById;
 
+  // Fixed points (as % of the hero) tracing a gentle wandering path across the
+  // header, alternating rotation so consecutive paws read left/right like a
+  // real footprint trail rather than a repeated stamp.
+  pawTrail = [
+    { left: 3, top: 72, rot: -20 },
+    { left: 11, top: 52, rot: 12 },
+    { left: 19, top: 66, rot: -18 },
+    { left: 27, top: 40, rot: 16 },
+    { left: 36, top: 58, rot: -14 },
+    { left: 45, top: 34, rot: 20 },
+    { left: 54, top: 50, rot: -16 },
+    { left: 63, top: 28, rot: 14 },
+    { left: 72, top: 46, rot: -12 },
+    { left: 81, top: 62, rot: 18 },
+    { left: 90, top: 40, rot: -20 },
+  ];
+
   constructor(
     private distributorService: DistributorService,
     private siteSettingsService: SiteSettingsService,

@@ -10,17 +10,13 @@
 <header class="blog-hero">
   <span class="blog-hero-blob blog-hero-blob-1"></span>
   <span class="blog-hero-blob blog-hero-blob-2"></span>
-  <span class="blog-hero-paw blog-hero-paw-1">🐾</span>
-  <span class="blog-hero-paw blog-hero-paw-2">🐾</span>
   <div class="container">
     <h1 class="blog-title kpet-fade-up">Blog Kpet</h1>
-    <p class="blog-subtitle kpet-fade-up">Novedades, eventos y fotos de la familia Kpet 🐶🐱</p>
+    <p class="blog-subtitle kpet-fade-up">Novedades, eventos y fotos de la familia Kpet</p>
   </div>
 </header>
 
 <div class="blog-body">
-  <span class="blog-body-paw blog-body-paw-1">🐾</span>
-  <span class="blog-body-paw blog-body-paw-2">🐾</span>
   <div class="container mb-5">
   <div *ngIf="posts.length === 0" class="text-center text-muted py-5">
     Todavía no hay publicaciones. ¡Vuelve pronto!
@@ -31,7 +27,13 @@
       <article class="blog-card kpet-fade-up" [class.blog-card-alt]="i % 2 === 1" [style.animation-delay.ms]="i * 70">
         <div class="blog-card-image">
           <img *ngIf="post.imageUrl; else blogPlaceholder" [src]="resolveImageUrl(post.imageUrl)" [alt]="post.title">
-          <ng-template #blogPlaceholder><span>🐾</span></ng-template>
+          <ng-template #blogPlaceholder>
+            <svg class="blog-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="2"/>
+              <circle cx="8.5" cy="9.5" r="1.5"/>
+              <path d="m21 15-5-5L5 20"/>
+            </svg>
+          </ng-template>
           <span class="blog-date-badge">
             <strong>{{ (post.eventDate || post.createdAt) | date:'d' }}</strong>
             <small>{{ (post.eventDate || post.createdAt) | date:'MMM' }}</small>
