@@ -26,16 +26,21 @@ function makeProduct(overrides: Partial<Product> = {}): Product {
 describe('CartService', () => {
   let service: CartService;
   let authServiceStub: { isLoggedIn: jasmine.Spy };
+  let modalServiceStub: { confirm: jasmine.Spy; error: jasmine.Spy };
 
   beforeEach(() => {
     localStorage.clear();
     authServiceStub = { isLoggedIn: jasmine.createSpy('isLoggedIn').and.returnValue(true) };
+    modalServiceStub = {
+      confirm: jasmine.createSpy('confirm').and.returnValue(Promise.resolve(false)),
+      error: jasmine.createSpy('error').and.returnValue(Promise.resolve()),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         CartService,
         { provide: AuthService, useValue: authServiceStub },
-        { provide: ModalService, useValue: { confirm: () => Promise.resolve(false) } },
+        { provide: ModalService, useValue: modalServiceStub },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
       ],
     });
@@ -129,6 +134,37 @@ describe('CartService', () => {
     await service.addToCart(makeProduct({ id: 2 }), 3);
 
     expect(service.getItemCount()).toBe(5);
+  });
+
+  it('addToCart caps the quantity at the product\'s available stock and warns', async () => {
+    await service.addToCart(makeProduct({ stock: 5 }), 8);
+
+    expect(service.getItems()[0].quantity).toBe(5);
+    expect(modalServiceStub.error).toHaveBeenCalled();
+  });
+
+  it('addToCart adding more to an already-present item still caps at stock', async () => {
+    const product = makeProduct({ stock: 5 });
+    await service.addToCart(product, 3);
+    await service.addToCart(product, 4);
+
+    expect(service.getItems()[0].quantity).toBe(5);
+  });
+
+  it('addToCart refuses to add a product with no stock at all', async () => {
+    await service.addToCart(makeProduct({ stock: 0 }), 1);
+
+    expect(service.getItems()).toEqual([]);
+    expect(modalServiceStub.error).toHaveBeenCalled();
+  });
+
+  it('updateQuantity caps at the item\'s available stock instead of going over', async () => {
+    const product = makeProduct({ stock: 5 });
+    await service.addToCart(product, 1);
+
+    service.updateQuantity(product.id, 20);
+
+    expect(service.getItems()[0].quantity).toBe(5);
   });
 
   it('persists the cart to localStorage so a freshly constructed service picks it up', async () => {

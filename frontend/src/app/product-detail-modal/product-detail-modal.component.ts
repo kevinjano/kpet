@@ -220,7 +220,9 @@ export class ProductDetailModalComponent implements OnChanges, OnDestroy {
   }
 
   increment(): void {
-    this.quantity++;
+    if (this.quantity < (this.product.stock ?? 0)) {
+      this.quantity++;
+    }
   }
 
   decrement(): void {

@@ -36,8 +36,9 @@
             <div class="qty-control">
               <button type="button" (click)="decrement(item)">−</button>
               <span>{{ item.quantity }}</span>
-              <button type="button" (click)="increment(item)">+</button>
+              <button type="button" (click)="increment(item)" [disabled]="item.quantity >= item.product.stock">+</button>
             </div>
+            <div class="cart-stock-note" *ngIf="item.quantity >= item.product.stock">Máximo disponible</div>
           </div>
           <div class="col-subtotal fw-bold">Bs.{{ lineTotal(item).toFixed(2) }}</div>
           <div class="col-actions">
@@ -54,8 +55,8 @@
           <span class="fw-semibold">Total</span>
           <span class="fw-bold fs-4 total-amount">Bs.{{ total.toFixed(2) }}</span>
         </div>
-        <button class="btn btn-whatsapp w-100" (click)="proceedToPayment()">
-          Continuar con mi pedido
+        <button class="btn btn-whatsapp w-100" (click)="proceedToPayment()" [disabled]="placingOrder">
+          {{ placingOrder ? 'Procesando...' : 'Continuar con mi pedido' }}
         </button>
       </div>
     </div>

@@ -52,13 +52,16 @@
                   <span class="price-current">Bs.{{ product.price.toFixed(2) }}</span>
                 </ng-template>
               </div>
-              <button *ngIf="getCartQuantity(product.id) === 0" class="btn btn-kpet-primary w-100 mt-2" (click)="addToCart(product)">
+              <button *ngIf="getCartQuantity(product.id) === 0 && product.stock > 0" class="btn btn-kpet-primary w-100 mt-2" (click)="addToCart(product)">
                 Añadir al carrito
+              </button>
+              <button *ngIf="getCartQuantity(product.id) === 0 && product.stock <= 0" class="btn btn-kpet-primary w-100 mt-2" disabled>
+                Sin stock
               </button>
               <div *ngIf="getCartQuantity(product.id) > 0" class="card-qty-stepper mt-2">
                 <button type="button" (click)="decrementCartQty(product, $event)" aria-label="Quitar uno">−</button>
                 <span>{{ getCartQuantity(product.id) }}</span>
-                <button type="button" (click)="incrementCartQty(product, $event)" aria-label="Agregar uno">+</button>
+                <button type="button" (click)="incrementCartQty(product, $event)" [disabled]="getCartQuantity(product.id) >= product.stock" aria-label="Agregar uno">+</button>
               </div>
             </div>
           </div>

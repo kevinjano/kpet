@@ -113,10 +113,21 @@
   transition: transform var(--kpet-transition), background-color var(--kpet-transition);
 }
 
-.qty-control button:hover {
+.qty-control button:hover:not(:disabled) {
   background: var(--kpet-purple-600);
   color: white;
   transform: scale(1.08);
+}
+
+.qty-control button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cart-stock-note {
+  font-size: 0.72rem;
+  color: var(--kpet-ink-soft);
+  margin-top: 0.25rem;
 }
 
 .btn-remove {

@@ -41,13 +41,16 @@
           </ng-template>
         </div>
 
-        <div class="pdm-actions" *ngIf="!hideAddToCart">
+        <div class="pdm-actions" *ngIf="!hideAddToCart && product.stock > 0">
           <div class="qty-control">
             <button type="button" (click)="decrement()">−</button>
             <span>{{ quantity }}</span>
-            <button type="button" (click)="increment()">+</button>
+            <button type="button" (click)="increment()" [disabled]="quantity >= product.stock">+</button>
           </div>
           <button class="btn btn-kpet-primary flex-grow-1" (click)="addToCart()">Añadir al carrito</button>
+        </div>
+        <div class="pdm-actions" *ngIf="!hideAddToCart && product.stock <= 0">
+          <button class="btn btn-kpet-primary flex-grow-1" disabled>Sin stock</button>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ import { OrderService } from '../services/order-service';
 import { ModalService } from '../services/modal-service';
 import { CartItem } from '../cart-item';
 import { Order } from '../order';
-import { resolveImageUrl, DEFAULT_LOGO_URL } from '../constants';
+import { resolveImageUrl, extractErrorMessage, DEFAULT_LOGO_URL } from '../constants';
 
 @Component({
   selector: 'app-cart',
@@ -40,6 +40,7 @@ export class CartComponent implements OnInit {
   currentOrder: Order | null = null;
   receiptConfirmed = false;
   confirmingReceipt = false;
+  placingOrder = false;
 
   // Built once when the order is created (while items/total are still known)
   // and reused when the customer taps "Enviar comprobante por WhatsApp" —
@@ -125,18 +126,23 @@ export class CartComponent implements OnInit {
       'Ya realicé el pago, adjunto mi comprobante.'
     ].join('\n');
 
+    this.placingOrder = true;
     this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}).subscribe({
       next: order => {
+        this.placingOrder = false;
         this.currentOrder = order;
         this.checkoutStep = 'payment';
         this.cartService.clearCart();
       },
       error: err => {
-        console.error('Error creating order:', err);
-        // The order record is just for tracking — a backend hiccup here
-        // shouldn't block the customer from paying and reaching out.
-        this.checkoutStep = 'payment';
-        this.cartService.clearCart();
+        this.placingOrder = false;
+        // Unlike the old flow (which opened WhatsApp in the same click),
+        // nothing irreversible has happened yet at this point — so a
+        // rejection here (most commonly: someone ordered more than what's
+        // actually in stock right now) should stop the checkout and tell the
+        // customer, not silently wave them through to a "pedido creado"
+        // screen for an order that isn't valid.
+        this.modalService.error(extractErrorMessage(err, 'No pudimos procesar tu pedido. Intenta de nuevo.'));
       }
     });
   }

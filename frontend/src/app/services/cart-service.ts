@@ -71,15 +71,33 @@ export class CartService {
       return;
     }
 
+    const available = product.stock ?? 0;
+    if (available <= 0) {
+      this.modalService.error(`"${product.name}" no tiene stock disponible en este momento.`);
+      return;
+    }
+
     const items = [...this.cartSubject.value];
     const existing = items.find(item => item.product.id === product.id);
+    const desiredQty = (existing?.quantity ?? 0) + quantity;
+    // Capped to what's actually in stock — the authoritative check happens
+    // again server-side when the order is created (stock can change between
+    // adding to cart and checkout), this just keeps the cart honest from the
+    // start instead of only rejecting at the very end.
+    const finalQty = Math.min(desiredQty, available);
+
     if (existing) {
-      existing.quantity += quantity;
+      existing.quantity = finalQty;
     } else {
-      items.push({product, quantity});
+      items.push({product, quantity: finalQty});
     }
     this.persist(items);
-    this.cartToastService.show(`${product.name} añadido al carrito`);
+
+    if (desiredQty > available) {
+      this.modalService.error(`Solo quedan ${available} unidad${available === 1 ? '' : 'es'} disponibles de "${product.name}".`);
+    } else {
+      this.cartToastService.show(`${product.name} añadido al carrito`);
+    }
   }
 
   removeFromCart(productId: number): void {
@@ -91,9 +109,13 @@ export class CartService {
       this.removeFromCart(productId);
       return;
     }
-    const items = this.cartSubject.value.map(item =>
-      item.product.id === productId ? {...item, quantity} : item
-    );
+    const items = this.cartSubject.value.map(item => {
+      if (item.product.id !== productId) {
+        return item;
+      }
+      const available = item.product.stock ?? 0;
+      return {...item, quantity: Math.min(quantity, available)};
+    });
     this.persist(items);
   }
 

@@ -220,8 +220,14 @@
   transition: transform var(--kpet-transition), background-color var(--kpet-transition), color var(--kpet-transition);
 }
 
-.card-qty-stepper button:hover {
+.card-qty-stepper button:hover:not(:disabled) {
   background: var(--kpet-purple-600);
   color: var(--kpet-white);
   transform: scale(1.08);
+}
+
+.card-qty-stepper button:disabled {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
 }
