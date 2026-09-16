@@ -52,7 +52,7 @@
   height: 180px;
   top: 220px;
   left: -50px;
-  background: radial-gradient(circle at 30% 30%, rgba(250, 204, 21, 0.28), transparent 70%);
+  background: radial-gradient(circle at 30% 30%, var(--kpet-purple-100), transparent 70%);
   animation-delay: 1.4s;
 }
 
@@ -64,6 +64,41 @@
 @keyframes dist-blob-float {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-16px) scale(1.05); }
+}
+
+.dist-paw {
+  position: absolute;
+  font-size: 4.5rem;
+  opacity: 0.07;
+  pointer-events: none;
+  animation: dist-paw-bob 6s ease-in-out infinite;
+}
+
+.dist-paw-1 {
+  --rot: 15deg;
+  top: 8%;
+  right: 8%;
+}
+
+.dist-paw-2 {
+  --rot: -20deg;
+  top: 45%;
+  left: 3%;
+  font-size: 3rem;
+  animation-delay: 1.5s;
+}
+
+.dist-paw-3 {
+  --rot: -10deg;
+  bottom: 6%;
+  right: 15%;
+  font-size: 5.5rem;
+  animation-delay: 3s;
+}
+
+@keyframes dist-paw-bob {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-12px) rotate(var(--rot, 0deg)); }
 }
 
 .dist-title {

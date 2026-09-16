@@ -99,6 +99,37 @@
   margin-bottom: 0;
 }
 
+.blog-body {
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-body-paw {
+  position: absolute;
+  font-size: 5rem;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blog-body-paw-1 {
+  top: 1rem;
+  right: 4%;
+  transform: rotate(12deg);
+}
+
+.blog-body-paw-2 {
+  bottom: 2rem;
+  left: 4%;
+  font-size: 4rem;
+  transform: rotate(-18deg);
+}
+
+.blog-body > .container {
+  position: relative;
+  z-index: 1;
+}
+
 /* ---------- Cards ---------- */
 .blog-card {
   position: relative;

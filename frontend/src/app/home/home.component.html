@@ -136,24 +136,26 @@
       </div>
       <div class="col-lg-5 kpet-fade-up">
         <div class="social-card">
-          <h3 class="social-title">Síguenos</h3>
+          <span class="social-card-blob"></span>
+          <h3 class="social-title">Síguenos en redes</h3>
           <div class="social-links">
-            <a *ngIf="settings?.instagramUrl" [href]="settings?.instagramUrl" target="_blank" rel="noopener" class="social-link social-instagram">
+            <a *ngIf="settings?.instagramUrl" [href]="settings?.instagramUrl" target="_blank" rel="noopener" class="social-link" aria-label="Instagram" title="Instagram">
               <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
-              Instagram
             </a>
-            <a *ngIf="settings?.tiktokUrl" [href]="settings?.tiktokUrl" target="_blank" rel="noopener" class="social-link social-tiktok">
+            <a *ngIf="settings?.tiktokUrl" [href]="settings?.tiktokUrl" target="_blank" rel="noopener" class="social-link" aria-label="TikTok" title="TikTok">
               <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M16.5 2c.4 2.2 1.9 3.9 4 4.4V9.8c-1.5 0-2.9-.5-4-1.3v6.6c0 3.4-2.8 6.1-6.1 5.9-3-.1-5.4-2.6-5.4-5.7 0-3.1 2.5-5.7 5.7-5.7.3 0 .6 0 .9.1v3.4a2.5 2.5 0 1 0 1.9 2.4V2h3Z"/></svg>
-              TikTok
             </a>
-            <a *ngIf="settings?.youtubeUrl" [href]="settings?.youtubeUrl" target="_blank" rel="noopener" class="social-link social-youtube">
+            <a *ngIf="settings?.youtubeUrl" [href]="settings?.youtubeUrl" target="_blank" rel="noopener" class="social-link" aria-label="YouTube" title="YouTube">
               <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12a29 29 0 0 0-.5-5.6 3 3 0 0 0-2.1-2C17.6 4 12 4 12 4s-5.6 0-7.4.4a3 3 0 0 0-2.1 2A29 29 0 0 0 2 12a29 29 0 0 0 .5 5.6 3 3 0 0 0 2.1 2C6.4 20 12 20 12 20s5.6 0 7.4-.4a3 3 0 0 0 2.1-2A29 29 0 0 0 22 12Z"/><path d="m10 9 5 3-5 3Z" fill="currentColor"/></svg>
-              YouTube
             </a>
           </div>
           <div class="contact-links" *ngIf="settings?.contactEmail || settings?.whatsappNumber">
-            <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail" class="contact-link">✉️ {{ settings?.contactEmail }}</a>
-            <a *ngIf="settings?.whatsappNumber" [href]="'https://wa.me/' + settings?.whatsappNumber" target="_blank" rel="noopener" class="contact-link">💬 Comunícate con nosotros</a>
+            <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail" class="contact-link">
+              <span class="contact-link-icon">✉️</span> {{ settings?.contactEmail }}
+            </a>
+            <a *ngIf="settings?.whatsappNumber" [href]="'https://wa.me/' + settings?.whatsappNumber" target="_blank" rel="noopener" class="contact-link">
+              <span class="contact-link-icon">💬</span> Comunícate con nosotros
+            </a>
           </div>
         </div>
       </div>
