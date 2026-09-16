@@ -8,10 +8,12 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group mb-3">
-        <input type="email" formControlName="email" class="form-control" placeholder="Correo electrónico" autocomplete="email">
+        <label for="login-email" class="visually-hidden">Correo electrónico</label>
+        <input id="login-email" type="email" formControlName="email" class="form-control" placeholder="Correo electrónico" autocomplete="email">
       </div>
       <div class="form-group mb-4 password-field">
-        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control"
+        <label for="login-password" class="visually-hidden">Contraseña</label>
+        <input id="login-password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control"
                placeholder="Contraseña" autocomplete="current-password">
         <button type="button" class="password-toggle-btn" (click)="showPassword = !showPassword"
                 [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">

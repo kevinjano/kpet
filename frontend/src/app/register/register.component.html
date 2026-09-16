@@ -9,19 +9,24 @@
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="g-3">
 
       <div class="form-group mb-3">
-        <input type="text" formControlName="firstName" class="form-control" placeholder="Nombre">
+        <label for="register-first-name" class="visually-hidden">Nombre</label>
+        <input id="register-first-name" type="text" formControlName="firstName" class="form-control" placeholder="Nombre">
       </div>
       <div class="form-group mb-3">
-        <input type="text" formControlName="lastName" class="form-control" placeholder="Apellido">
+        <label for="register-last-name" class="visually-hidden">Apellido</label>
+        <input id="register-last-name" type="text" formControlName="lastName" class="form-control" placeholder="Apellido">
       </div>
       <div class="form-group mb-3">
-        <input type="email" formControlName="email" class="form-control" placeholder="Correo electrónico">
+        <label for="register-email" class="visually-hidden">Correo electrónico</label>
+        <input id="register-email" type="email" formControlName="email" class="form-control" placeholder="Correo electrónico">
       </div>
       <div class="form-group mb-3">
-        <input type="text" formControlName="noTel" class="form-control" placeholder="Número de teléfono">
+        <label for="register-phone" class="visually-hidden">Número de teléfono</label>
+        <input id="register-phone" type="text" formControlName="noTel" class="form-control" placeholder="Número de teléfono">
       </div>
       <div class="form-group mb-4 password-field">
-        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control" placeholder="Contraseña">
+        <label for="register-password" class="visually-hidden">Contraseña</label>
+        <input id="register-password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control" placeholder="Contraseña">
         <button type="button" class="password-toggle-btn" (click)="showPassword = !showPassword"
                 [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
           <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
