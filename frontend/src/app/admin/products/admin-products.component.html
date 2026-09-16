@@ -29,7 +29,7 @@
     <tbody>
     <tr *ngFor="let product of filteredProducts; trackBy: trackById">
       <td>
-        <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="admin-thumb">
+        <img *ngIf="product.imageUrl" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="admin-thumb" loading="lazy">
         <span *ngIf="!product.imageUrl" class="text-muted">—</span>
       </td>
       <td class="fw-semibold">{{ product.name }}</td>

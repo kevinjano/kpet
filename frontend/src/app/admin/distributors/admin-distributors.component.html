@@ -104,7 +104,7 @@
           <div class="product-check-item" *ngFor="let product of allProducts; trackBy: trackById">
             <label class="product-check-label">
               <input type="checkbox" [checked]="isSelected(product.id)" (change)="toggleProduct(product.id)">
-              <img *ngIf="product.imageUrl; else productIconPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-check-thumb">
+              <img *ngIf="product.imageUrl; else productIconPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-check-thumb" loading="lazy">
               <ng-template #productIconPlaceholder><span class="product-check-thumb product-check-thumb-placeholder">🐾</span></ng-template>
               <span class="product-check-name">{{ product.name }}</span>
             </label>

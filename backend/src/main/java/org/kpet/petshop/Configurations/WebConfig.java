@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.File;
+import java.time.Duration;
 
 /**
  * Exposes the server's local upload directory (product/blog/QR images, see
@@ -23,6 +24,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String absolutePath = new File(uploadDir).getAbsolutePath();
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + absolutePath + File.separator);
+                .addResourceLocations("file:" + absolutePath + File.separator)
+                // Every upload gets a fresh random filename (see FileStorageService),
+                // so a given URL's content never changes — safe to cache hard instead
+                // of re-fetching the same product photo on every page view.
+                .setCacheControl(org.springframework.http.CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable());
     }
 }

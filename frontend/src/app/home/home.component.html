@@ -91,7 +91,7 @@
     <div class="col" *ngFor="let product of visibleProducts; trackBy: trackById">
       <div class="card h-100 product-card kpet-fade-up">
         <div class="product-image-wrapper">
-          <img *ngIf="product.imageUrl; else imgPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-image">
+          <img *ngIf="product.imageUrl; else imgPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-image" loading="lazy">
           <ng-template #imgPlaceholder>
             <div class="product-image-placeholder">🐾</div>
           </ng-template>
