@@ -1,0 +1,209 @@
+.dash-header {
+  margin-bottom: 1.5rem;
+}
+
+.dash-header h1 {
+  font-weight: 800;
+  color: var(--kpet-ink);
+  margin-bottom: 0.15rem;
+}
+
+.dash-header p {
+  color: var(--kpet-ink-soft);
+  margin: 0;
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.1rem;
+  margin-bottom: 1.75rem;
+}
+
+.dash-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  padding: 1.25rem 1.4rem;
+}
+
+.dash-stat-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-stat-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dash-icon-revenue {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.dash-icon-pending {
+  background: var(--kpet-yellow-100);
+  color: #92640A;
+}
+
+.dash-icon-stock {
+  background: #FEE2E2;
+  color: var(--kpet-danger);
+}
+
+.dash-icon-users {
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+}
+
+.dash-stat-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--kpet-ink);
+  line-height: 1.2;
+}
+
+.dash-stat-label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--kpet-ink-soft);
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.dash-panel {
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  padding: 1.5rem;
+}
+
+.dash-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dash-panel-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--kpet-ink);
+  margin: 0;
+}
+
+.dash-panel-header a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--kpet-purple-700);
+  text-decoration: none;
+}
+
+.dash-panel-header a:hover {
+  text-decoration: underline;
+}
+
+.dash-order-row,
+.dash-top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(76, 29, 149, 0.06);
+  font-size: 0.9rem;
+}
+
+.dash-order-row:last-child,
+.dash-top-row:last-child {
+  border-bottom: none;
+}
+
+.dash-order-id {
+  font-weight: 700;
+  color: var(--kpet-ink);
+}
+
+.dash-order-total {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--kpet-purple-700);
+}
+
+.dash-top-rank {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-top-name {
+  flex: 1;
+  color: var(--kpet-ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-top-qty {
+  color: var(--kpet-ink-soft);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.dash-stock-qty {
+  margin-left: auto;
+  color: var(--kpet-danger);
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.order-status-pill {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.status-PENDING_CONFIRMATION {
+  background: var(--kpet-yellow-100);
+  color: #92640A;
+}
+
+.status-CONFIRMED {
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+}
+
+.status-COMPLETED {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.status-CANCELLED {
+  background: #FEE2E2;
+  color: var(--kpet-danger);
+}

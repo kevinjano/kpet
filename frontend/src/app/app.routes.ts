@@ -28,7 +28,8 @@ export const routes: Routes = [
         path: 'admin',
         loadComponent: () => import('./admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
         children: [
-            {path: '', loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent), canActivate: [AuthGuard], data: {role: 'Admin'}},
+            {path: '', loadComponent: () => import('./admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent), canActivate: [AuthGuard], data: {role: 'Admin'}},
+            {path: 'usuarios', loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent), canActivate: [AuthGuard], data: {role: 'Admin'}},
             {path: 'productos', loadComponent: () => import('./admin/products/admin-products.component').then(m => m.AdminProductsComponent), canActivate: [AuthGuard], data: {role: 'Admin'}},
             {path: 'configuracion', loadComponent: () => import('./admin/site-settings/admin-site-settings.component').then(m => m.AdminSiteSettingsComponent), canActivate: [AuthGuard], data: {role: 'Admin'}},
             {path: 'blog', loadComponent: () => import('./admin/blog/admin-blog.component').then(m => m.AdminBlogComponent), canActivate: [AuthGuard], data: {role: 'Admin'}},

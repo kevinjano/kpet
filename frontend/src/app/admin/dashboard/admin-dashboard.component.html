@@ -1,0 +1,85 @@
+<div class="dash-header kpet-fade-up">
+  <h1>Inicio</h1>
+  <p>Un vistazo rápido a cómo va la tienda.</p>
+</div>
+
+<div class="dash-stats kpet-fade-up">
+  <div class="dash-stat-card">
+    <span class="dash-stat-icon dash-icon-revenue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </span>
+    <div>
+      <span class="dash-stat-value">Bs.{{ totalRevenue.toFixed(2) }}</span>
+      <span class="dash-stat-label">Ventas confirmadas</span>
+    </div>
+  </div>
+
+  <div class="dash-stat-card">
+    <span class="dash-stat-icon dash-icon-pending">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    </span>
+    <div>
+      <span class="dash-stat-value">{{ pendingOrdersCount }}</span>
+      <span class="dash-stat-label">Pedidos pendientes</span>
+    </div>
+  </div>
+
+  <div class="dash-stat-card">
+    <span class="dash-stat-icon dash-icon-stock">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </span>
+    <div>
+      <span class="dash-stat-value">{{ lowStockProducts.length }}</span>
+      <span class="dash-stat-label">Productos con stock bajo</span>
+    </div>
+  </div>
+
+  <div class="dash-stat-card">
+    <span class="dash-stat-icon dash-icon-users">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </span>
+    <div>
+      <span class="dash-stat-value">{{ usersCount }}</span>
+      <span class="dash-stat-label">Usuarios registrados</span>
+    </div>
+  </div>
+</div>
+
+<div class="dash-grid">
+  <div class="dash-panel kpet-fade-up">
+    <div class="dash-panel-header">
+      <h3>Pedidos recientes</h3>
+      <a routerLink="/admin/pedidos">Ver todos →</a>
+    </div>
+    <div *ngIf="loaded && recentOrders.length === 0" class="text-muted py-3">Todavía no hay pedidos.</div>
+    <div class="dash-order-row" *ngFor="let order of recentOrders; trackBy: trackById">
+      <span class="dash-order-id">#{{ order.id }}</span>
+      <span class="order-status-pill" [class]="'status-' + order.status">{{ statusLabels[order.status] || order.status }}</span>
+      <span class="dash-order-total">Bs.{{ order.total.toFixed(2) }}</span>
+    </div>
+  </div>
+
+  <div class="dash-panel kpet-fade-up">
+    <div class="dash-panel-header">
+      <h3>Productos más vendidos</h3>
+      <a routerLink="/admin/productos">Ver catálogo →</a>
+    </div>
+    <div *ngIf="loaded && topProducts.length === 0" class="text-muted py-3">Todavía no hay ventas confirmadas.</div>
+    <div class="dash-top-row" *ngFor="let row of topProducts; let i = index">
+      <span class="dash-top-rank">{{ i + 1 }}</span>
+      <span class="dash-top-name">{{ row.name }}</span>
+      <span class="dash-top-qty">{{ row.quantitySold }} vendidos</span>
+    </div>
+  </div>
+
+  <div class="dash-panel kpet-fade-up" *ngIf="lowStockProducts.length > 0">
+    <div class="dash-panel-header">
+      <h3>⚠️ Stock bajo</h3>
+      <a routerLink="/admin/productos">Revisar →</a>
+    </div>
+    <div class="dash-top-row" *ngFor="let product of lowStockProducts">
+      <span class="dash-top-name">{{ product.name }}</span>
+      <span class="dash-stock-qty">{{ product.stock }} unidades</span>
+    </div>
+  </div>
+</div>
