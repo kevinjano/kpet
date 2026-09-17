@@ -89,6 +89,7 @@
   padding: 3rem 2rem;
   text-align: center;
   max-width: 480px;
+  margin: 0 auto;
 }
 
 .favorites-empty-icon {

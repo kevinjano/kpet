@@ -9,6 +9,7 @@ import { Order, ORDER_STATUS_LABELS, ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRME
 import { Product } from '../../product';
 import { RatingSummary } from '../../review';
 import { trackById, LOW_STOCK_THRESHOLD } from '../../constants';
+import { ModalService } from '../../services/modal-service';
 
 // Recent orders are refetched on this interval so "Pedidos recientes" and the
 // sales chart reflect new orders without the admin needing to reload the page.
@@ -99,18 +100,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private userService: UserService,
     private reviewService: ReviewService,
+    private modalService: ModalService,
   ) {}
 
   ngOnInit(): void {
     this.loadOrders();
-    this.productService.getProducts().subscribe(products => {
-      this.products = products;
+    this.productService.getProducts().subscribe({
+      next: products => this.products = products,
+      error: () => this.modalService.error('No se pudieron cargar los productos. Recargá la página.'),
     });
-    this.userService.getUsers().subscribe(users => {
-      this.usersCount = users.length;
+    this.userService.getUsers().subscribe({
+      next: users => this.usersCount = users.length,
+      error: () => this.modalService.error('No se pudo cargar el número de usuarios. Recargá la página.'),
     });
-    this.reviewService.getRatingSummary().subscribe(summaries => {
-      this.ratingSummaries = summaries;
+    this.reviewService.getRatingSummary().subscribe({
+      next: summaries => this.ratingSummaries = summaries,
+      error: () => {},
     });
 
     this.refreshHandle = setInterval(() => this.loadOrders(), ORDERS_REFRESH_MS);
@@ -122,11 +127,25 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Only surfaces one error modal for the periodic refresh (every
+  // ORDERS_REFRESH_MS) even if it keeps failing — otherwise a dropped
+  // connection would pop a new modal every 25s.
+  private orderLoadErrorShown = false;
+
   private loadOrders(): void {
-    this.orderService.getOrders().subscribe(orders => {
-      this.orders = orders;
-      this.loaded = true;
-      this.refreshChartData();
+    this.orderService.getOrders().subscribe({
+      next: orders => {
+        this.orders = orders;
+        this.loaded = true;
+        this.orderLoadErrorShown = false;
+        this.refreshChartData();
+      },
+      error: () => {
+        if (!this.orderLoadErrorShown) {
+          this.orderLoadErrorShown = true;
+          this.modalService.error('No se pudieron cargar los pedidos. Recargá la página.');
+        }
+      },
     });
   }
 
