@@ -108,8 +108,13 @@
     </div>
 
     <div *ngIf="activeOrdersTab === 'history'">
+      <div class="history-toolbar">
+        <app-filter-dropdown [options]="historyRangeOptions" [(value)]="historyRangeFilter"></app-filter-dropdown>
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="exportOrdersCsv()">⬇ Descargar Excel del mes</button>
+      </div>
+
       <div *ngIf="historyOrders.length === 0" class="text-center text-muted py-4 orders-column-empty">
-        Todavía no hay pedidos finalizados.
+        Todavía no hay pedidos finalizados{{ historyRangeFilter !== 'all' ? ' en este rango' : '' }}.
       </div>
 
       <app-admin-table *ngIf="historyOrders.length > 0">

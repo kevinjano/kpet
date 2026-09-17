@@ -131,6 +131,15 @@
   font-weight: 600;
 }
 
+/* ---------- Historial: range filter + CSV export ---------- */
+.history-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 /* ---------- Pendientes / Historial pill switch ---------- */
 .orders-tab-switch {
   position: relative;

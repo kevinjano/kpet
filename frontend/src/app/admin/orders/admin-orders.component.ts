@@ -62,6 +62,19 @@ export class AdminOrdersComponent implements OnInit {
     ];
   }
 
+  // "Historial" date-range filter — separate from the CSV export below
+  // (that one's always "this calendar month", this is just what's shown on
+  // screen). Plain string (not a union literal) so FilterDropdownComponent's
+  // (valueChange)="historyRangeFilter = $event" two-way binding type-checks —
+  // same reasoning as CategoryFilterValue in AdminProductsComponent.
+  historyRangeFilter = 'all';
+  historyRangeOptions = [
+    { value: 'all', label: 'Todo el historial' },
+    { value: 'day', label: 'Hoy' },
+    { value: 'week', label: 'Esta semana' },
+    { value: 'month', label: 'Este mes' },
+  ];
+
   constructor(
     private orderService: OrderService,
     private distributorService: DistributorService,
@@ -97,9 +110,39 @@ export class AdminOrdersComponent implements OnInit {
     return this.filteredOrders.filter(o => o.status === this.STATUS_PENDING || o.status === this.STATUS_CONFIRMED);
   }
 
-  // "Historial" = resolved either way (Finalizado or Cancelado) — read-only from here on.
+  // "Historial" = resolved either way (Finalizado or Cancelado) — read-only
+  // from here on. Also narrowed by historyRangeFilter (día/semana/mes),
+  // independent of the status/search filter bar above.
   get historyOrders(): Order[] {
-    return this.filteredOrders.filter(o => o.status === this.STATUS_COMPLETED || o.status === this.STATUS_CANCELLED);
+    const resolved = this.filteredOrders.filter(o => o.status === this.STATUS_COMPLETED || o.status === this.STATUS_CANCELLED);
+    if (this.historyRangeFilter === 'all') {
+      return resolved;
+    }
+    return resolved.filter(o => this.isWithinHistoryRange(new Date(o.createdAt)));
+  }
+
+  private isWithinHistoryRange(date: Date): boolean {
+    const now = new Date();
+    if (this.historyRangeFilter === 'day') {
+      return date.toDateString() === now.toDateString();
+    }
+    if (this.historyRangeFilter === 'week') {
+      return this.startOfWeek(date).toDateString() === this.startOfWeek(now).toDateString();
+    }
+    if (this.historyRangeFilter === 'month') {
+      return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+    }
+    return true;
+  }
+
+  // Monday of the week containing the given date, at midnight — same
+  // definition as the dashboard's sales-by-week chart.
+  private startOfWeek(d: Date): Date {
+    const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const day = date.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    date.setDate(date.getDate() + diff);
+    return date;
   }
 
   // Only "Historial" is paginated — it only grows over time, whereas
@@ -153,6 +196,22 @@ export class AdminOrdersComponent implements OnInit {
   loadOrders(): void {
     this.orderService.getOrders().subscribe(data => {
       this.orders = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    });
+  }
+
+  exportOrdersCsv(): void {
+    this.orderService.exportOrdersCsv().subscribe({
+      next: blob => {
+        const now = new Date();
+        const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pedidos-${month}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => this.modalService.error('Error al exportar el historial de pedidos.')
     });
   }
 
