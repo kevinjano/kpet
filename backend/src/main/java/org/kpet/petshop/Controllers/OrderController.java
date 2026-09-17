@@ -2,6 +2,7 @@ package org.kpet.petshop.Controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.kpet.petshop.Models.Order;
+import org.kpet.petshop.Models.OrderItem;
 import org.kpet.petshop.Repositories.OrderRepository;
 import org.kpet.petshop.Services.OrderService;
 import org.kpet.petshop.Util.CsvWriter;
@@ -18,8 +19,8 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * REST surface for the order workflow. createOrder() is called right after the
@@ -48,13 +49,29 @@ public class OrderController {
     }
 
     private static final List<String> ORDER_CSV_HEADERS = List.of(
-            "id", "fecha", "estado", "total", "productos", "comprobanteEnviado");
+            "N° de pedido", "Fecha", "Estado", "Producto", "Cantidad",
+            "Precio unitario (Bs.)", "Subtotal (Bs.)", "Total del pedido (Bs.)", "Comprobante enviado");
+
+    private static final Map<String, String> STATUS_LABELS_ES = Map.of(
+            Order.PENDING_CONFIRMATION, "Pendiente a confirmar",
+            Order.CONFIRMED, "Confirmado",
+            Order.COMPLETED, "Finalizado",
+            Order.CANCELLED, "Cancelado"
+    );
 
     // Admin only (see SecurityConfig — "/export" is a single path segment
     // under /api/orders/**, already covered by the existing ADMIN-only
     // GET .../"/api/orders/*" rule, same as /api/products/export). Always
     // the current calendar month — "descargar el historial del mes" — not a
     // date range picker, so this stays a one-click download.
+    //
+    // One row per order ITEM rather than cramming every product into one
+    // cell — Excel can only split a cell into columns along one delimiter,
+    // so a "2x Bofe; 1x Traquea" cell reads as a single blob, not separate
+    // values. Semicolon-delimited (see CsvWriter) since a comma-delimited
+    // file opens as one giant column A on Excel set to a Spanish locale, and
+    // a UTF-8 BOM up front so accented headers/values don't show as mojibake
+    // when Excel opens the file directly instead of through an import wizard.
     @GetMapping("/export")
     public ResponseEntity<String> exportOrders() {
         YearMonth currentMonth = YearMonth.now();
@@ -66,21 +83,39 @@ public class OrderController {
                 .sorted(Comparator.comparing(Order::getCreatedAt))
                 .toList();
 
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         StringBuilder csv = new StringBuilder();
-        csv.append(String.join(",", ORDER_CSV_HEADERS)).append("\n");
+        csv.append('﻿');
+        csv.append(CsvWriter.row(';', ORDER_CSV_HEADERS.toArray(new String[0]))).append("\n");
+
         for (Order o : orders) {
-            String productos = o.getItems().stream()
-                    .map(item -> item.getQuantity() + "x " + item.getProductName())
-                    .collect(Collectors.joining("; "));
-            csv.append(CsvWriter.row(
-                    String.valueOf(o.getId()),
-                    o.getCreatedAt().format(dateFormat),
-                    o.getStatus(),
-                    String.valueOf(o.getTotal()),
-                    productos,
-                    String.valueOf(o.isReceiptSent())
-            )).append("\n");
+            String fecha = o.getCreatedAt().format(dateFormat);
+            String estado = STATUS_LABELS_ES.getOrDefault(o.getStatus(), o.getStatus());
+            String comprobante = o.isReceiptSent() ? "Sí" : "No";
+            String total = formatAmount(o.getTotal());
+
+            if (o.getItems().isEmpty()) {
+                csv.append(CsvWriter.row(';',
+                        String.valueOf(o.getId()), fecha, estado, "", "", "", "", total, comprobante
+                )).append("\n");
+                continue;
+            }
+
+            for (OrderItem item : o.getItems()) {
+                double unitPrice = item.getUnitPrice() != null ? item.getUnitPrice() : 0;
+                int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
+                csv.append(CsvWriter.row(';',
+                        String.valueOf(o.getId()),
+                        fecha,
+                        estado,
+                        item.getProductName(),
+                        String.valueOf(quantity),
+                        formatAmount(unitPrice),
+                        formatAmount(unitPrice * quantity),
+                        total,
+                        comprobante
+                )).append("\n");
+            }
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -90,6 +125,10 @@ public class OrderController {
                 .headers(headers)
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(csv.toString());
+    }
+
+    private String formatAmount(double amount) {
+        return String.format(Locale.US, "%.2f", amount);
     }
 
     @GetMapping("/{id}")
