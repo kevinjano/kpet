@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.kpet.petshop.Models.Product;
 import org.kpet.petshop.Repositories.ProductRepository;
 import org.kpet.petshop.Services.ProductService;
+import org.kpet.petshop.Util.CsvWriter;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -92,7 +93,7 @@ public class ProductController {
         StringBuilder csv = new StringBuilder();
         csv.append(String.join(",", CSV_HEADERS)).append("\n");
         for (Product p : products) {
-            csv.append(csvRow(
+            csv.append(CsvWriter.row(
                     String.valueOf(p.getId()),
                     p.getName(),
                     p.getDescription(),
@@ -111,18 +112,6 @@ public class ProductController {
                 .headers(headers)
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(csv.toString());
-    }
-
-    private String csvRow(String... fields) {
-        List<String> escaped = new ArrayList<>();
-        for (String field : fields) {
-            String value = field == null ? "" : field;
-            if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-                value = "\"" + value.replace("\"", "\"\"") + "\"";
-            }
-            escaped.add(value);
-        }
-        return String.join(",", escaped);
     }
 
     public record ImportResult(int created, int updated, List<String> errors) {

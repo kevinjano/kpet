@@ -36,4 +36,10 @@ export class OrderService {
   updateStatus(id: number, status: string): Observable<Order> {
     return this.httpClient.put<Order>(`${this.apiUrl}/${id}/status`, {status});
   }
+
+  // Blob response so the caller can trigger a browser download — a plain
+  // <a href> can't carry the Authorization header this admin-only endpoint needs.
+  exportOrdersCsv(): Observable<Blob> {
+    return this.httpClient.get(`${this.apiUrl}/export`, { responseType: 'blob' });
+  }
 }

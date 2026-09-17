@@ -4,13 +4,22 @@ import jakarta.persistence.EntityNotFoundException;
 import org.kpet.petshop.Models.Order;
 import org.kpet.petshop.Repositories.OrderRepository;
 import org.kpet.petshop.Services.OrderService;
+import org.kpet.petshop.Util.CsvWriter;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST surface for the order workflow. createOrder() is called right after the
@@ -36,6 +45,51 @@ public class OrderController {
     @GetMapping(value = "/findAll", produces = "application/json")
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    private static final List<String> ORDER_CSV_HEADERS = List.of(
+            "id", "fecha", "estado", "total", "productos", "comprobanteEnviado");
+
+    // Admin only (see SecurityConfig — "/export" is a single path segment
+    // under /api/orders/**, already covered by the existing ADMIN-only
+    // GET .../"/api/orders/*" rule, same as /api/products/export). Always
+    // the current calendar month — "descargar el historial del mes" — not a
+    // date range picker, so this stays a one-click download.
+    @GetMapping("/export")
+    public ResponseEntity<String> exportOrders() {
+        YearMonth currentMonth = YearMonth.now();
+        LocalDateTime start = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        List<Order> orders = orderRepository.findAll().stream()
+                .filter(o -> o.getCreatedAt() != null && !o.getCreatedAt().isBefore(start) && !o.getCreatedAt().isAfter(end))
+                .sorted(Comparator.comparing(Order::getCreatedAt))
+                .toList();
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        StringBuilder csv = new StringBuilder();
+        csv.append(String.join(",", ORDER_CSV_HEADERS)).append("\n");
+        for (Order o : orders) {
+            String productos = o.getItems().stream()
+                    .map(item -> item.getQuantity() + "x " + item.getProductName())
+                    .collect(Collectors.joining("; "));
+            csv.append(CsvWriter.row(
+                    String.valueOf(o.getId()),
+                    o.getCreatedAt().format(dateFormat),
+                    o.getStatus(),
+                    String.valueOf(o.getTotal()),
+                    productos,
+                    String.valueOf(o.isReceiptSent())
+            )).append("\n");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename("pedidos-" + currentMonth + ".csv").build());
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csv.toString());
     }
 
     @GetMapping("/{id}")
