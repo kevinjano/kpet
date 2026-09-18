@@ -5,16 +5,23 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
-// Mirrors the old FileStorageService: extension allow-list backed by an
-// actual magic-byte sniff (never trust the extension alone), a fully random
-// UUID filename (no path traversal / overwrite / collision risk), and a
-// downscale to at most 1600px on the longest side, format preserved (so PNG
-// logos/QR codes keep transparency) — falls back to storing the original
-// bytes untouched if GD can't decode/re-encode the format.
+// Mirrors the old FileStorageService's extension allow-list backed by an
+// actual magic-byte sniff (never trust the extension alone) and a fully
+// random UUID filename (no path traversal / overwrite / collision risk).
+//
+// Unlike the old version, every upload is now converted to WebP (regardless
+// of what was uploaded) and downscaled to at most 1600px on the longest
+// side — WebP at quality 85 is visually near-lossless but a fraction of the
+// size of the equivalent PNG/JPG, which matters a lot on the cheap shared
+// hosting plan this is deploying to (less disk, less bandwidth per page
+// load). Transparency (PNG logos, QR codes) is preserved. If GD can't
+// decode the upload for some reason, it falls back to storing the original
+// bytes untouched rather than failing the upload outright.
 class FileStorageService
 {
     private const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     private const MAX_DIMENSION = 1600;
+    private const WEBP_QUALITY = 85;
 
     public function store(UploadedFile $file): string
     {
@@ -37,11 +44,10 @@ class FileStorageService
             mkdir($dir, 0755, true);
         }
 
-        $filename = Str::uuid()->toString() . '.' . $extension;
+        $webp = $this->convertToWebp($bytes);
+        $filename = Str::uuid()->toString() . ($webp ? '.webp' : '.' . $extension);
         $destination = $dir . DIRECTORY_SEPARATOR . $filename;
-
-        $resized = $this->resizeIfNeeded($bytes, $extension);
-        file_put_contents($destination, $resized ?? $bytes);
+        file_put_contents($destination, $webp ?? $bytes);
 
         return '/uploads/' . $filename;
     }
@@ -55,7 +61,7 @@ class FileStorageService
         return false;
     }
 
-    private function resizeIfNeeded(string $bytes, string $extension): ?string
+    private function convertToWebp(string $bytes): ?string
     {
         $image = @imagecreatefromstring($bytes);
         if ($image === false) {
@@ -64,33 +70,27 @@ class FileStorageService
 
         $width = imagesx($image);
         $height = imagesy($image);
-        if ($width <= self::MAX_DIMENSION && $height <= self::MAX_DIMENSION) {
-            imagedestroy($image);
-            return null;
-        }
+        if ($width > self::MAX_DIMENSION || $height > self::MAX_DIMENSION) {
+            $scale = self::MAX_DIMENSION / max($width, $height);
+            $newWidth = (int) round($width * $scale);
+            $newHeight = (int) round($height * $scale);
 
-        $scale = self::MAX_DIMENSION / max($width, $height);
-        $newWidth = (int) round($width * $scale);
-        $newHeight = (int) round($height * $scale);
-
-        $resized = imagecreatetruecolor($newWidth, $newHeight);
-        if (in_array($extension, ['png', 'gif'], true)) {
+            $resized = imagecreatetruecolor($newWidth, $newHeight);
             imagealphablending($resized, false);
             imagesavealpha($resized, true);
+            imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagedestroy($image);
+            $image = $resized;
+        } else {
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
         }
-        imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-        imagedestroy($image);
 
         ob_start();
-        match ($extension) {
-            'png' => imagepng($resized),
-            'gif' => imagegif($resized),
-            'webp' => imagewebp($resized),
-            default => imagejpeg($resized, null, 90),
-        };
+        $ok = imagewebp($image, null, self::WEBP_QUALITY);
         $out = ob_get_clean();
-        imagedestroy($resized);
+        imagedestroy($image);
 
-        return $out ?: null;
+        return $ok && $out ? $out : null;
     }
 }
