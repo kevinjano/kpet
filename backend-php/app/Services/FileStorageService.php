@@ -61,7 +61,9 @@ class FileStorageService
         return false;
     }
 
-    private function convertToWebp(string $bytes): ?string
+    // Exposed for the one-off kpet:images-to-webp console command, which
+    // re-runs this exact same conversion against files already on disk.
+    public function convertToWebp(string $bytes): ?string
     {
         $image = @imagecreatefromstring($bytes);
         if ($image === false) {
