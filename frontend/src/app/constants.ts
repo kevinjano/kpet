@@ -1,7 +1,7 @@
 // Hardcoded rather than environment.ts because this project doesn't use Angular's
 // environment file setup — update this (and the backend's server.port) together
 // whenever the API's port changes.
-export const API_ORIGIN = 'http://localhost:8090';
+export const API_ORIGIN = 'http://localhost:8091';
 
 // Fixed category list shared by every category <select>/filter across the app
 // (storefront nav, admin product form + filter). Not a string enum since it's
