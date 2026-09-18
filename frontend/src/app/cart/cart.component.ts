@@ -42,6 +42,12 @@ export class CartComponent implements OnInit {
   confirmingReceipt = false;
   placingOrder = false;
 
+  // Guards proceedToPayment() against firing before the settings fetch below
+  // resolves — without this, a slow connection could hit the "whatsappNumber
+  // not configured" check purely because it hasn't loaded yet, not because
+  // it's actually missing.
+  settingsLoaded = false;
+
   // Built once when the order is created (while items/total are still known)
   // and reused when the customer taps "Enviar comprobante por WhatsApp" —
   // by then the cart has already been cleared.
@@ -61,6 +67,7 @@ export class CartComponent implements OnInit {
       this.whatsappNumber = settings.whatsappNumber || '';
       this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
       this.qrCodeUrl = settings.qrCodeUrl;
+      this.settingsLoaded = true;
     });
   }
 
@@ -96,7 +103,7 @@ export class CartComponent implements OnInit {
   // Does NOT open WhatsApp — that used to happen here and its new tab/window
   // would cover the QR before the customer had a chance to pay.
   proceedToPayment(): void {
-    if (this.items.length === 0) {
+    if (this.items.length === 0 || !this.settingsLoaded) {
       return;
     }
     if (!this.whatsappNumber) {

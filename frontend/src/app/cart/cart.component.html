@@ -55,8 +55,8 @@
           <span class="fw-semibold">Total</span>
           <span class="fw-bold fs-4 total-amount">Bs.{{ total.toFixed(2) }}</span>
         </div>
-        <button class="btn btn-whatsapp w-100" (click)="proceedToPayment()" [disabled]="placingOrder">
-          {{ placingOrder ? 'Procesando...' : 'Continuar con mi pedido' }}
+        <button class="btn btn-whatsapp w-100" (click)="proceedToPayment()" [disabled]="placingOrder || !settingsLoaded">
+          {{ placingOrder ? 'Procesando...' : (settingsLoaded ? 'Continuar con mi pedido' : 'Cargando...') }}
         </button>
       </div>
     </div>

@@ -1,0 +1,22 @@
+FROM php:8.3-fpm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libzip-dev libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev unzip git \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
+    && docker-php-ext-install -j$(nproc) pdo_mysql gd zip bcmath opcache \
+    && rm -rf /var/lib/apt/lists/*
+
+# Opcache keeps compiled PHP bytecode in memory across requests — this is
+# the actual reason `php artisan serve` feels slow (it re-parses every
+# framework file on every request, opcache is what a real prod server has
+# that a raw CLI dev server doesn't) and what makes FPM close to real
+# hosting performance.
+RUN { \
+        echo 'opcache.enable=1'; \
+        echo 'opcache.enable_cli=0'; \
+        echo 'opcache.memory_consumption=128'; \
+        echo 'opcache.max_accelerated_files=20000'; \
+        echo 'opcache.validate_timestamps=0'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+
+WORKDIR /app
