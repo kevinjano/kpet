@@ -1,0 +1,10 @@
+# Apache serves files in this folder directly (see public/.htaccess's
+# "RewriteCond %{REQUEST_FILENAME} !-f" — an existing file is never routed
+# through Laravel), so CORS/cache headers have to be set here instead of in
+# a Laravel route. Only matters if the frontend ever ends up on a different
+# origin than this backend (e.g. separate subdomains) — same-origin hosting
+# needs none of this, browsers only check CORS for cross-origin requests.
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>
