@@ -60,9 +60,11 @@ export class TrabajaConNosotrosComponent implements OnInit {
     }
 
     const v = this.form.value;
+    const storeName = this.settings.storeName || 'Kpet';
     const lines = [
-      '¡Hola! Quiero postular mi petshop para trabajar como distribuidor de Kiara Petnutri:',
+      `¡Hola! Quiero postular mi petshop para trabajar como distribuidor de *${storeName}*:`,
       '',
+      '*Datos de mi negocio:*',
       `*Nombre del negocio:* ${v.storeName}`,
       `*Nombre de contacto:* ${v.contactName}`,
       `*Teléfono:* ${v.phone}`,
@@ -72,8 +74,9 @@ export class TrabajaConNosotrosComponent implements OnInit {
       lines.push(`*Dirección:* ${v.address}`);
     }
     if (v.message) {
-      lines.push('', `*Mensaje:*`, v.message);
+      lines.push('', '*Mensaje:*', v.message);
     }
+    lines.push('', 'Quedo atento/a a su respuesta. ¡Gracias!');
 
     const digitsOnly = this.settings.whatsappNumber.replace(/\D/g, '');
     const url = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(lines.join('\n'))}`;
