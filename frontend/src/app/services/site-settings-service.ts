@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, concat, of} from 'rxjs';
+import {tap} from 'rxjs/operators';
 import {SiteSettings} from '../site-settings';
 import {API_ORIGIN} from '../constants';
+
+const CACHE_KEY = 'kpet_site_settings_cache';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +17,41 @@ export class SiteSettingsService {
 
   constructor(private httpClient: HttpClient) {}
 
+  // Emits the last-known settings from localStorage first (if any) so the
+  // real logo/banners paint immediately instead of flashing the bundled
+  // default logo / empty hero placeholder while the network request is
+  // still in flight, then emits again once the fresh response arrives.
+  // Every page that reads settings goes through here, so this fixes the
+  // flicker everywhere at once instead of per-component.
   getSettings(): Observable<SiteSettings> {
-    return this.httpClient.get<SiteSettings>(this.apiUrl);
+    const cached = this.readCache();
+    const network$ = this.httpClient.get<SiteSettings>(this.apiUrl).pipe(
+      tap(settings => this.writeCache(settings))
+    );
+    return cached ? concat(of(cached), network$) : network$;
   }
 
   updateSettings(settings: Partial<SiteSettings>): Observable<SiteSettings> {
-    return this.httpClient.put<SiteSettings>(`${this.apiUrl}/update`, settings);
+    return this.httpClient.put<SiteSettings>(`${this.apiUrl}/update`, settings).pipe(
+      tap(updated => this.writeCache(updated))
+    );
+  }
+
+  private readCache(): SiteSettings | null {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeCache(settings: SiteSettings): void {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(settings));
+    } catch {
+      // Private browsing / storage disabled / quota exceeded — fine to skip,
+      // this cache is a pure optimization, never load-bearing.
+    }
   }
 }
