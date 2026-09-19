@@ -26,7 +26,10 @@
 
       <div class="col-12">
         <label class="form-label fw-semibold d-block">Banners del carrusel:</label>
-        <small class="text-muted d-block mb-2">Puedes añadir varios banners; se mostrarán en rotación automática en la página principal.</small>
+        <small class="text-muted d-block mb-2">
+          Podés agregar hasta {{ maxBanners }} banners; se mostrarán en rotación automática en la página principal.
+          <strong>{{ bannerUrls.length }}/{{ maxBanners }}</strong>
+        </small>
 
         <div class="banner-list mb-3">
           <div class="banner-item" *ngFor="let banner of bannerUrls; let i = index">
@@ -41,8 +44,9 @@
           <p *ngIf="bannerUrls.length === 0" class="text-muted mb-0">Todavía no hay banners. Añade el primero abajo.</p>
         </div>
 
-        <input type="file" accept="image/*" class="form-control" (change)="onBannerSelected($event)" [disabled]="uploadingBanner">
+        <input type="file" accept="image/*" class="form-control" (change)="onBannerSelected($event)" [disabled]="uploadingBanner || bannerUrls.length >= maxBanners">
         <small *ngIf="uploadingBanner" class="text-muted">Subiendo banner...</small>
+        <small *ngIf="bannerUrls.length >= maxBanners" class="text-muted">Llegaste al máximo de {{ maxBanners }} banners. Eliminá uno para agregar otro.</small>
       </div>
 
       <div class="col-12">

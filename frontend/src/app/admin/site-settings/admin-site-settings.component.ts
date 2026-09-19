@@ -23,6 +23,10 @@ export class AdminSiteSettingsComponent implements OnInit {
   form: FormGroup;
   resolveImageUrl = resolveImageUrl;
 
+  // Carousel reads fine with more, but the client asked for a fixed cap
+  // they can reason about ("space for 8") rather than an open-ended list.
+  readonly maxBanners = 8;
+
   currentLogoUrl: string | null = null;
   currentQrCodeUrl: string | null = null;
   bannerUrls: string[] = [];
@@ -93,6 +97,11 @@ export class AdminSiteSettingsComponent implements OnInit {
   onBannerSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) {
+      return;
+    }
+    if (this.bannerUrls.length >= this.maxBanners) {
+      input.value = '';
+      this.modalService.error(`Ya llegaste al máximo de ${this.maxBanners} banners. Eliminá uno para agregar otro.`);
       return;
     }
     const file = input.files[0];
