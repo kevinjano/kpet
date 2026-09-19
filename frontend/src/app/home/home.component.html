@@ -167,7 +167,7 @@
   </div>
 </div>
 
-<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
+<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.address || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
   <span class="about-paw about-paw-1">🐾</span>
   <span class="about-paw about-paw-2">🐾</span>
   <div class="container">
@@ -178,6 +178,8 @@
           <span class="about-underline"></span>
         </div>
         <p class="about-text" *ngIf="settings?.aboutText">{{ settings?.aboutText }}</p>
+        <p class="about-address" *ngIf="settings?.address">📍 {{ settings?.address }}</p>
+        <a *ngIf="settings?.mapUrl" [href]="settings?.mapUrl" target="_blank" rel="noopener" class="btn btn-kpet-accent btn-sm">Ver en el mapa</a>
       </div>
       <div class="col-lg-5 kpet-fade-up">
         <div class="social-card">

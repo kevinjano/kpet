@@ -8,6 +8,8 @@ export interface SiteSettings {
   bannerUrls: string[];
   whatsappNumber: string;
   aboutText: string | null;
+  address: string | null;
+  mapUrl: string | null;
   instagramUrl: string | null;
   tiktokUrl: string | null;
   youtubeUrl: string | null;

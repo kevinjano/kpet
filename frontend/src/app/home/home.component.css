@@ -801,6 +801,12 @@
   border-left: 3px solid var(--kpet-purple-200, var(--kpet-purple-100));
 }
 
+.about-address {
+  color: var(--kpet-ink-soft);
+  font-weight: 600;
+  margin: 1rem 0 0.75rem;
+}
+
 .social-card {
   position: relative;
   overflow: hidden;
