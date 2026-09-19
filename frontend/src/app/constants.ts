@@ -7,7 +7,7 @@ export const API_ORIGIN = 'http://localhost:8091';
 // (storefront nav, admin product form + filter). Not a string enum since it's
 // also directly rendered as the visible label — adding a category means adding
 // it here only, no backend migration needed since Product.category is a plain string.
-export const PRODUCT_CATEGORIES = ['Perros', 'Gatos', 'Novedades'];
+export const PRODUCT_CATEGORIES = ['Perros', 'Gatos', 'Novedades', 'Accesorios'];
 
 // Below this stock count, a product counts as "low stock" — shared by the
 // admin dashboard's KPI/alert panel, the low-stock warning on order creation,
