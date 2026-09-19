@@ -4,6 +4,7 @@ export interface BlogPost {
   title: string;
   content: string;
   imageUrl: string | null;
+  videoUrl: string | null;
   eventDate: string | null;
   published: boolean;
   createdAt: string;

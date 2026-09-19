@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BlogService } from '../../services/blog-service';
 import { UploadService } from '../../services/upload-service';
@@ -27,6 +28,9 @@ export class AdminBlogComponent implements OnInit {
   editingPostId: number | null = null;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
+  selectedVideoFile: File | null = null;
+  videoPreviewUrl: string | null = null;
+  currentVideoUrl: string | null = null;
   saving = false;
 
   constructor(
@@ -61,10 +65,27 @@ export class AdminBlogComponent implements OnInit {
     }
   }
 
+  onVideoFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedVideoFile = input.files[0];
+      this.videoPreviewUrl = URL.createObjectURL(this.selectedVideoFile);
+    }
+  }
+
+  removeVideo(): void {
+    this.selectedVideoFile = null;
+    this.videoPreviewUrl = null;
+    this.currentVideoUrl = null;
+  }
+
   editPost(post: BlogPost): void {
     this.editingPostId = post.id;
     this.previewUrl = post.imageUrl ? resolveImageUrl(post.imageUrl) : null;
     this.selectedFile = null;
+    this.currentVideoUrl = post.videoUrl;
+    this.videoPreviewUrl = post.videoUrl ? resolveImageUrl(post.videoUrl) : null;
+    this.selectedVideoFile = null;
     this.form.patchValue({
       title: post.title,
       content: post.content,
@@ -77,6 +98,9 @@ export class AdminBlogComponent implements OnInit {
     this.editingPostId = null;
     this.selectedFile = null;
     this.previewUrl = null;
+    this.selectedVideoFile = null;
+    this.videoPreviewUrl = null;
+    this.currentVideoUrl = null;
     this.form.reset({title: '', content: '', eventDate: '', published: true});
   }
 
@@ -101,46 +125,46 @@ export class AdminBlogComponent implements OnInit {
     }
     this.saving = true;
 
+    const existingPost = this.editingPostId ? this.posts.find(p => p.id === this.editingPostId) : undefined;
     const payload = {
       ...this.form.value,
       eventDate: this.form.value.eventDate || null,
-      imageUrl: this.editingPostId
-        ? this.posts.find(p => p.id === this.editingPostId)?.imageUrl ?? null
-        : null,
+      imageUrl: existingPost?.imageUrl ?? null,
+      videoUrl: this.currentVideoUrl,
     };
 
-    const afterUpload = (imageUrl: string | null) => {
-      if (imageUrl) {
-        payload.imageUrl = imageUrl;
+    const imageUpload$ = this.selectedFile ? this.uploadService.upload(this.selectedFile) : of(null);
+    const videoUpload$ = this.selectedVideoFile ? this.uploadService.uploadVideo(this.selectedVideoFile) : of(null);
+
+    forkJoin({image: imageUpload$, video: videoUpload$}).subscribe({
+      next: ({image, video}) => {
+        if (image) {
+          payload.imageUrl = image.url;
+        }
+        if (video) {
+          payload.videoUrl = video.url;
+        }
+
+        const request = this.editingPostId
+          ? this.blogService.updatePost(this.editingPostId, payload)
+          : this.blogService.createPost(payload);
+
+        request.subscribe({
+          next: () => {
+            this.saving = false;
+            this.cancelEdit();
+            this.loadPosts();
+          },
+          error: () => {
+            this.saving = false;
+            this.modalService.error('Error al guardar la publicación.');
+          }
+        });
+      },
+      error: err => {
+        this.saving = false;
+        this.modalService.error(extractErrorMessage(err, 'Error al subir el archivo.'));
       }
-
-      const request = this.editingPostId
-        ? this.blogService.updatePost(this.editingPostId, payload)
-        : this.blogService.createPost(payload);
-
-      request.subscribe({
-        next: () => {
-          this.saving = false;
-          this.cancelEdit();
-          this.loadPosts();
-        },
-        error: () => {
-          this.saving = false;
-          this.modalService.error('Error al guardar la publicación.');
-        }
-      });
-    };
-
-    if (this.selectedFile) {
-      this.uploadService.upload(this.selectedFile).subscribe({
-        next: res => afterUpload(res.url),
-        error: err => {
-          this.saving = false;
-          this.modalService.error(extractErrorMessage(err, 'Error al subir la imagen.'));
-        }
-      });
-    } else {
-      afterUpload(null);
-    }
+    });
   }
 }

@@ -17,4 +17,12 @@ export class UploadService {
     formData.append('file', file);
     return this.httpClient.post<{ url: string }>(`${API_ORIGIN}/api/upload`, formData);
   }
+
+  // Short blog videos only — separate endpoint since it allows a much
+  // bigger file (50MB vs 15MB) and skips the image-specific processing.
+  uploadVideo(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.httpClient.post<{ url: string }>(`${API_ORIGIN}/api/upload/video`, formData);
+  }
 }

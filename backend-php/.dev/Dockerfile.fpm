@@ -33,4 +33,15 @@ RUN { \
         echo 'pm.max_spare_servers = 8'; \
     } > /usr/local/etc/php-fpm.d/zz-pool-tuning.conf
 
+# Stock php.ini caps uploads at 2M/post 8M — well under even the old 15MB
+# image limit, and nowhere near enough for the short blog videos feature.
+# 60M/64M covers a few-minute clip at reasonable phone-camera quality.
+# NOTE: the real cPanel hosting will need this same bump (via its PHP
+# selector's "Options" tab, or a php.ini in the app root) — this file only
+# configures the local Docker dev environment.
+RUN { \
+        echo 'upload_max_filesize=60M'; \
+        echo 'post_max_size=64M'; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
+
 WORKDIR /app

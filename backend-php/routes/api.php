@@ -84,3 +84,4 @@ Route::put('/settings/update', [SiteSettingsController::class, 'update'])->middl
 
 // ---------- Uploads ----------
 Route::post('/upload', [UploadController::class, 'upload'])->middleware('role:Admin');
+Route::post('/upload/video', [UploadController::class, 'uploadVideo'])->middleware('role:Admin');

@@ -34,7 +34,7 @@ class BlogPostController extends Controller
 
     public function create(Request $request)
     {
-        $data = $request->only(['title', 'content', 'imageUrl', 'eventDate', 'published']);
+        $data = $request->only(['title', 'content', 'imageUrl', 'videoUrl', 'eventDate', 'published']);
         $data['createdAt'] = now();
         $post = BlogPost::create($data);
         return response()->json($post, 201, ['Location' => "/api/blog/{$post->id}"]);
@@ -46,7 +46,7 @@ class BlogPostController extends Controller
         if (!$post) {
             return response()->json(['error' => 'No encontrado'], 404);
         }
-        $post->fill($request->only(['title', 'content', 'imageUrl', 'eventDate', 'published']));
+        $post->fill($request->only(['title', 'content', 'imageUrl', 'videoUrl', 'eventDate', 'published']));
         $post->save();
         return response()->json($post);
     }

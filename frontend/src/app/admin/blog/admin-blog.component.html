@@ -5,6 +5,7 @@
     <thead>
     <tr>
       <th>Imagen</th>
+      <th>Video</th>
       <th>Título</th>
       <th>Fecha evento</th>
       <th>Publicado</th>
@@ -16,6 +17,10 @@
       <td>
         <img *ngIf="post.imageUrl" [src]="resolveImageUrl(post.imageUrl)" [alt]="post.title" class="admin-thumb">
         <span *ngIf="!post.imageUrl" class="text-muted">—</span>
+      </td>
+      <td>
+        <span *ngIf="post.videoUrl" class="role-pill role-admin">Sí</span>
+        <span *ngIf="!post.videoUrl" class="text-muted">—</span>
       </td>
       <td class="fw-semibold">{{ post.title }}</td>
       <td>{{ post.eventDate || '—' }}</td>
@@ -57,6 +62,16 @@
         <label class="form-label fw-semibold">Imagen:</label>
         <input type="file" accept="image/*" class="form-control" (change)="onFileSelected($event)">
         <img *ngIf="previewUrl" [src]="previewUrl" alt="preview" class="admin-preview mt-2">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Video corto (opcional):</label>
+        <input type="file" accept="video/mp4,video/webm,video/quicktime" class="form-control" (change)="onVideoFileSelected($event)">
+        <small class="text-muted">Formatos: MP4, WebM o MOV. Tamaño máximo 50MB.</small>
+        <div *ngIf="videoPreviewUrl" class="mt-2">
+          <video [src]="videoPreviewUrl" controls class="admin-preview"></video>
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeVideo()">Quitar video</button>
+        </div>
       </div>
 
     </div>
