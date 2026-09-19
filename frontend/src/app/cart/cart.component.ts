@@ -121,19 +121,21 @@ export class CartComponent implements OnInit {
 
     // WhatsApp renders *text* as bold and a blank line as a paragraph break,
     // so this reads as a formatted receipt instead of one run-on paragraph.
+    // No emoji here on purpose — they showed up as broken boxes in testing
+    // on both desktop and phone once sent through a wa.me link.
     const lines = this.items.map(item =>
-      `🔸 ${item.quantity}x ${item.product.name} — Bs.${this.lineTotal(item).toFixed(2)}`
+      `- ${item.quantity}x ${item.product.name} — Bs.${this.lineTotal(item).toFixed(2)}`
     );
 
     this.pendingWhatsappMessage = [
-      `🐾 ¡Hola! Quiero hacer un pedido en *${this.storeName}* 🛍️`,
+      `¡Hola! Quiero hacer un pedido en *${this.storeName}*:`,
       '',
-      '🧾 *Mi pedido:*',
+      '*Mi pedido:*',
       ...lines,
       '',
-      `💵 *Total: Bs.${totalSnapshot.toFixed(2)}*`,
+      `*Total: Bs.${totalSnapshot.toFixed(2)}*`,
       '',
-      '✅ Ya realicé el pago, adjunto mi comprobante 📎',
+      'Ya realicé el pago, adjunto mi comprobante.',
     ].join('\n');
 
     this.placingOrder = true;
