@@ -206,17 +206,28 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return this.products.filter(p => p.active).length;
   }
 
-  // Proportional breakdown of every order by status, for the status bar —
-  // percentages of the whole order count, not just the closed ones.
+  // Same día/semana/mes scope as the "Ventas confirmadas" chart above it —
+  // "today" / "this week" / "this month", not the chart's whole plotted
+  // range, so the two panels answer the same question ("how's it going
+  // right now") at the same granularity.
+  private get ordersInSelectedRange(): Order[] {
+    const today = new Date();
+    return this.orders.filter(o => this.sameBucket(today, new Date(o.createdAt), this.chartRange));
+  }
+
+  // Proportional breakdown of orders by status, for the status bar —
+  // percentages within the selected día/semana/mes range, not just the
+  // closed ones.
   get statusBreakdown(): { status: string; label: string; count: number; percent: number }[] {
-    const total = this.orders.length;
+    const scoped = this.ordersInSelectedRange;
+    const total = scoped.length;
     if (total === 0) {
       return [];
     }
     const statuses = [ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRMED, ORDER_STATUS_COMPLETED, ORDER_STATUS_CANCELLED];
     return statuses
       .map(status => {
-        const count = this.orders.filter(o => o.status === status).length;
+        const count = scoped.filter(o => o.status === status).length;
         return { status, label: this.statusLabels[status] || status, count, percent: (count / total) * 100 };
       })
       .filter(row => row.count > 0);
