@@ -65,7 +65,12 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Newer Laravel skeletons hardcode this to 'UTC' instead of reading
+    // APP_TIMEZONE from .env — that silently broke every now()/createdAt
+    // timestamp (orders, reviews, favorites, blog posts) for a Bolivia-based
+    // store, since UTC is 4 hours ahead of America/La_Paz. Restoring the
+    // env() lookup so .env's APP_TIMEZONE actually takes effect.
+    'timezone' => env('APP_TIMEZONE', 'America/La_Paz'),
 
     /*
     |--------------------------------------------------------------------------
