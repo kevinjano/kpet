@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\DistributorController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -68,6 +69,14 @@ Route::get('/blog/{id}', [BlogPostController::class, 'show']);
 Route::post('/blog/create', [BlogPostController::class, 'create'])->middleware('role:Admin');
 Route::put('/blog/update/{id}', [BlogPostController::class, 'update'])->middleware('role:Admin');
 Route::delete('/blog/delete/{id}', [BlogPostController::class, 'destroy'])->middleware('role:Admin');
+
+// ---------- FAQ ----------
+Route::get('/faq/findAll', [FaqController::class, 'findAll']);
+Route::get('/faq/{id}', [FaqController::class, 'show']);
+Route::post('/faq/create', [FaqController::class, 'create'])->middleware('role:Admin');
+Route::put('/faq/update/{id}', [FaqController::class, 'update'])->middleware('role:Admin');
+Route::put('/faq/{id}/reorder', [FaqController::class, 'reorder'])->middleware('role:Admin');
+Route::delete('/faq/delete/{id}', [FaqController::class, 'destroy'])->middleware('role:Admin');
 
 // ---------- Settings ----------
 Route::get('/settings', [SiteSettingsController::class, 'show']);

@@ -1,0 +1,58 @@
+<div class="mb-5">
+  <h2 class="admin-title pb-2">Preguntas Frecuentes</h2>
+
+  <app-admin-table>
+    <thead>
+    <tr>
+      <th>Orden</th>
+      <th>Pregunta</th>
+      <th>Publicado</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let faq of faqs; let i = index; trackBy: trackById">
+      <td class="d-flex gap-1">
+        <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="i === 0" (click)="move(faq, 'up')" aria-label="Subir">↑</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="i === faqs.length - 1" (click)="move(faq, 'down')" aria-label="Bajar">↓</button>
+      </td>
+      <td class="fw-semibold">{{ faq.question }}</td>
+      <td><span class="role-pill" [class.role-admin]="faq.published">{{ faq.published ? 'Sí' : 'No' }}</span></td>
+      <td class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="editFaq(faq)">Editar</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteFaq(faq.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </app-admin-table>
+
+  <h3 class="admin-subtitle pt-5">{{ editingFaqId ? 'Editar pregunta' : 'Nueva pregunta' }}</h3>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="admin-form-card kpet-fade-up">
+    <div class="row g-3">
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Pregunta:</label>
+        <input type="text" class="form-control" formControlName="question">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Respuesta:</label>
+        <textarea class="form-control" formControlName="answer" rows="4" placeholder="Escribe la respuesta..."></textarea>
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <input type="checkbox" id="published" class="form-check-input" formControlName="published">
+        <label for="published" class="form-check-label fw-semibold mb-0">Publicada (visible en la página)</label>
+      </div>
+
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-kpet-primary" [disabled]="form.invalid || saving">
+        {{ editingFaqId ? 'Guardar cambios' : 'Publicar' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary" *ngIf="editingFaqId" (click)="cancelEdit()">Cancelar</button>
+    </div>
+  </form>
+</div>
