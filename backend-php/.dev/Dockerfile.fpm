@@ -19,4 +19,18 @@ RUN { \
         echo 'opcache.validate_timestamps=0'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# Default pool only allows 5 concurrent workers — too few once the browser
+# (polling the admin dashboard every 25s), a curl test, and a second browser
+# tab all land at once, so requests queue up behind each other instead of
+# running in parallel. Bumped well past what this small site will ever
+# actually need concurrently, just to remove that ceiling during testing.
+RUN { \
+        echo '[www]'; \
+        echo 'pm = dynamic'; \
+        echo 'pm.max_children = 20'; \
+        echo 'pm.start_servers = 4'; \
+        echo 'pm.min_spare_servers = 2'; \
+        echo 'pm.max_spare_servers = 8'; \
+    } > /usr/local/etc/php-fpm.d/zz-pool-tuning.conf
+
 WORKDIR /app

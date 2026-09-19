@@ -66,18 +66,26 @@ class ProductController extends Controller
         return response()->noContent();
     }
 
-    private const EXPORT_HEADERS = ['id', 'name', 'description', 'price', 'salePrice', 'onSale', 'category', 'stock', 'active'];
+    // Spanish, semicolon-delimited, one value per cell — same reasoning as
+    // the orders export: Excel under a Spanish locale uses ',' as the
+    // decimal separator, so it treats ';' as the list separator, not ','.
+    // A comma-delimited file there dumps every value into column A instead
+    // of splitting it into cells. Header/boolean text stays understandable
+    // in Spanish; import() below accepts both this and the old
+    // English/comma shape so older exported files still round-trip.
+    private const EXPORT_HEADERS = ['ID', 'Nombre', 'Descripción', 'Precio (Bs.)', 'Precio de oferta (Bs.)', 'En oferta', 'Categoría', 'Stock', 'Activo'];
 
     public function export()
     {
-        $csv = CsvWriter::row(self::EXPORT_HEADERS) . "\n";
+        $csv = "\u{FEFF}" . CsvWriter::row(self::EXPORT_HEADERS, ';') . "\n";
         foreach (Product::orderBy('id')->cursor() as $p) {
             $csv .= CsvWriter::row([
-                $p->id, $p->name, $p->description, $p->price,
-                $p->salePrice === null ? '' : $p->salePrice,
-                $p->onSale ? 'true' : 'false',
-                $p->category, $p->stock, $p->active ? 'true' : 'false',
-            ]) . "\n";
+                $p->id, $p->name, $p->description,
+                number_format($p->price, 2, '.', ''),
+                $p->salePrice === null ? '' : number_format($p->salePrice, 2, '.', ''),
+                $p->onSale ? 'Sí' : 'No',
+                $p->category, $p->stock, $p->active ? 'Sí' : 'No',
+            ], ';') . "\n";
         }
 
         return response($csv, 200, [
@@ -86,33 +94,71 @@ class ProductController extends Controller
         ]);
     }
 
+    // Spanish header (current export) → internal field name; also accepts
+    // the old English headers so a file exported before this change still
+    // imports correctly.
+    private const IMPORT_HEADER_MAP = [
+        'id' => 'id',
+        'nombre' => 'name', 'name' => 'name',
+        'descripción' => 'description', 'descripcion' => 'description', 'description' => 'description',
+        'precio (bs.)' => 'price', 'precio' => 'price', 'price' => 'price',
+        'precio de oferta (bs.)' => 'salePrice', 'precio de oferta' => 'salePrice', 'saleprice' => 'salePrice',
+        'en oferta' => 'onSale', 'onsale' => 'onSale',
+        'categoría' => 'category', 'categoria' => 'category', 'category' => 'category',
+        'stock' => 'stock',
+        'activo' => 'active', 'active' => 'active',
+    ];
+
+    private static function parseBoolCell(string $value): bool
+    {
+        $value = strtolower(trim($value));
+        return $value === 'true' || $value === 'sí' || $value === 'si';
+    }
+
     public function import(Request $request)
     {
         if (!$request->hasFile('file')) {
             return response()->json(['error' => 'No se envió ningún archivo.'], 400);
         }
 
-        $handle = fopen($request->file('file')->getRealPath(), 'r');
-        $headers = fgetcsv($handle);
-        if ($headers === false) {
+        $raw = file_get_contents($request->file('file')->getRealPath());
+        $raw = preg_replace('/^\x{FEFF}/u', '', $raw); // strip UTF-8 BOM if present
+        $firstLine = strtok($raw, "\n") ?: '';
+        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+
+        $handle = fopen('php://temp', 'r+');
+        fwrite($handle, $raw);
+        rewind($handle);
+
+        $rawHeaders = fgetcsv($handle, 0, $delimiter);
+        if ($rawHeaders === false) {
             fclose($handle);
             return response()->json(['created' => 0, 'updated' => 0, 'errors' => []]);
         }
+        // Map each column to its internal field name (id/name/price/...),
+        // recognizing either the current Spanish headers or the older
+        // English ones — unrecognized columns are simply ignored.
+        $fieldByIndex = array_map(
+            fn ($h) => self::IMPORT_HEADER_MAP[strtolower(trim($h))] ?? null,
+            $rawHeaders
+        );
 
         $created = 0;
         $updated = 0;
         $errors = [];
         $rowNum = 1;
 
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
             $rowNum++;
             if (count($row) === 1 && trim($row[0]) === '') {
                 continue;
             }
             try {
                 $cols = [];
-                foreach ($headers as $i => $header) {
-                    $cols[trim($header)] = $row[$i] ?? null;
+                foreach ($fieldByIndex as $i => $field) {
+                    if ($field !== null) {
+                        $cols[$field] = $row[$i] ?? null;
+                    }
                 }
 
                 $id = $cols['id'] ?? null;
@@ -130,10 +176,10 @@ class ProductController extends Controller
                     $product->salePrice = trim((string) $cols['salePrice']) === '' ? null : (float) $cols['salePrice'];
                 }
                 if (array_key_exists('onSale', $cols) && $cols['onSale'] !== null && trim((string) $cols['onSale']) !== '') {
-                    $product->onSale = strtolower(trim($cols['onSale'])) === 'true';
+                    $product->onSale = self::parseBoolCell($cols['onSale']);
                 }
                 if (array_key_exists('active', $cols) && $cols['active'] !== null && trim((string) $cols['active']) !== '') {
-                    $product->active = strtolower(trim($cols['active'])) === 'true';
+                    $product->active = self::parseBoolCell($cols['active']);
                 }
                 if (array_key_exists('stock', $cols) && trim((string) $cols['stock']) !== '') {
                     $product->stock = (int) $cols['stock'];
