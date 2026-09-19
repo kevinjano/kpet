@@ -1,0 +1,100 @@
+.kpet-topbar {
+  background: var(--kpet-white);
+  border-bottom: 1px solid rgba(76, 29, 149, 0.08);
+  box-shadow: var(--kpet-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.kpet-back-link {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.kpet-back-link:hover {
+  color: var(--kpet-purple-900);
+}
+
+.kpet-logo-text-sm {
+  text-decoration: none;
+}
+
+/* ---------- Hero header ---------- */
+.work-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--kpet-purple-700) 0%, var(--kpet-purple-600) 45%, var(--kpet-purple-500) 75%, var(--kpet-yellow-500) 130%);
+  padding: 3rem 0 3.5rem;
+  margin-bottom: 2rem;
+}
+
+.work-hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  animation: work-blob-float 7s ease-in-out infinite;
+}
+
+.work-hero-blob-1 {
+  width: 220px;
+  height: 220px;
+  top: -90px;
+  right: 8%;
+  animation-delay: 0s;
+}
+
+.work-hero-blob-2 {
+  width: 140px;
+  height: 140px;
+  bottom: -70px;
+  left: 6%;
+  background: rgba(250, 204, 21, 0.18);
+  animation-delay: 1.2s;
+}
+
+@keyframes work-blob-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-14px) scale(1.06); }
+}
+
+.work-title {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  color: var(--kpet-white);
+  margin-bottom: 0.35rem;
+}
+
+.work-subtitle {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0;
+  max-width: 600px;
+}
+
+/* ---------- Form ---------- */
+.work-form-card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--kpet-white);
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow-sm);
+  padding: 1.75rem;
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366, #1EBE57);
+  color: white;
+  font-weight: 700;
+  box-shadow: var(--kpet-shadow-sm);
+}
+
+.btn-whatsapp:hover {
+  background: linear-gradient(135deg, #1EBE57, #17A64A);
+  color: white;
+  box-shadow: var(--kpet-shadow);
+  transform: translateY(-2px);
+}

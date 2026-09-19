@@ -1,0 +1,64 @@
+<nav class="kpet-topbar">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-back-link" routerLink="/">← Volver a la tienda</a>
+    <a class="kpet-logo-text-sm" routerLink="/">
+      <img [src]="resolveImageUrl(settings?.logoUrl) || defaultLogoUrl" alt="Kpet" height="36">
+    </a>
+  </div>
+</nav>
+
+<header class="work-hero">
+  <span class="work-hero-blob work-hero-blob-1"></span>
+  <span class="work-hero-blob work-hero-blob-2"></span>
+  <div class="container">
+    <h1 class="work-title kpet-fade-up">Trabaja con nosotros</h1>
+    <p class="work-subtitle kpet-fade-up">¿Tenés una petshop y querés vender nuestros productos? Contanos sobre tu negocio.</p>
+  </div>
+</header>
+
+<div class="work-body">
+  <div class="container mb-5">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="work-form-card kpet-fade-up">
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Nombre de tu petshop:</label>
+          <input type="text" class="form-control" formControlName="storeName">
+          <small class="text-danger" *ngIf="submitted && form.controls['storeName'].invalid">Ingresá el nombre de tu negocio.</small>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Nombre de contacto:</label>
+          <input type="text" class="form-control" formControlName="contactName">
+          <small class="text-danger" *ngIf="submitted && form.controls['contactName'].invalid">Ingresá un nombre de contacto.</small>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Teléfono / WhatsApp:</label>
+          <input type="text" class="form-control" formControlName="phone">
+          <small class="text-danger" *ngIf="submitted && form.controls['phone'].invalid">Ingresá un teléfono de contacto.</small>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Ciudad:</label>
+          <input type="text" class="form-control" formControlName="city">
+          <small class="text-danger" *ngIf="submitted && form.controls['city'].invalid">Ingresá tu ciudad.</small>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Dirección (opcional):</label>
+          <input type="text" class="form-control" formControlName="address">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Contanos sobre tu negocio (opcional):</label>
+          <textarea class="form-control" formControlName="message" rows="4" placeholder="Hace cuánto tiempo tenés tu tienda, qué productos manejás, etc."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-whatsapp w-100 mt-4">
+        Enviar postulación por WhatsApp
+      </button>
+    </form>
+  </div>
+</div>

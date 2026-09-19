@@ -16,6 +16,7 @@ export const routes: Routes = [
     {path: 'favoritos', loadComponent: () => import('./favorites/favorites.component').then(m => m.FavoritesComponent), data: {title: 'Mis favoritos'}},
     {path: 'blog', loadComponent: () => import('./blog/blog.component').then(m => m.BlogComponent), data: {title: 'Blog', description: 'Consejos, novedades y cuidados para tu mascota, directo del equipo de Kpet.'}},
     {path: 'preguntas-frecuentes', loadComponent: () => import('./faq/faq.component').then(m => m.FaqComponent), data: {title: 'Preguntas frecuentes', description: 'Respuestas a las dudas más comunes antes de comprar en Kpet.'}},
+    {path: 'trabaja-con-nosotros', loadComponent: () => import('./trabaja-con-nosotros/trabaja-con-nosotros.component').then(m => m.TrabajaConNosotrosComponent), data: {title: 'Trabaja con nosotros', description: 'Postulá tu petshop para ser distribuidor de Kpet.'}},
     {path: 'distribuidores', loadComponent: () => import('./distributors/distributors.component').then(m => m.DistributorsComponent), data: {title: 'Distribuidores', description: 'Encontrá el distribuidor Kpet más cercano para comprar en persona.'}},
     {path: 'distribuidores/:id', loadComponent: () => import('./distributor-detail/distributor-detail.component').then(m => m.DistributorDetailComponent), data: {title: 'Distribuidor'}},
     {path: 'terminos', loadComponent: () => import('./terminos/terminos.component').then(m => m.TerminosComponent), data: {title: 'Términos y condiciones', description: 'Términos y condiciones de uso de la tienda online Kpet.'}},
