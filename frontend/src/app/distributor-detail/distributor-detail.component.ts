@@ -6,7 +6,6 @@ import { Distributor } from '../distributor';
 import { Product } from '../product';
 import { resolveImageUrl, trackById } from '../constants';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
-import { ModalService } from '../services/modal-service';
 
 @Component({
   selector: 'app-distributor-detail',
@@ -17,10 +16,8 @@ import { ModalService } from '../services/modal-service';
 })
 /**
  * Public page for a single distributor: informational only (name, price, stock
- * badge per product) plus one WhatsApp CTA (contactOnWhatsapp) that opens a
- * fixed generic message to that distributor's own number. Deliberately has no
- * cart, no quantity selection, and creates no backend Order — see Distributor's
- * model comment for why.
+ * badge per product). Deliberately has no cart, no quantity selection, and
+ * creates no backend Order — see Distributor's model comment for why.
  */
 export class DistributorDetailComponent implements OnInit {
 
@@ -33,7 +30,6 @@ export class DistributorDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private distributorService: DistributorService,
-    private modalService: ModalService,
   ) {}
 
   ngOnInit(): void {
@@ -54,20 +50,5 @@ export class DistributorDetailComponent implements OnInit {
 
   closeProductInfo(): void {
     this.selectedProduct = null;
-  }
-
-  contactOnWhatsapp(): void {
-    if (!this.distributor) {
-      return;
-    }
-    if (!this.distributor.whatsappNumber) {
-      this.modalService.error('Este distribuidor todavía no configuró su número de WhatsApp.');
-      return;
-    }
-
-    const message = `Hola, me gustaría adquirir productos de ${this.distributor.name}`;
-    const digitsOnly = this.distributor.whatsappNumber.replace(/\D/g, '');
-    const url = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
   }
 }

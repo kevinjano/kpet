@@ -171,16 +171,3 @@
   color: var(--kpet-purple-700);
 }
 
-.btn-whatsapp {
-  background: linear-gradient(135deg, #25D366, #1EBE57);
-  color: white;
-  font-weight: 700;
-  box-shadow: var(--kpet-shadow-sm);
-}
-
-.btn-whatsapp:hover {
-  background: linear-gradient(135deg, #1EBE57, #17A64A);
-  color: white;
-  box-shadow: var(--kpet-shadow);
-  transform: translateY(-2px);
-}

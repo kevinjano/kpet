@@ -22,9 +22,6 @@
           <p class="dist-hero-phone" *ngIf="distributor.phone">📞 {{ distributor.phone }}</p>
           <div class="d-flex flex-wrap gap-2 mt-2">
             <a *ngIf="distributor.mapUrl" [href]="distributor.mapUrl" target="_blank" rel="noopener" class="btn btn-kpet-accent">Ver en el mapa</a>
-            <button type="button" class="btn btn-whatsapp" (click)="contactOnWhatsapp()">
-              <span aria-hidden="true">💬</span> Pedir por WhatsApp
-            </button>
           </div>
         </div>
       </div>
