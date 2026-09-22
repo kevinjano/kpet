@@ -63,6 +63,11 @@ class DistributorController extends Controller
         if (!$distributor) {
             return response()->json(['error' => 'No encontrado'], 404);
         }
+        // The production DB's FK on distributor_product_items.distributor_id
+        // (inherited from the old Hibernate schema) doesn't cascade, so the
+        // child rows must be deleted explicitly first — same as
+        // syncProductQuantities() already does on update.
+        $distributor->items()->delete();
         $distributor->delete();
         return response()->noContent();
     }

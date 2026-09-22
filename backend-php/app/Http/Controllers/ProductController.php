@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DistributorProductItem;
 use App\Models\Product;
 use App\Support\CsvWriter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -62,6 +64,12 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['error' => 'No encontrado'], 404);
         }
+        // Same reasoning as DistributorController::destroy — the production
+        // DB's FKs on product_images/distributor_product_items (inherited
+        // from the old Hibernate schema) don't cascade, so child rows must
+        // be deleted explicitly first.
+        DB::table('product_images')->where('product_id', $id)->delete();
+        DistributorProductItem::where('product_id', $id)->delete();
         $product->delete();
         return response()->noContent();
     }
