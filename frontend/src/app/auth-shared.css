@@ -70,6 +70,16 @@
   padding: 0 0.75rem;
 }
 
+.auth-forgot-link {
+  font-size: 0.85rem;
+  color: var(--kpet-ink-soft);
+  text-decoration: none;
+}
+
+.auth-forgot-link:hover {
+  text-decoration: underline;
+}
+
 .auth-footer {
   text-align: center;
   color: var(--kpet-ink-soft);

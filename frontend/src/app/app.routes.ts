@@ -12,6 +12,8 @@ export const routes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'login', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent), data: {title: 'Iniciar sesión'}},
     {path: 'register', loadComponent: () => import('./register/register.component').then(m => m.RegisterComponent), data: {title: 'Crear cuenta'}},
+    {path: 'forgot-password', loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent), data: {title: 'Recuperar contraseña'}},
+    {path: 'restablecer-contrasena', loadComponent: () => import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent), data: {title: 'Restablecer contraseña'}},
     {path: 'carrito', loadComponent: () => import('./cart/cart.component').then(m => m.CartComponent), data: {title: 'Carrito de compras'}},
     {path: 'favoritos', loadComponent: () => import('./favorites/favorites.component').then(m => m.FavoritesComponent), data: {title: 'Mis favoritos'}},
     {path: 'blog', loadComponent: () => import('./blog/blog.component').then(m => m.BlogComponent), data: {title: 'Blog', description: 'Consejos, novedades y cuidados para tu mascota, directo del equipo de Kpet.'}},

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordResetMail;
 use App\Models\User;
 use App\Services\GoogleAuthService;
 use App\Services\JwtService;
 use App\Services\LoginAttemptService;
+use App\Services\PasswordResetService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -15,6 +18,7 @@ class UserController extends Controller
         private JwtService $jwtService,
         private LoginAttemptService $loginAttemptService,
         private GoogleAuthService $googleAuthService,
+        private PasswordResetService $passwordResetService,
     ) {}
 
     private function isSelfOrAdmin(Request $request, $id): bool
@@ -121,6 +125,53 @@ class UserController extends Controller
             'role' => $user->role,
             'token' => $token,
         ]);
+    }
+
+    // Always responds the same way whether or not the email exists — avoids
+    // leaking which addresses are registered. Google-only accounts (no
+    // password) are silently skipped: nothing useful to reset, and pointing
+    // them at the Google button is the responsibility of the login error
+    // message, not this endpoint.
+    public function forgotPassword(Request $request)
+    {
+        $email = strtolower(trim((string) $request->input('email', '')));
+        $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
+
+        if ($user && $user->password !== null) {
+            $token = $this->passwordResetService->createToken($email);
+            $frontendOrigin = rtrim((string) (config('cors.allowed_origins')[0] ?? ''), '/');
+            $resetUrl = "{$frontendOrigin}/restablecer-contrasena?token={$token}";
+
+            Mail::to($email)->send(new PasswordResetMail($resetUrl, config('app.name')));
+        }
+
+        return response()->json(['message' => 'Si el correo existe, te enviamos un enlace para restablecer tu contraseña.']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $token = (string) $request->input('token', '');
+        $newPassword = (string) $request->input('newPassword', '');
+
+        if (strlen($newPassword) < 6) {
+            return response()->json(['error' => 'La contraseña debe tener al menos 6 caracteres.'], 400);
+        }
+
+        $email = $this->passwordResetService->resolveEmail($token);
+        if (!$email) {
+            return response()->json(['error' => 'El enlace no es válido o ya venció. Solicitá uno nuevo.'], 400);
+        }
+
+        $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
+        if (!$user) {
+            return response()->json(['error' => 'El enlace no es válido o ya venció. Solicitá uno nuevo.'], 400);
+        }
+
+        $user->password = Hash::make($newPassword);
+        $user->save();
+        $this->passwordResetService->consume($token);
+
+        return response()->noContent();
     }
 
     public function findAll()

@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/users/create', [UserController::class, 'create']);
 Route::post('/users/login', [UserController::class, 'login']);
 Route::post('/users/google', [UserController::class, 'google']);
+Route::post('/users/forgot-password', [UserController::class, 'forgotPassword']);
+Route::post('/users/reset-password', [UserController::class, 'resetPassword']);
 Route::get('/users/findAll', [UserController::class, 'findAll'])->middleware('role:Admin');
 Route::get('/users/{id}', [UserController::class, 'show'])->middleware('role:Admin,Client');
 Route::put('/users/update/{id}', [UserController::class, 'update'])->middleware('role:Admin,Client');

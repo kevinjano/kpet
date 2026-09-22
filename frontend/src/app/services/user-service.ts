@@ -42,4 +42,12 @@ export class UserService {
   getUserById(userId: number | undefined) {
     return this.httpClient.get<User>(`${this.apiUrl}/${userId}`);
   }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.httpClient.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.httpClient.post(`${this.apiUrl}/reset-password`, { token, newPassword });
+  }
 }
