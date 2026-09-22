@@ -12,7 +12,7 @@ class SiteSettings extends Model
 
     protected $fillable = [
         'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'aboutVideoUrl', 'address', 'mapUrl',
-        'instagramUrl', 'tiktokUrl', 'youtubeUrl', 'contactEmail', 'qrCodeUrl',
+        'instagramUrl', 'facebookUrl', 'tiktokUrl', 'youtubeUrl', 'contactEmail', 'qrCodeUrl',
     ];
 
     protected $appends = ['bannerUrls'];

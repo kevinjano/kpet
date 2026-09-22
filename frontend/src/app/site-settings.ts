@@ -12,6 +12,7 @@ export interface SiteSettings {
   address: string | null;
   mapUrl: string | null;
   instagramUrl: string | null;
+  facebookUrl: string | null;
   tiktokUrl: string | null;
   youtubeUrl: string | null;
   contactEmail: string | null;

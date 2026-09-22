@@ -167,7 +167,7 @@
   </div>
 </div>
 
-<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.aboutVideoUrl || settings?.address || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
+<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.aboutVideoUrl || settings?.address || settings?.instagramUrl || settings?.facebookUrl || settings?.tiktokUrl || settings?.youtubeUrl">
   <span class="about-paw about-paw-1">🐾</span>
   <span class="about-paw about-paw-2">🐾</span>
   <div class="container">
@@ -186,6 +186,9 @@
           <span class="social-card-blob"></span>
           <h3 class="social-title">Síguenos en redes</h3>
           <div class="social-links">
+            <a *ngIf="settings?.facebookUrl" [href]="settings?.facebookUrl" target="_blank" rel="noopener" class="social-link" aria-label="Facebook" title="Facebook">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.2l.8-4H14V7a1 1 0 0 1 1-1h3Z"/></svg>
+            </a>
             <a *ngIf="settings?.instagramUrl" [href]="settings?.instagramUrl" target="_blank" rel="noopener" class="social-link" aria-label="Instagram" title="Instagram">
               <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
             </a>
@@ -274,9 +277,12 @@
         </ul>
       </div>
 
-      <div class="col-md-4" *ngIf="settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
+      <div class="col-md-4" *ngIf="settings?.instagramUrl || settings?.facebookUrl || settings?.tiktokUrl || settings?.youtubeUrl">
         <h3 class="footer-col-title">Síguenos en:</h3>
         <div class="footer-social-links">
+          <a *ngIf="settings?.facebookUrl" [href]="settings?.facebookUrl" target="_blank" rel="noopener" class="footer-social-link" aria-label="Facebook" title="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.2l.8-4H14V7a1 1 0 0 1 1-1h3Z"/></svg>
+          </a>
           <a *ngIf="settings?.instagramUrl" [href]="settings?.instagramUrl" target="_blank" rel="noopener" class="footer-social-link" aria-label="Instagram" title="Instagram">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
           </a>
