@@ -1,3 +1,13 @@
+/* Flex column filling at least the viewport height so app-site-footer's
+   margin-top:auto (see its own CSS) pushes it to the bottom of the screen
+   instead of leaving blank page background below it when this page's content
+   is shorter than the viewport (e.g. a cart with only 1-2 items). */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .kpet-topbar {
   background: var(--kpet-white);
   border-bottom: 1px solid rgba(76, 29, 149, 0.08);
@@ -53,9 +63,16 @@
 .dist-pin {
   position: absolute;
   font-size: 1.8rem;
+  color: var(--kpet-white);
   opacity: 0.4;
   animation: dist-pin-drop 3.2s ease-in-out infinite;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.dist-pin svg {
+  display: block;
+  width: 1em;
+  height: 1em;
 }
 
 .dist-pin-1 { top: 18%; left: 12%; animation-delay: 0s; }
@@ -109,6 +126,20 @@
   font-weight: 800;
 }
 
+.dist-stat-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.chip-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  vertical-align: -2px;
+  margin-right: 0.3rem;
+}
+
 .dist-page {
   position: relative;
   overflow: hidden;
@@ -156,9 +187,16 @@
 .dist-paw {
   position: absolute;
   font-size: 4.5rem;
+  color: var(--kpet-purple-900);
   opacity: 0.07;
   pointer-events: none;
   animation: dist-paw-bob 6s ease-in-out infinite;
+}
+
+.dist-paw svg {
+  display: block;
+  width: 1em;
+  height: 1em;
 }
 
 .dist-paw-1 {
@@ -273,7 +311,14 @@
 
 .dist-card-image span {
   font-size: 3rem;
-  opacity: 0.35;
+  color: var(--kpet-purple-300, var(--kpet-purple-200, var(--kpet-purple-100)));
+  opacity: 0.5;
+}
+
+.dist-card-image span svg {
+  display: block;
+  width: 1em;
+  height: 1em;
 }
 
 .dist-card-pin {
@@ -289,6 +334,12 @@
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   margin-bottom: 0.5rem;
+}
+
+.dist-card-pin-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }
 
 .dist-card-body {

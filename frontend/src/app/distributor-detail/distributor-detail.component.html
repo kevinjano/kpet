@@ -4,6 +4,8 @@
   </div>
 </nav>
 
+<app-loading-spinner *ngIf="loading" message="Cargando distribuidor..."></app-loading-spinner>
+
 <div class="container mt-4 mb-5" *ngIf="notFound">
   <p class="text-center text-muted py-5">No encontramos este distribuidor.</p>
 </div>
@@ -18,8 +20,14 @@
         <div class="col-md-8">
           <span class="dist-city-pill">{{ distributor.city }}</span>
           <h1 class="dist-hero-title kpet-fade-up">{{ distributor.name }}</h1>
-          <p class="dist-hero-address" *ngIf="distributor.address">📍 {{ distributor.address }}</p>
-          <p class="dist-hero-phone" *ngIf="distributor.phone">📞 {{ distributor.phone }}</p>
+          <p class="dist-hero-address" *ngIf="distributor.address">
+            <svg class="dist-hero-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ distributor.address }}
+          </p>
+          <p class="dist-hero-phone" *ngIf="distributor.phone">
+            <svg class="dist-hero-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            {{ distributor.phone }}
+          </p>
           <div class="d-flex flex-wrap gap-2 mt-2">
             <a *ngIf="distributor.mapUrl" [href]="distributor.mapUrl" target="_blank" rel="noopener" class="btn btn-kpet-accent">Ver en el mapa</a>
           </div>
@@ -42,7 +50,9 @@
           <div class="product-image-wrapper">
             <img *ngIf="entry.product.imageUrl; else imgPlaceholder" [src]="resolveImageUrl(entry.product.imageUrl)" [alt]="entry.product.name" class="product-image">
             <ng-template #imgPlaceholder>
-              <div class="product-image-placeholder">🐾</div>
+              <div class="product-image-placeholder">
+                <svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="16.5" rx="6" ry="5"/><ellipse cx="4.5" cy="9" rx="2.3" ry="3"/><ellipse cx="9.7" cy="5" rx="2.3" ry="3"/><ellipse cx="14.3" cy="5" rx="2.3" ry="3"/><ellipse cx="19.5" cy="9" rx="2.3" ry="3"/></svg>
+              </div>
             </ng-template>
             <span *ngIf="entry.product.onSale" class="offer-badge">Oferta</span>
             <span class="stock-badge" [class.stock-out]="entry.quantity === 0">
@@ -79,3 +89,5 @@
   (close)="closeProductInfo()"
   (selectProduct)="openProductInfo($event)">
 </app-product-detail-modal>
+
+<app-site-footer [settings]="settings"></app-site-footer>

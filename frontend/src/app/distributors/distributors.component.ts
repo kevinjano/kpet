@@ -6,11 +6,13 @@ import { SiteSettingsService } from '../services/site-settings-service';
 import { Distributor } from '../distributor';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-distributors',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SiteFooterComponent, LoadingSpinnerComponent],
   templateUrl: './distributors.component.html',
   styleUrl: './distributors.component.css'
 })
@@ -21,6 +23,7 @@ export class DistributorsComponent implements OnInit {
   distributors: Distributor[] = [];
   cities: string[] = [];
   selectedCity: string | null = null;
+  distributorsLoaded = false;
   settings: SiteSettings | undefined;
   resolveImageUrl = resolveImageUrl;
   defaultLogoUrl = DEFAULT_LOGO_URL;
@@ -52,6 +55,7 @@ export class DistributorsComponent implements OnInit {
     this.distributorService.getDistributors().subscribe(data => {
       this.distributors = data.filter(d => d.active);
       this.cities = Array.from(new Set(this.distributors.map(d => d.city))).sort();
+      this.distributorsLoaded = true;
     });
 
     this.siteSettingsService.getSettings().subscribe(settings => {

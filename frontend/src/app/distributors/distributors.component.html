@@ -15,17 +15,23 @@
       <ellipse cx="19.5" cy="9" rx="2.3" ry="3"/>
     </svg>
   </div>
-  <span class="dist-pin dist-pin-1">📍</span>
-  <span class="dist-pin dist-pin-2">📍</span>
-  <span class="dist-pin dist-pin-3">📍</span>
+  <span class="dist-pin dist-pin-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+  <span class="dist-pin dist-pin-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+  <span class="dist-pin dist-pin-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
 
   <div class="container">
     <h1 class="dist-title kpet-fade-up">Nuestros Distribuidores</h1>
     <p class="dist-subtitle kpet-fade-up">Encuentra el punto de venta Kpet más cercano a ti.</p>
 
     <div class="dist-stats kpet-fade-up" *ngIf="distributors.length > 0">
-      <span class="dist-stat">🏬 <strong>{{ distributors.length }}</strong> punto{{ distributors.length === 1 ? '' : 's' }} de venta</span>
-      <span class="dist-stat">📍 <strong>{{ cities.length }}</strong> ciudad{{ cities.length === 1 ? '' : 'es' }}</span>
+      <span class="dist-stat">
+        <svg class="dist-stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"/><path d="M5 9v10h14V9"/><path d="M9 19v-5h6v5"/></svg>
+        <strong>{{ distributors.length }}</strong> punto{{ distributors.length === 1 ? '' : 's' }} de venta
+      </span>
+      <span class="dist-stat">
+        <svg class="dist-stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <strong>{{ cities.length }}</strong> ciudad{{ cities.length === 1 ? '' : 'es' }}
+      </span>
     </div>
   </div>
 </header>
@@ -33,17 +39,25 @@
 <div class="dist-page">
   <span class="dist-blob dist-blob-1"></span>
   <span class="dist-blob dist-blob-2"></span>
-  <span class="dist-paw dist-paw-1">🐾</span>
-  <span class="dist-paw dist-paw-2">🐾</span>
-  <span class="dist-paw dist-paw-3">🐾</span>
+  <span class="dist-paw dist-paw-1"><svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="16.5" rx="6" ry="5"/><ellipse cx="4.5" cy="9" rx="2.3" ry="3"/><ellipse cx="9.7" cy="5" rx="2.3" ry="3"/><ellipse cx="14.3" cy="5" rx="2.3" ry="3"/><ellipse cx="19.5" cy="9" rx="2.3" ry="3"/></svg></span>
+  <span class="dist-paw dist-paw-2"><svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="16.5" rx="6" ry="5"/><ellipse cx="4.5" cy="9" rx="2.3" ry="3"/><ellipse cx="9.7" cy="5" rx="2.3" ry="3"/><ellipse cx="14.3" cy="5" rx="2.3" ry="3"/><ellipse cx="19.5" cy="9" rx="2.3" ry="3"/></svg></span>
+  <span class="dist-paw dist-paw-3"><svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="16.5" rx="6" ry="5"/><ellipse cx="4.5" cy="9" rx="2.3" ry="3"/><ellipse cx="9.7" cy="5" rx="2.3" ry="3"/><ellipse cx="14.3" cy="5" rx="2.3" ry="3"/><ellipse cx="19.5" cy="9" rx="2.3" ry="3"/></svg></span>
 
   <div class="container mb-5">
     <div class="city-filter" *ngIf="cities.length > 0">
-      <button class="city-chip" [class.active]="selectedCity === null" (click)="selectCity(null)">🌎 Todas las ciudades</button>
-      <button class="city-chip" *ngFor="let city of cities" [class.active]="selectedCity === city" (click)="selectCity(city)">📍 {{ city }}</button>
+      <button class="city-chip" [class.active]="selectedCity === null" (click)="selectCity(null)">
+        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+        Todas las ciudades
+      </button>
+      <button class="city-chip" *ngFor="let city of cities" [class.active]="selectedCity === city" (click)="selectCity(city)">
+        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        {{ city }}
+      </button>
     </div>
 
-    <div *ngIf="visibleDistributors.length === 0" class="text-center text-muted py-5">
+    <app-loading-spinner *ngIf="!distributorsLoaded" message="Cargando distribuidores..."></app-loading-spinner>
+
+    <div *ngIf="distributorsLoaded && visibleDistributors.length === 0" class="text-center text-muted py-5">
       Todavía no hay distribuidores registrados en esta ciudad.
     </div>
 
@@ -52,10 +66,17 @@
         <a [routerLink]="['/distribuidores', dist.id]" class="dist-card dist-card-drop" [style.animation-delay.ms]="i * 90">
           <div class="dist-card-image">
             <img *ngIf="dist.imageUrl; else distPlaceholder" [src]="resolveImageUrl(dist.imageUrl)" [alt]="dist.name">
-            <ng-template #distPlaceholder><span>🏬</span></ng-template>
+            <ng-template #distPlaceholder>
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0"/><path d="M5 9v10h14V9"/><path d="M9 19v-5h6v5"/></svg>
+              </span>
+            </ng-template>
           </div>
           <div class="dist-card-body">
-            <span class="dist-card-pin">📍 {{ dist.city }}</span>
+            <span class="dist-card-pin">
+              <svg class="dist-card-pin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              {{ dist.city }}
+            </span>
             <h2 class="dist-card-title">{{ dist.name }}</h2>
             <p class="dist-card-address" *ngIf="dist.address">{{ dist.address }}</p>
             <p class="dist-card-count">{{ dist.distributorProducts.length }} producto{{ dist.distributorProducts.length === 1 ? '' : 's' }} disponible{{ dist.distributorProducts.length === 1 ? '' : 's' }}</p>
@@ -66,3 +87,5 @@
     </div>
   </div>
 </div>
+
+<app-site-footer [settings]="settings"></app-site-footer>
