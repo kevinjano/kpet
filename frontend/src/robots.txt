@@ -3,4 +3,4 @@ Disallow: /admin
 Disallow: /mon-compte
 Allow: /
 
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://kiarapetnutri.com.bo/sitemap.xml
