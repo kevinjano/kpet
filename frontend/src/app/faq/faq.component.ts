@@ -6,11 +6,12 @@ import { SiteSettingsService } from '../services/site-settings-service';
 import { Faq } from '../faq';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
 
 @Component({
   selector: 'app-faq',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SiteFooterComponent],
   templateUrl: './faq.component.html',
   styleUrl: './faq.component.css'
 })

@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, DEFAULT_LOGO_URL } from '../constants';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
 
 @Component({
   selector: 'app-privacidad',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SiteFooterComponent],
   templateUrl: './privacidad.component.html',
   styleUrl: './privacidad.component.css'
 })

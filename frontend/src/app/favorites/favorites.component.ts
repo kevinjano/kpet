@@ -8,11 +8,12 @@ import { SiteSettingsService } from '../services/site-settings-service';
 import { SiteSettings } from '../site-settings';
 import { Product } from '../product';
 import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
 
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SiteFooterComponent],
   templateUrl: './favorites.component.html',
   styleUrl: './favorites.component.css'
 })

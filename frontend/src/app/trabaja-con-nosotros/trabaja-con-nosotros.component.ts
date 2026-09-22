@@ -6,11 +6,12 @@ import { SiteSettingsService } from '../services/site-settings-service';
 import { ModalService } from '../services/modal-service';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, DEFAULT_LOGO_URL } from '../constants';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
 
 @Component({
   selector: 'app-trabaja-con-nosotros',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, SiteFooterComponent],
   templateUrl: './trabaja-con-nosotros.component.html',
   styleUrl: './trabaja-con-nosotros.component.css'
 })

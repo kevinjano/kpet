@@ -1,3 +1,13 @@
+/* Flex column filling at least the viewport height so app-site-footer's
+   margin-top:auto (see its own CSS) pushes it to the bottom of the screen
+   instead of leaving blank page background below it when this page's content
+   is shorter than the viewport (e.g. a cart with only 1-2 items). */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .kpet-topbar {
   background: var(--kpet-white);
   border-bottom: 1px solid rgba(76, 29, 149, 0.08);

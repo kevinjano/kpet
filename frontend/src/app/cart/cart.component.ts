@@ -7,12 +7,14 @@ import { OrderService } from '../services/order-service';
 import { ModalService } from '../services/modal-service';
 import { CartItem } from '../cart-item';
 import { Order } from '../order';
+import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, extractErrorMessage, DEFAULT_LOGO_URL } from '../constants';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SiteFooterComponent],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -34,6 +36,7 @@ export class CartComponent implements OnInit {
   whatsappNumber = '';
   logoUrl: string = DEFAULT_LOGO_URL;
   qrCodeUrl: string | null = null;
+  settings: SiteSettings | undefined;
   resolveImageUrl = resolveImageUrl;
 
   checkoutStep: 'cart' | 'payment' = 'cart';
@@ -63,6 +66,7 @@ export class CartComponent implements OnInit {
   ngOnInit(): void {
     this.cartService.cart$.subscribe(items => this.items = items);
     this.siteSettingsService.getSettings().subscribe(settings => {
+      this.settings = settings;
       this.storeName = settings.storeName || 'Kpet';
       this.whatsappNumber = settings.whatsappNumber || '';
       this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
