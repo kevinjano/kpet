@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { forkJoin, of } from 'rxjs';
 import { SiteSettingsService } from '../../services/site-settings-service';
 import { UploadService } from '../../services/upload-service';
 import { ModalService } from '../../services/modal-service';
-import { resolveImageUrl, extractErrorMessage } from '../../constants';
+import { resolveImageUrl, extractErrorMessage, toEmbedVideoUrl, isDirectVideoFile, isVideoEmbeddable } from '../../constants';
 
 @Component({
   selector: 'app-admin-site-settings',
@@ -22,6 +23,14 @@ export class AdminSiteSettingsComponent implements OnInit {
 
   form: FormGroup;
   resolveImageUrl = resolveImageUrl;
+  isDirectVideoFile = isDirectVideoFile;
+  // Computed from valueChanges rather than called inline in the template —
+  // bypassSecurityTrustResourceUrl() returns a new wrapper object each call,
+  // which would otherwise reset the preview iframe's src (restarting
+  // playback) on every unrelated change-detection cycle, not just when the
+  // pasted link actually changes.
+  aboutVideoEmbedUrl: SafeResourceUrl | null = null;
+  aboutVideoUnsupported = false;
 
   // Carousel reads fine with more, but the client asked for a fixed cap
   // they can reason about ("space for 8") rather than an open-ended list.
@@ -45,11 +54,13 @@ export class AdminSiteSettingsComponent implements OnInit {
     private uploadService: UploadService,
     private modalService: ModalService,
     private formBuilder: FormBuilder,
+    private sanitizer: DomSanitizer,
   ) {
     this.form = this.formBuilder.group({
       storeName: ['', Validators.required],
       whatsappNumber: ['', Validators.required],
       aboutText: [''],
+      aboutVideoUrl: [''],
       address: [''],
       mapUrl: [''],
       instagramUrl: [''],
@@ -61,6 +72,22 @@ export class AdminSiteSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSettings();
+    this.form.get('aboutVideoUrl')!.valueChanges.subscribe(url => this.updateAboutVideoPreview(url));
+  }
+
+  private updateAboutVideoPreview(url: string | null): void {
+    if (!url || isDirectVideoFile(url)) {
+      this.aboutVideoEmbedUrl = null;
+      this.aboutVideoUnsupported = false;
+      return;
+    }
+    if (isVideoEmbeddable(url)) {
+      this.aboutVideoEmbedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(toEmbedVideoUrl(url));
+      this.aboutVideoUnsupported = false;
+    } else {
+      this.aboutVideoEmbedUrl = null;
+      this.aboutVideoUnsupported = true;
+    }
   }
 
   private loadSettings(): void {
@@ -69,6 +96,7 @@ export class AdminSiteSettingsComponent implements OnInit {
         storeName: settings.storeName,
         whatsappNumber: settings.whatsappNumber,
         aboutText: settings.aboutText,
+        aboutVideoUrl: settings.aboutVideoUrl,
         address: settings.address,
         mapUrl: settings.mapUrl,
         instagramUrl: settings.instagramUrl,
@@ -154,6 +182,7 @@ export class AdminSiteSettingsComponent implements OnInit {
           storeName: this.form.value.storeName,
           whatsappNumber: this.form.value.whatsappNumber,
           aboutText: this.form.value.aboutText,
+          aboutVideoUrl: this.form.value.aboutVideoUrl || null,
           address: this.form.value.address,
           mapUrl: this.form.value.mapUrl,
           instagramUrl: this.form.value.instagramUrl,

@@ -167,7 +167,7 @@
   </div>
 </div>
 
-<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.address || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
+<section class="about-section" id="conocenos" *ngIf="settings?.aboutText || settings?.aboutVideoUrl || settings?.address || settings?.instagramUrl || settings?.tiktokUrl || settings?.youtubeUrl">
   <span class="about-paw about-paw-1">🐾</span>
   <span class="about-paw about-paw-2">🐾</span>
   <div class="container">
@@ -205,6 +205,28 @@
             </a>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="row mt-4" *ngIf="settings?.aboutVideoUrl">
+      <div class="col-12">
+        <video *ngIf="isDirectVideoFile(settings!.aboutVideoUrl!); else aboutVideoNotDirect" class="about-video" [src]="resolveImageUrl(settings?.aboutVideoUrl)" controls playsinline preload="metadata"></video>
+        <ng-template #aboutVideoNotDirect>
+          <div class="about-video-embed" *ngIf="safeAboutVideoUrl || aboutVideoThumbnail; else aboutVideoFallback">
+            <button *ngIf="aboutVideoThumbnail && !aboutVideoActivated" type="button" class="about-video-facade" [style.backgroundImage]="'url(' + aboutVideoThumbnail + ')'" (click)="activateAboutVideo()" aria-label="Reproducir video">
+              <span class="about-video-play-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
+              </span>
+            </button>
+            <iframe *ngIf="safeAboutVideoUrl && (!aboutVideoThumbnail || aboutVideoActivated)" [src]="safeAboutVideoUrl" title="Video de la tienda" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+          <ng-template #aboutVideoFallback>
+            <a [href]="settings!.aboutVideoUrl!" target="_blank" rel="noopener" class="about-video-link-fallback">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5v7l6-3.5-6-3.5Z"/></svg>
+              Ver video
+            </a>
+          </ng-template>
+        </ng-template>
       </div>
     </div>
   </div>

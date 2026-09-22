@@ -11,7 +11,7 @@ class SiteSettings extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'address', 'mapUrl',
+        'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'aboutVideoUrl', 'address', 'mapUrl',
         'instagramUrl', 'tiktokUrl', 'youtubeUrl', 'contactEmail', 'qrCodeUrl',
     ];
 

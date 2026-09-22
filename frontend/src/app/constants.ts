@@ -31,6 +31,104 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
   return path.startsWith('/uploads/') ? `${API_ORIGIN}${path}` : path;
 }
 
+// Turns a YouTube/Vimeo/Google Drive link (whatever shape someone pastes —
+// youtu.be, /watch?v=, with other query params before/after v=, /shorts/,
+// /live/, youtube-nocookie.com, vimeo.com/id, or a Drive "view" share link)
+// into its embeddable iframe URL. Uses the URL API instead of one big regex
+// so query-param order doesn't matter (e.g. ?app=desktop&v=ID). Anything
+// unrecognized passes through unchanged — isVideoEmbeddable() below decides
+// whether it's actually safe to put in an <iframe>.
+export function toEmbedVideoUrl(url: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return url;
+  }
+  const host = parsed.hostname.replace(/^www\./, '');
+
+  if (host === 'youtu.be') {
+    const id = parsed.pathname.slice(1).split('/')[0];
+    if (id) {
+      return `https://www.youtube.com/embed/${id}`;
+    }
+  }
+
+  if (host === 'youtube.com' || host === 'youtube-nocookie.com' || host === 'm.youtube.com') {
+    const id = parsed.searchParams.get('v');
+    if (id) {
+      return `https://www.youtube.com/embed/${id}`;
+    }
+    const pathMatch = parsed.pathname.match(/\/(shorts|embed|live)\/([\w-]{6,})/);
+    if (pathMatch) {
+      return `https://www.youtube.com/embed/${pathMatch[2]}`;
+    }
+  }
+
+  if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+    const pathMatch = parsed.pathname.match(/(\d+)/);
+    if (pathMatch) {
+      return `https://player.vimeo.com/video/${pathMatch[1]}`;
+    }
+  }
+
+  if (host === 'drive.google.com') {
+    const pathMatch = parsed.pathname.match(/\/file\/d\/([\w-]+)/);
+    if (pathMatch) {
+      return `https://drive.google.com/file/d/${pathMatch[1]}/preview`;
+    }
+  }
+
+  return url;
+}
+
+// Raw YouTube video ID (no domain-specific formatting), for building a static
+// thumbnail URL — used to show a lightweight preview image instead of loading
+// the full iframe until the visitor actually taps it (see safeAboutVideoUrl's
+// comment in home.component.ts for why that tap-gated load matters on mobile).
+export function extractYoutubeId(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  const host = parsed.hostname.replace(/^www\./, '');
+
+  if (host === 'youtu.be') {
+    return parsed.pathname.slice(1).split('/')[0] || null;
+  }
+  if (host === 'youtube.com' || host === 'youtube-nocookie.com' || host === 'm.youtube.com') {
+    const id = parsed.searchParams.get('v');
+    if (id) {
+      return id;
+    }
+    const pathMatch = parsed.pathname.match(/\/(shorts|embed|live)\/([\w-]{6,})/);
+    if (pathMatch) {
+      return pathMatch[2];
+    }
+  }
+  return null;
+}
+
+export function isDirectVideoFile(url: string): boolean {
+  return /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url);
+}
+
+// Most video-hosting sites (Instagram, TikTok, Facebook, random CDNs...)
+// refuse to be shown in an <iframe> at all (X-Frame-Options/CSP), so forcing
+// one for a link we don't recognize just renders a frozen, blank, "se traba"
+// box. Only put an iframe on screen for hosts we know actually allow it —
+// everything else falls back to a plain "open in a new tab" link instead.
+export function isVideoEmbeddable(url: string): boolean {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    return ['youtu.be', 'youtube.com', 'youtube-nocookie.com', 'm.youtube.com', 'vimeo.com', 'player.vimeo.com', 'drive.google.com'].includes(host);
+  } catch {
+    return false;
+  }
+}
+
 // Pre-filled into wa.me links (the WhatsApp bubble and the Conócenos contact
 // link) so a tap opens the chat with this already typed in, instead of a
 // blank conversation the visitor has to start from scratch.

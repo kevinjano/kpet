@@ -12,11 +12,20 @@
   z-index: 50;
 }
 
+/* Bootstrap's default .container caps out at 960px right at the 992px
+   breakpoint where the desktop nav first turns on — barely more than the
+   viewport itself, so the links + action buttons had almost no breathing
+   room and "Ver todo" (the extra item shown while a category/offers filter
+   is active) would wrap mid-word. Widening just the nav's own container
+   gives every link room to sit on one line. */
+.kpet-nav .container {
+  max-width: 1600px;
+}
+
 .kpet-logo {
   display: flex;
   align-items: center;
   text-decoration: none;
-  margin-left: -0.75rem;
 }
 
 .kpet-logo-text {
@@ -112,6 +121,7 @@
   text-decoration: none;
   position: relative;
   padding-bottom: 4px;
+  white-space: nowrap;
   transition: color var(--kpet-transition);
 }
 
@@ -806,6 +816,111 @@
   color: var(--kpet-ink-soft);
   font-weight: 600;
   margin: 1rem 0 0.75rem;
+}
+
+.about-video {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  margin: 0.5rem auto 0;
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow);
+  background: #000;
+}
+
+.about-video-embed {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  margin: 0.5rem auto 0;
+  box-shadow: var(--kpet-shadow);
+  background: #000;
+}
+
+/* Rounded corners live on the iframe/button itself, not the wrapper above —
+   an ancestor with overflow:hidden clipping a nested cross-origin iframe is
+   another well-known iOS Safari trigger for broken touch delivery into that
+   iframe's own content (YouTube's controls), separate from the transform
+   issue already fixed on the row above this. */
+.about-video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: var(--kpet-radius);
+}
+
+.about-video-facade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: var(--kpet-radius);
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-video-play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.92);
+  color: var(--kpet-white);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transition: transform var(--kpet-transition), background-color var(--kpet-transition);
+}
+
+.about-video-facade:hover .about-video-play-icon {
+  transform: scale(1.08);
+  background: rgba(220, 38, 38, 1);
+}
+
+.about-video-play-icon svg {
+  width: 30px;
+  height: 30px;
+  margin-left: 3px;
+}
+
+.about-video-link-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  margin: 0.5rem auto 0;
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow);
+  background: linear-gradient(150deg, var(--kpet-purple-600) 0%, var(--kpet-purple-800) 75%, var(--kpet-purple-900) 130%);
+  color: var(--kpet-white);
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
+}
+
+.about-video-link-fallback:hover {
+  color: var(--kpet-white);
+  transform: translateY(-2px);
+  box-shadow: var(--kpet-shadow-lg);
+}
+
+.about-video-link-fallback svg {
+  width: 32px;
+  height: 32px;
 }
 
 .social-card {

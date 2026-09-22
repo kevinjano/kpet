@@ -28,7 +28,7 @@ class SiteSettingsController extends Controller
         $data = $request->all();
         $settings = SiteSettings::find(1);
         $fields = $request->only([
-            'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'address', 'mapUrl',
+            'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'aboutVideoUrl', 'address', 'mapUrl',
             'instagramUrl', 'tiktokUrl', 'youtubeUrl', 'contactEmail', 'qrCodeUrl',
         ]);
         $fields['id'] = 1; // hard-pinned, regardless of what's sent

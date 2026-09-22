@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ProductService } from '../services/product-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { CartService } from '../services/cart-service';
@@ -11,7 +12,7 @@ import { RatingSummary } from '../review';
 import { AuthService } from '../services/auth-service';
 import { Product } from '../product';
 import { SiteSettings } from '../site-settings';
-import { PRODUCT_CATEGORIES, resolveImageUrl, trackById, DEFAULT_LOGO_URL, buildWhatsappUrl } from '../constants';
+import { PRODUCT_CATEGORIES, resolveImageUrl, trackById, DEFAULT_LOGO_URL, buildWhatsappUrl, isDirectVideoFile, isVideoEmbeddable, toEmbedVideoUrl, extractYoutubeId } from '../constants';
 import { BannerCarouselComponent } from '../banner-carousel/banner-carousel.component';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
 import { CartToastComponent } from '../cart-toast/cart-toast.component';
@@ -63,6 +64,24 @@ export class HomeComponent implements OnInit, AfterViewInit {
   resolveImageUrl = resolveImageUrl;
   defaultLogoUrl = DEFAULT_LOGO_URL;
   buildWhatsappUrl = buildWhatsappUrl;
+  isDirectVideoFile = isDirectVideoFile;
+  // Computed once when settings arrive, not from a template method call —
+  // bypassSecurityTrustResourceUrl() returns a NEW wrapper object every time
+  // it runs, so calling it inline in the template re-triggered on every
+  // change-detection cycle (e.g. the banner carousel's autoplay timer) reset
+  // the iframe's src each time, which restarted the embedded YouTube player
+  // over and over ("se corta y se reinicia").
+  safeAboutVideoUrl: SafeResourceUrl | null = null;
+  // Raw (unsanitized) embed URL, kept around so activateAboutVideo() can
+  // append autoplay=1 and re-sanitize once the visitor actually taps —
+  // loading/playing the iframe only after a real tap (instead of rendering it
+  // passively on page load) is what makes mobile browsers actually allow
+  // inline playback; a pre-rendered iframe nobody's interacted with yet is
+  // exactly what mobile Chrome/Safari refuse to autoplay, showing YouTube's
+  // own "watch on YouTube" facade instead.
+  private aboutVideoRawEmbedUrl: string | null = null;
+  aboutVideoThumbnail: string | null = null;
+  aboutVideoActivated = false;
   trackById = trackById;
 
   // productId -> quantity currently in the cart, so each "Añadir al carrito"
@@ -89,6 +108,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private reviewService: ReviewService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -102,6 +123,33 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.bannerImages = (data.bannerUrls ?? [])
         .map(url => resolveImageUrl(url))
         .filter((url): url is string => !!url);
+      this.aboutVideoActivated = false;
+      this.aboutVideoThumbnail = null;
+      this.aboutVideoRawEmbedUrl = null;
+      this.safeAboutVideoUrl = null;
+      if (data.aboutVideoUrl && !isDirectVideoFile(data.aboutVideoUrl) && isVideoEmbeddable(data.aboutVideoUrl)) {
+        this.aboutVideoRawEmbedUrl = toEmbedVideoUrl(data.aboutVideoUrl);
+        const youtubeId = extractYoutubeId(data.aboutVideoUrl);
+        if (youtubeId) {
+          // YouTube only: show a static thumbnail first instead of rendering
+          // the iframe immediately — see aboutVideoActivated's declaration
+          // for why.
+          this.aboutVideoThumbnail = `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+        } else {
+          // Vimeo/Drive have no equally simple thumbnail endpoint — embed
+          // right away as before.
+          this.safeAboutVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.aboutVideoRawEmbedUrl);
+        }
+      }
+
+      // Reaching this page via the footer's "Conócenos" link from elsewhere
+      // (e.g. /blog#conocenos) lands here before the *ngIf'd about-section has
+      // anything to scroll to — Angular's router fires its own fragment
+      // scroll on navigation, too early for that. Doing it here, right after
+      // settings arrive and the section can render, catches it reliably.
+      if (this.route.snapshot.fragment === 'conocenos') {
+        setTimeout(() => this.scrollToAbout(), 0);
+      }
     });
 
     this.cartService.cart$.subscribe(items => {
@@ -151,6 +199,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // A no-op if that section isn't rendered (settings has no bio/social links yet).
   scrollToAbout(): void {
     document.getElementById('conocenos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Loads the real iframe (with autoplay=1) only now, tied directly to this
+  // tap — mobile browsers require playback to start from a genuine user
+  // gesture like this one to allow it inline at all.
+  activateAboutVideo(): void {
+    if (!this.aboutVideoRawEmbedUrl) {
+      return;
+    }
+    this.aboutVideoActivated = true;
+    const separator = this.aboutVideoRawEmbedUrl.includes('?') ? '&' : '?';
+    this.safeAboutVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${this.aboutVideoRawEmbedUrl}${separator}autoplay=1`);
   }
 
   get visibleProducts(): Product[] {
