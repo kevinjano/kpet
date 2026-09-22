@@ -7,12 +7,13 @@ import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
 import {FavoriteService} from "../services/favorite-service";
 import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
+import {GoogleSigninButtonComponent} from "../google-signin-button/google-signin-button.component";
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive, GoogleSigninButtonComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

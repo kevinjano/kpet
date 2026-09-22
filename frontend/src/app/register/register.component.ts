@@ -7,6 +7,7 @@ import { UserService } from "../services/user-service";
 import { SiteSettingsService } from "../services/site-settings-service";
 import { ModalService } from "../services/modal-service";
 import { resolveImageUrl, DEFAULT_LOGO_URL } from "../constants";
+import { GoogleSigninButtonComponent } from "../google-signin-button/google-signin-button.component";
 
 @Component({
   selector: 'app-register',
@@ -19,7 +20,8 @@ import { resolveImageUrl, DEFAULT_LOGO_URL } from "../constants";
     RouterLink,
     RouterLinkActive,
     NgForOf,
-    NgIf
+    NgIf,
+    GoogleSigninButtonComponent
   ],
   standalone: true
 })

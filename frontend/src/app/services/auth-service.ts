@@ -18,6 +18,7 @@ import {API_ORIGIN} from "../constants";
  */
 export class AuthService {
   private loginUrl = `${API_ORIGIN}/api/users/login`;
+  private googleLoginUrl = `${API_ORIGIN}/api/users/google`;
   private user: any;
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -25,15 +26,26 @@ export class AuthService {
   login(email: string, password: string): Observable<any> {
     const credentials = { email, password };
     return this.http.post<any>(this.loginUrl, credentials).pipe(
-      tap((response: any) => {
-        this.user = response;
-        localStorage.setItem('userId', response.id);
-        localStorage.setItem('role', response.role);
-        localStorage.setItem('firstName', response.firstName || '');
-        localStorage.setItem('userLoggedIn', 'true');
-        localStorage.setItem('token', response.token);
-      })
+      tap((response: any) => this.storeSession(response))
     );
+  }
+
+  // credential is the Google ID token handed to the GIS callback — the
+  // backend verifies it and returns the same {id, email, firstName, role,
+  // token} shape as a normal login, creating the account on first use.
+  loginWithGoogle(credential: string): Observable<any> {
+    return this.http.post<any>(this.googleLoginUrl, { credential }).pipe(
+      tap((response: any) => this.storeSession(response))
+    );
+  }
+
+  private storeSession(response: any): void {
+    this.user = response;
+    localStorage.setItem('userId', response.id);
+    localStorage.setItem('role', response.role);
+    localStorage.setItem('firstName', response.firstName || '');
+    localStorage.setItem('userLoggedIn', 'true');
+    localStorage.setItem('token', response.token);
   }
 
   isLoggedIn(): boolean {

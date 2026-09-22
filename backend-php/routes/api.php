@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 // ---------- Users ----------
 Route::post('/users/create', [UserController::class, 'create']);
 Route::post('/users/login', [UserController::class, 'login']);
+Route::post('/users/google', [UserController::class, 'google']);
 Route::get('/users/findAll', [UserController::class, 'findAll'])->middleware('role:Admin');
 Route::get('/users/{id}', [UserController::class, 'show'])->middleware('role:Admin,Client');
 Route::put('/users/update/{id}', [UserController::class, 'update'])->middleware('role:Admin,Client');

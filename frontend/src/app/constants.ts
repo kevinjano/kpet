@@ -3,6 +3,11 @@
 // whenever the API's port changes.
 export const API_ORIGIN = 'http://localhost:8091';
 
+// Public identifier for the "Continuar con Google" button (Google Identity
+// Services) — safe to expose client-side, it's not a secret. Registered
+// under the Kiara Pet Nutri project in Google Cloud Console.
+export const GOOGLE_CLIENT_ID = '917667214262-r7n1eq96tlnvav0p5gevn337u7m95o5d.apps.googleusercontent.com';
+
 // Fixed category list shared by every category <select>/filter across the app
 // (storefront nav, admin product form + filter). Not a string enum since it's
 // also directly rendered as the visible label — adding a category means adding

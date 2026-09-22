@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\GoogleAuthService;
 use App\Services\JwtService;
 use App\Services\LoginAttemptService;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class UserController extends Controller
     public function __construct(
         private JwtService $jwtService,
         private LoginAttemptService $loginAttemptService,
+        private GoogleAuthService $googleAuthService,
     ) {}
 
     private function isSelfOrAdmin(Request $request, $id): bool
@@ -54,12 +56,62 @@ class UserController extends Controller
         }
 
         $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim($email))])->first();
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (!$user || $user->password === null || !Hash::check($password, $user->password)) {
             $this->loginAttemptService->recordFailure($email);
+            if ($user && $user->password === null) {
+                return response('Esta cuenta fue creada con Google. Iniciá sesión con el botón "Continuar con Google".', 401);
+            }
             return response('Email o contraseña incorrectos', 401);
         }
 
         $this->loginAttemptService->recordSuccess($email);
+        $token = $this->jwtService->generateToken($user->id, $user->role);
+
+        return response()->json([
+            'id' => $user->id,
+            'email' => $user->email,
+            'firstName' => $user->firstName,
+            'role' => $user->role,
+            'token' => $token,
+        ]);
+    }
+
+    // Single entry point for both "Continuar con Google" sign-up and sign-in
+    // — whichever one applies is decided here, not by the frontend. Finds by
+    // googleId first, then falls back to matching an existing email/password
+    // account so someone who registered normally can still use the same
+    // email with Google afterward.
+    public function google(Request $request)
+    {
+        $credential = (string) $request->input('credential', '');
+        try {
+            $profile = $this->googleAuthService->verify($credential);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => 'No se pudo verificar la cuenta de Google.'], 401);
+        }
+
+        $user = User::where('googleId', $profile['sub'])->first();
+
+        if (!$user) {
+            $user = User::whereRaw('LOWER(email) = ?', [strtolower($profile['email'])])->first();
+            if ($user) {
+                $user->googleId = $profile['sub'];
+                $user->save();
+            }
+        }
+
+        if (!$user) {
+            $user = User::create([
+                'firstName' => $profile['given_name'] ?: $profile['email'],
+                'lastName' => $profile['family_name'] ?: '',
+                'email' => $profile['email'],
+                'noTel' => '',
+                'password' => null,
+                'role' => User::ROLE_CLIENT,
+                'googleId' => $profile['sub'],
+            ]);
+        }
+
         $token = $this->jwtService->generateToken($user->id, $user->role);
 
         return response()->json([

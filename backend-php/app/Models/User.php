@@ -8,7 +8,7 @@ class User extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['firstName', 'lastName', 'email', 'noTel', 'password', 'role'];
+    protected $fillable = ['firstName', 'lastName', 'email', 'noTel', 'password', 'role', 'googleId'];
 
     // Mirrors the old backend's @JsonProperty(WRITE_ONLY) on User.password —
     // accepted on input, never serialized back out.
