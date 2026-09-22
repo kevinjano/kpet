@@ -209,11 +209,13 @@ export class AdminDistributorsComponent implements OnInit {
         ? this.distributorService.updateDistributor(this.editingDistributorId, payload)
         : this.distributorService.createDistributor(payload);
 
+      const wasEditing = this.editingDistributorId !== null;
       request.subscribe({
         next: () => {
           this.saving = false;
           this.cancelEdit();
           this.loadDistributors();
+          this.modalService.success(wasEditing ? 'Distribuidor actualizado con éxito.' : 'Distribuidor añadido con éxito.');
         },
         error: () => {
           this.saving = false;

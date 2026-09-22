@@ -273,11 +273,13 @@ export class AdminProductsComponent implements OnInit {
         ? this.productService.updateProduct(this.editingProductId, payload)
         : this.productService.createProduct(payload);
 
+      const wasEditing = this.editingProductId !== null;
       request.subscribe({
         next: () => {
           this.saving = false;
           this.cancelEdit();
           this.loadProducts();
+          this.modalService.success(wasEditing ? 'Producto actualizado con éxito.' : 'Producto añadido con éxito.');
         },
         error: () => {
           this.saving = false;
