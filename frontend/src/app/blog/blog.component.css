@@ -1,3 +1,13 @@
+/* Flex column filling at least the viewport height so app-site-footer's
+   margin-top:auto (see its own CSS) pushes it to the bottom of the screen
+   instead of leaving blank page background below it when this page's content
+   is shorter than the viewport (e.g. a cart with only 1-2 items). */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .kpet-topbar {
   background: var(--kpet-white);
   border-bottom: 1px solid rgba(76, 29, 149, 0.08);
@@ -149,6 +159,7 @@
   display: flex;
   flex-direction: column;
   border-top: 5px solid var(--kpet-purple-600);
+  cursor: pointer;
   transition: transform 280ms var(--kpet-ease), box-shadow 280ms var(--kpet-ease);
 }
 
@@ -257,4 +268,21 @@
   color: var(--kpet-ink-soft);
   line-height: 1.5;
   white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.blog-read-more {
+  margin-top: auto;
+  align-self: flex-start;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--kpet-purple-600);
+}
+
+.blog-card:hover .blog-read-more {
+  color: var(--kpet-purple-800);
 }

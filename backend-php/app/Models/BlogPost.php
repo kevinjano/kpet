@@ -11,7 +11,7 @@ class BlogPost extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['title', 'content', 'imageUrl', 'videoUrl', 'eventDate', 'published', 'createdAt'];
+    protected $fillable = ['title', 'content', 'imageUrl', 'videoUrl', 'externalUrl', 'eventDate', 'published', 'createdAt'];
 
     protected $casts = [
         'published' => 'boolean',

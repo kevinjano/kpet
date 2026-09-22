@@ -43,6 +43,7 @@ export class AdminBlogComponent implements OnInit {
       title: ['', Validators.required],
       content: ['', Validators.required],
       eventDate: [''],
+      externalUrl: [''],
       published: [true],
     });
   }
@@ -90,6 +91,7 @@ export class AdminBlogComponent implements OnInit {
       title: post.title,
       content: post.content,
       eventDate: post.eventDate ?? '',
+      externalUrl: post.externalUrl ?? '',
       published: post.published,
     });
   }
@@ -101,7 +103,7 @@ export class AdminBlogComponent implements OnInit {
     this.selectedVideoFile = null;
     this.videoPreviewUrl = null;
     this.currentVideoUrl = null;
-    this.form.reset({title: '', content: '', eventDate: '', published: true});
+    this.form.reset({title: '', content: '', eventDate: '', externalUrl: '', published: true});
   }
 
   async deletePost(id: number): Promise<void> {
@@ -129,6 +131,7 @@ export class AdminBlogComponent implements OnInit {
     const payload = {
       ...this.form.value,
       eventDate: this.form.value.eventDate || null,
+      externalUrl: this.form.value.externalUrl || null,
       imageUrl: existingPost?.imageUrl ?? null,
       videoUrl: this.currentVideoUrl,
     };

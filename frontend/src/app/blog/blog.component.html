@@ -30,15 +30,17 @@
     <ellipse cx="12" cy="16.5" rx="6" ry="5"/><ellipse cx="4.5" cy="9" rx="2.3" ry="3"/><ellipse cx="9.7" cy="5" rx="2.3" ry="3"/><ellipse cx="14.3" cy="5" rx="2.3" ry="3"/><ellipse cx="19.5" cy="9" rx="2.3" ry="3"/>
   </svg>
   <div class="container mb-5">
-  <div *ngIf="posts.length === 0" class="text-center text-muted py-5">
+  <app-loading-spinner *ngIf="!postsLoaded" message="Cargando publicaciones..."></app-loading-spinner>
+
+  <div *ngIf="postsLoaded && posts.length === 0" class="text-center text-muted py-5">
     Todavía no hay publicaciones. ¡Vuelve pronto!
   </div>
 
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     <div class="col" *ngFor="let post of posts; let i = index; trackBy: trackById">
-      <article class="blog-card kpet-fade-up" [class.blog-card-alt]="i % 2 === 1" [style.animation-delay.ms]="i * 70">
+      <article class="blog-card kpet-fade-up" [class.blog-card-alt]="i % 2 === 1" [style.animation-delay.ms]="i * 70" (click)="openPost(post)">
         <div class="blog-card-image">
-          <video *ngIf="post.videoUrl; else blogImage" [src]="resolveImageUrl(post.videoUrl)" controls preload="metadata"></video>
+          <video *ngIf="post.videoUrl; else blogImage" [src]="resolveImageUrl(post.videoUrl)" muted preload="metadata"></video>
           <ng-template #blogImage>
             <img *ngIf="post.imageUrl; else blogPlaceholder" [src]="resolveImageUrl(post.imageUrl)" [alt]="post.title">
           </ng-template>
@@ -57,9 +59,14 @@
         <div class="blog-card-body">
           <h2 class="blog-card-title">{{ post.title }}</h2>
           <p class="blog-card-content">{{ post.content }}</p>
+          <span class="blog-read-more">Leer más →</span>
         </div>
       </article>
     </div>
   </div>
   </div>
 </div>
+
+<app-blog-post-detail-modal *ngIf="selectedPost" [post]="selectedPost" (close)="closePost()"></app-blog-post-detail-modal>
+
+<app-site-footer [settings]="settings"></app-site-footer>

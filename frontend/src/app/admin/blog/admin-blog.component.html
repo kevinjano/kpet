@@ -6,6 +6,7 @@
     <tr>
       <th>Imagen</th>
       <th>Video</th>
+      <th>Link externo</th>
       <th>Título</th>
       <th>Fecha evento</th>
       <th>Publicado</th>
@@ -21,6 +22,10 @@
       <td>
         <span *ngIf="post.videoUrl" class="role-pill role-admin">Sí</span>
         <span *ngIf="!post.videoUrl" class="text-muted">—</span>
+      </td>
+      <td>
+        <a *ngIf="post.externalUrl" [href]="post.externalUrl" target="_blank" rel="noopener">Ver</a>
+        <span *ngIf="!post.externalUrl" class="text-muted">—</span>
       </td>
       <td class="fw-semibold">{{ post.title }}</td>
       <td>{{ post.eventDate || '—' }}</td>
@@ -46,6 +51,12 @@
       <div class="col-md-4">
         <label class="form-label fw-semibold">Fecha del evento (opcional):</label>
         <input type="date" class="form-control" formControlName="eventDate">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Link de Instagram o TikTok (opcional):</label>
+        <input type="text" class="form-control" formControlName="externalUrl" placeholder="https://www.instagram.com/p/... o https://www.tiktok.com/...">
+        <small class="text-muted">Si lo cargás, al hacer clic en la publicación en la tienda se abre directamente esa red social en vez de la vista interna.</small>
       </div>
 
       <div class="col-12">

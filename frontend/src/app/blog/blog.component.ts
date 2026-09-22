@@ -6,11 +6,14 @@ import { SiteSettingsService } from '../services/site-settings-service';
 import { BlogPost } from '../blog-post';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
+import { BlogPostDetailModalComponent } from '../blog-post-detail-modal/blog-post-detail-modal.component';
+import { SiteFooterComponent } from '../site-footer/site-footer.component';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-blog',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, BlogPostDetailModalComponent, SiteFooterComponent, LoadingSpinnerComponent],
   templateUrl: './blog.component.html',
   styleUrl: './blog.component.css'
 })
@@ -18,7 +21,9 @@ import { resolveImageUrl, trackById, DEFAULT_LOGO_URL } from '../constants';
 export class BlogComponent implements OnInit {
 
   posts: BlogPost[] = [];
+  postsLoaded = false;
   settings: SiteSettings | undefined;
+  selectedPost: BlogPost | null = null;
   resolveImageUrl = resolveImageUrl;
   defaultLogoUrl = DEFAULT_LOGO_URL;
   trackById = trackById;
@@ -33,10 +38,19 @@ export class BlogComponent implements OnInit {
       this.posts = data
         .filter(p => p.published)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      this.postsLoaded = true;
     });
 
     this.siteSettingsService.getSettings().subscribe(settings => {
       this.settings = settings;
     });
+  }
+
+  openPost(post: BlogPost): void {
+    this.selectedPost = post;
+  }
+
+  closePost(): void {
+    this.selectedPost = null;
   }
 }

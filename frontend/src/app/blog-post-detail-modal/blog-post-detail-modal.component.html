@@ -1,0 +1,21 @@
+<div class="bpm-backdrop" (click)="onBackdropClick()">
+  <div class="bpm-modal kpet-fade-up" (click)="$event.stopPropagation()">
+    <button class="bpm-close" type="button" (click)="close.emit()" aria-label="Cerrar">✕</button>
+
+    <div class="bpm-media">
+      <video *ngIf="post.videoUrl; else bpmImage" [src]="resolveImageUrl(post.videoUrl)" controls preload="metadata"></video>
+      <ng-template #bpmImage>
+        <img *ngIf="post.imageUrl" [src]="resolveImageUrl(post.imageUrl)" [alt]="post.title">
+      </ng-template>
+    </div>
+
+    <div class="bpm-body">
+      <span class="bpm-date">{{ (post.eventDate || post.createdAt) | date:'d MMMM yyyy' }}</span>
+      <h2 class="bpm-title">{{ post.title }}</h2>
+      <p class="bpm-content">{{ post.content }}</p>
+      <a *ngIf="post.externalUrl" [href]="post.externalUrl" target="_blank" rel="noopener" class="bpm-external-link">
+        Ver publicación original →
+      </a>
+    </div>
+  </div>
+</div>
