@@ -19,11 +19,11 @@ use Illuminate\Support\Facades\Route;
 // only two roles that exist.
 
 // ---------- Users ----------
-Route::post('/users/create', [UserController::class, 'create']);
+Route::post('/users/create', [UserController::class, 'create'])->middleware('throttle:10,1');
 Route::post('/users/login', [UserController::class, 'login']);
-Route::post('/users/google', [UserController::class, 'google']);
-Route::post('/users/forgot-password', [UserController::class, 'forgotPassword']);
-Route::post('/users/reset-password', [UserController::class, 'resetPassword']);
+Route::post('/users/google', [UserController::class, 'google'])->middleware('throttle:10,1');
+Route::post('/users/forgot-password', [UserController::class, 'forgotPassword'])->middleware('throttle:5,1');
+Route::post('/users/reset-password', [UserController::class, 'resetPassword'])->middleware('throttle:10,1');
 Route::get('/users/findAll', [UserController::class, 'findAll'])->middleware('role:Admin');
 Route::get('/users/{id}', [UserController::class, 'show'])->middleware('role:Admin,Client');
 Route::put('/users/update/{id}', [UserController::class, 'update'])->middleware('role:Admin,Client');
