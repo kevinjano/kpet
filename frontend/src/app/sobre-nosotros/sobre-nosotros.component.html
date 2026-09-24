@@ -1,0 +1,95 @@
+<app-site-nav></app-site-nav>
+
+<section class="sobre-hero">
+  <div class="container">
+    <h1 class="kpet-fade-up">Conócenos</h1>
+    <p class="kpet-fade-up" *ngIf="settings?.storeName">{{ settings?.storeName }}</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="d-flex align-items-center justify-content-center my-4 kpet-fade-up">
+    <span class="about-underline"></span>
+    <h2 class="section-title mx-3 mb-0">Sobre Nosotros</h2>
+    <span class="about-underline"></span>
+  </div>
+</div>
+
+<div class="mini-banner kpet-fade-up">
+  <span>🐾 100% Natural</span>
+  <span class="mini-banner-dot">•</span>
+  <span>Hecho con amor</span>
+  <span class="mini-banner-dot">•</span>
+  <span>Snacks para tu mejor amigo</span>
+</div>
+
+<!-- ---------- Row 1: ¿Qué es? + imagen destacada ---------- -->
+<section class="container sobre-row" *ngIf="settings?.aboutText">
+  <div class="row g-4 align-items-center">
+    <div class="col-md-6 order-md-2 kpet-fade-up" *ngIf="settings?.aboutImageUrl">
+      <img [src]="resolveImageUrl(settings?.aboutImageUrl)" alt="Kiara petnutri" class="sobre-row-image">
+    </div>
+    <div class="kpet-fade-up" [class.col-md-6]="settings?.aboutImageUrl" [class.order-md-1]="settings?.aboutImageUrl" [class.col-12]="!settings?.aboutImageUrl">
+      <span class="sobre-row-paw">🐾</span>
+      <h3>¿Qué es {{ settings?.storeName }}?</h3>
+      <p class="about-text">{{ settings?.aboutText }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- ---------- Row 2: Misión + video (alternado) ---------- -->
+<section class="container sobre-row sobre-row-tint" *ngIf="settings?.missionText">
+  <div class="row g-4 align-items-center">
+    <div class="col-md-6 kpet-fade-up" *ngIf="settings?.aboutVideoUrl">
+      <video *ngIf="isDirectVideoFile(settings!.aboutVideoUrl!); else missionVideoNotDirect" class="about-video" [src]="settings?.aboutVideoUrl" controls playsinline preload="metadata"></video>
+      <ng-template #missionVideoNotDirect>
+        <div class="about-video-embed" *ngIf="safeAboutVideoUrl || aboutVideoThumbnail">
+          <button *ngIf="aboutVideoThumbnail && !aboutVideoActivated" type="button" class="about-video-facade" [style.backgroundImage]="'url(' + aboutVideoThumbnail + ')'" (click)="activateAboutVideo()" aria-label="Reproducir video">
+            <span class="about-video-play-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
+            </span>
+          </button>
+          <iframe *ngIf="safeAboutVideoUrl && (!aboutVideoThumbnail || aboutVideoActivated)" [src]="safeAboutVideoUrl" title="Video de la tienda" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </ng-template>
+    </div>
+    <div class="kpet-fade-up" [class.col-md-6]="settings?.aboutVideoUrl" [class.col-12]="!settings?.aboutVideoUrl">
+      <span class="sobre-row-paw">🐾</span>
+      <h3>Misión</h3>
+      <p class="about-text">{{ settings?.missionText }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- ---------- Row 3: Visión ---------- -->
+<section class="container sobre-row" *ngIf="settings?.visionText">
+  <div class="sobre-card-wide kpet-fade-up">
+    <h3>Visión</h3>
+    <p>{{ settings?.visionText }}</p>
+  </div>
+</section>
+
+<!-- ---------- Row 4: Nuestro compromiso ---------- -->
+<section class="container sobre-row sobre-row-tint" *ngIf="settings?.commitmentText">
+  <div class="sobre-card-wide sobre-card-accent kpet-fade-up">
+    <h3>Nuestro compromiso</h3>
+    <p>{{ settings?.commitmentText }}</p>
+  </div>
+</section>
+
+<section class="container sobre-row" *ngIf="settings?.address || settings?.contactEmail || settings?.whatsappNumber">
+  <div class="sobre-contact-card kpet-fade-up" [class.has-bg-image]="settings?.contactCardImageUrl" [style.--bg-image]="settings?.contactCardImageUrl ? 'url(' + resolveImageUrl(settings?.contactCardImageUrl) + ')' : null">
+    <p class="about-address" *ngIf="settings?.address">📍 {{ settings?.address }}</p>
+    <a *ngIf="settings?.mapUrl" [href]="settings?.mapUrl" target="_blank" rel="noopener" class="btn btn-kpet-accent btn-sm mb-3">Ver en el mapa</a>
+    <div class="contact-links">
+      <a *ngIf="settings?.contactEmail" [href]="'mailto:' + settings?.contactEmail" class="contact-link">
+        <span class="contact-link-icon">✉️</span> {{ settings?.contactEmail }}
+      </a>
+      <a *ngIf="settings?.whatsappNumber" [href]="buildWhatsappUrl(settings!.whatsappNumber)" target="_blank" rel="noopener" class="contact-link">
+        <span class="contact-link-icon">💬</span> Comunícate con nosotros
+      </a>
+    </div>
+  </div>
+</section>
+
+<app-site-footer [settings]="settings"></app-site-footer>

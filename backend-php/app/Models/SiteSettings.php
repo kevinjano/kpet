@@ -11,9 +11,14 @@ class SiteSettings extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'aboutVideoUrl', 'address', 'mapUrl',
+        'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'missionText', 'visionText', 'commitmentText', 'aboutVideoUrl', 'aboutImageUrl', 'address', 'mapUrl',
         'instagramUrl', 'facebookUrl', 'tiktokUrl', 'youtubeUrl', 'contactEmail', 'qrCodeUrl',
+        'discountEnabled', 'discountPercent', 'discountImageUrl',
+        'categoryImagePerros', 'categoryImageGatos', 'categoryImageAccesorios',
+        'followCardImageUrl', 'contactCardImageUrl',
     ];
+
+    protected $casts = ['discountEnabled' => 'boolean', 'discountPercent' => 'integer'];
 
     protected $appends = ['bannerUrls'];
 

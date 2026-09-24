@@ -1,0 +1,31 @@
+<div class="discount-backdrop" *ngIf="visible" (click)="close()">
+  <div class="discount-modal" (click)="$event.stopPropagation()">
+    <button type="button" class="discount-close" (click)="close()" aria-label="Cerrar">✕</button>
+
+    <div class="discount-image-side" *ngIf="imageUrl" [style.backgroundImage]="'url(' + imageUrl + ')'"></div>
+
+    <div class="discount-form-side">
+      <ng-container *ngIf="!submitted; else successBlock">
+        <h2 class="discount-title">¡{{ discountPercent }}% OFF<br>en tu primer pedido!</h2>
+        <p class="discount-subtitle">Dejanos tus datos y te mandamos el código de descuento.</p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <input type="text" class="discount-input" placeholder="Nombre" formControlName="name">
+          <input type="email" class="discount-input" placeholder="Correo" formControlName="email">
+          <input type="text" class="discount-input" placeholder="Nombre de tu mascota (opcional)" formControlName="petName">
+          <input type="date" class="discount-input" placeholder="Cumpleaños de tu mascota (opcional)" formControlName="petBirthday">
+          <button type="submit" class="discount-submit" [disabled]="form.invalid || submitting">
+            {{ submitting ? 'Enviando...' : 'Obtener descuento' }}
+          </button>
+        </form>
+      </ng-container>
+
+      <ng-template #successBlock>
+        <h2 class="discount-title">¡Listo!</h2>
+        <p class="discount-subtitle">Usá este código al hacer tu pedido por WhatsApp:</p>
+        <div class="discount-code">{{ discountCode }}</div>
+        <button type="button" class="discount-submit" (click)="close()">Empezar a comprar</button>
+      </ng-template>
+    </div>
+  </div>
+</div>

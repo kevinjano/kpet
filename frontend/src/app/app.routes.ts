@@ -10,6 +10,8 @@ import { AuthGuard } from "./auth.guard";
 // costs nothing in perceived navigation speed.
 export const routes: Routes = [
     {path: '', component: HomeComponent},
+    {path: 'tienda', loadComponent: () => import('./tienda/tienda.component').then(m => m.TiendaComponent), data: {title: 'Tienda', description: 'Todo el catálogo de Kiara petnutri: snacks, alimentos y accesorios para perros y gatos.'}},
+    {path: 'sobre-nosotros', loadComponent: () => import('./sobre-nosotros/sobre-nosotros.component').then(m => m.SobreNosotrosComponent), data: {title: 'Conócenos', description: 'Quiénes somos, nuestra misión y visión en Kiara petnutri.'}},
     {path: 'login', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent), data: {title: 'Iniciar sesión'}},
     {path: 'register', loadComponent: () => import('./register/register.component').then(m => m.RegisterComponent), data: {title: 'Crear cuenta'}},
     {path: 'forgot-password', loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent), data: {title: 'Recuperar contraseña'}},

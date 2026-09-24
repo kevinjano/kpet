@@ -1,0 +1,106 @@
+<app-site-nav></app-site-nav>
+
+<div class="container mt-4 mb-5">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="section-title mb-0">Tienda</h1>
+    <span class="section-underline"></span>
+  </div>
+
+  <div class="tienda-filter-chips">
+    <button type="button" class="tienda-chip" [class.active]="selectedCategory === null && !showOffersOnly" (click)="selectedCategory = null; showOffersOnly = false">Todos</button>
+    <button type="button" class="tienda-chip" *ngFor="let cat of categories" [class.active]="selectedCategory === cat" (click)="selectCategory(cat)">{{ cat }}</button>
+    <button type="button" class="tienda-chip tienda-chip-offer" [class.active]="showOffersOnly" (click)="selectOffers()">Ofertas</button>
+  </div>
+
+  <div class="products-toolbar">
+    <div class="products-search">
+      <svg class="products-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar productos..." aria-label="Buscar productos">
+      <button *ngIf="searchTerm" type="button" class="products-search-clear" (click)="clearSearch()" aria-label="Limpiar búsqueda">✕</button>
+    </div>
+    <div class="products-sort" [class.open]="sortMenuOpen">
+      <button type="button" class="products-sort-trigger" (click)="toggleSortMenu()" aria-haspopup="listbox" [attr.aria-expanded]="sortMenuOpen">
+        <span>{{ sortLabel }}</span>
+        <svg class="products-sort-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="products-sort-menu" role="listbox" *ngIf="sortMenuOpen">
+        <li *ngFor="let opt of sortOptions" role="option" [attr.aria-selected]="opt.value === sortOption">
+          <button type="button" [class.active]="opt.value === sortOption" (click)="selectSort(opt.value)">{{ opt.label }}</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div *ngIf="productsLoaded && visibleProducts.length === 0" class="text-muted text-center py-5">
+    <ng-container *ngIf="searchTerm; else noProductsInCategory">
+      No encontramos productos para "{{ searchTerm }}".
+    </ng-container>
+    <ng-template #noProductsInCategory>
+      No hay productos disponibles en esta categoría por el momento.
+    </ng-template>
+  </div>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="col" *ngFor="let product of visibleProducts; trackBy: trackById">
+      <div class="card h-100 product-card kpet-fade-up">
+        <div class="product-image-wrapper">
+          <img *ngIf="product.imageUrl; else imgPlaceholder" [src]="resolveImageUrl(product.imageUrl)" [alt]="product.name" class="product-image" loading="lazy">
+          <ng-template #imgPlaceholder>
+            <div class="product-image-placeholder">🐾</div>
+          </ng-template>
+          <span *ngIf="product.onSale" class="offer-badge">Oferta</span>
+          <button type="button" class="favorite-btn" [class.active]="favoriteService.isFavorite(product.id)"
+                  (click)="toggleFavorite(product, $event)"
+                  [attr.aria-label]="favoriteService.isFavorite(product.id) ? 'Quitar de favoritos' : 'Añadir a favoritos'">
+            <svg viewBox="0 0 24 24" [attr.fill]="favoriteService.isFavorite(product.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+          </button>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <h3 class="product-name">{{ product.name }}</h3>
+          <div class="product-rating" *ngIf="getRatingSummary(product.id) as rating">
+            <span class="product-stars">
+              <span *ngFor="let i of [1,2,3,4,5]" class="product-star" [class.filled]="i <= rating.average">★</span>
+            </span>
+            <span class="product-rating-count">({{ rating.count }})</span>
+          </div>
+          <p class="product-description text-muted">{{ product.description }}</p>
+          <div class="mt-auto">
+            <div class="price-row">
+              <ng-container *ngIf="product.onSale && product.salePrice != null; else regularPrice">
+                <span class="price-old">Bs.{{ product.price.toFixed(2) }}</span>
+                <span class="price-current">Bs.{{ product.salePrice.toFixed(2) }}</span>
+              </ng-container>
+              <ng-template #regularPrice>
+                <span class="price-current">Bs.{{ product.price.toFixed(2) }}</span>
+              </ng-template>
+            </div>
+            <button class="btn btn-outline-secondary w-100 mt-2" (click)="openProductInfo(product)">Información</button>
+            <button *ngIf="getCartQuantity(product.id) === 0 && product.stock > 0" class="btn btn-kpet-primary w-100 mt-2" (click)="addToCart(product)">
+              Añadir al carrito
+            </button>
+            <button *ngIf="getCartQuantity(product.id) === 0 && product.stock <= 0" class="btn btn-kpet-primary w-100 mt-2" disabled>
+              Sin stock
+            </button>
+            <div *ngIf="getCartQuantity(product.id) > 0" class="card-qty-stepper mt-2">
+              <button type="button" (click)="decrementCartQty(product, $event)" aria-label="Quitar uno">−</button>
+              <span>{{ getCartQuantity(product.id) }}</span>
+              <button type="button" (click)="incrementCartQty(product, $event)" [disabled]="getCartQuantity(product.id) >= product.stock" aria-label="Agregar uno">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-site-footer [settings]="settings"></app-site-footer>
+
+<app-product-detail-modal
+  *ngIf="selectedProduct"
+  [product]="selectedProduct"
+  [allProducts]="products"
+  (close)="closeProductInfo()"
+  (selectProduct)="openProductInfo($event)">
+</app-product-detail-modal>
+
+<app-cart-toast></app-cart-toast>

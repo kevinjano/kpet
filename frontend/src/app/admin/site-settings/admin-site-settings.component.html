@@ -17,6 +17,7 @@
 
       <div class="col-12">
         <label class="form-label fw-semibold">Logo:</label>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 240×80px, PNG con fondo transparente.</small>
         <input type="file" accept="image/*" class="form-control" (change)="onLogoSelected($event)">
         <div class="mt-2">
           <img *ngIf="logoPreview || currentLogoUrl" [src]="logoPreview || resolveImageUrl(currentLogoUrl)" alt="logo" class="admin-preview">
@@ -30,6 +31,7 @@
           Podés agregar hasta {{ maxBanners }} banners; se mostrarán en rotación automática en la página principal.
           <strong>{{ bannerUrls.length }}/{{ maxBanners }}</strong>
         </small>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 1600×900px (horizontal).</small>
 
         <div class="banner-list mb-3">
           <div class="banner-item" *ngFor="let banner of bannerUrls; let i = index">
@@ -57,6 +59,7 @@
       <div class="col-12">
         <label class="form-label fw-semibold">Código QR de pago:</label>
         <small class="text-muted d-block mb-2">Se muestra al cliente en el carrito después de enviar su pedido por WhatsApp, para que escanee y pague.</small>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 500×500px (cuadrado).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onQrSelected($event)">
         <div class="mt-2">
           <img *ngIf="qrPreview || currentQrCodeUrl" [src]="qrPreview || resolveImageUrl(currentQrCodeUrl)" alt="QR de pago" class="admin-preview">
@@ -66,12 +69,116 @@
 
       <div class="col-12">
         <hr>
+        <h3 class="admin-subtitle mb-3">Descuento de bienvenida</h3>
+        <small class="text-muted d-block mb-2">Muestra un cartel a quien entra por primera vez a la tienda (sin haber iniciado sesión) ofreciendo un descuento a cambio de sus datos de contacto.</small>
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center gap-2">
+        <input type="checkbox" id="discountEnabled" class="form-check-input" formControlName="discountEnabled">
+        <label for="discountEnabled" class="form-check-label fw-semibold mb-0">Activar el cartel de descuento</label>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Porcentaje de descuento:</label>
+        <input type="number" min="1" max="90" class="form-control" formControlName="discountPercent">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Imagen del cartel (opcional):</label>
+        <small class="text-muted d-block mb-2">Se recomienda una imagen vertical (ej: 600×760px) — es la mitad izquierda del cartel.</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onDiscountImageSelected($event)">
+        <div class="mt-2">
+          <img *ngIf="discountImagePreview || currentDiscountImageUrl" [src]="discountImagePreview || resolveImageUrl(currentDiscountImageUrl)" alt="Imagen del descuento" class="admin-preview">
+        </div>
+      </div>
+
+      <div class="col-12" *ngIf="leads.length > 0">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <label class="form-label fw-semibold mb-0">Contactos capturados ({{ leads.length }}):</label>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="exportLeads()">⬇ Exportar CSV</button>
+        </div>
+        <div class="leads-table-wrap">
+          <table class="table table-sm">
+            <thead><tr><th>Nombre</th><th>Correo</th><th>Mascota</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let lead of leads">
+                <td>{{ lead.name }}</td>
+                <td>{{ lead.email }}</td>
+                <td>{{ lead.petName || '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Imagen de fondo — tarjeta "Síguenos en redes" (Home, opcional):</label>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 1200×500px (horizontal).</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onFollowCardImageSelected($event)">
+        <img *ngIf="followCardImagePreview || currentFollowCardImageUrl" [src]="followCardImagePreview || resolveImageUrl(currentFollowCardImageUrl)" alt="Fondo Síguenos" class="admin-preview mt-2">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Imagen de fondo — tarjeta de contacto (Conócenos, opcional):</label>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 1200×500px (horizontal).</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onContactCardImageSelected($event)">
+        <img *ngIf="contactCardImagePreview || currentContactCardImageUrl" [src]="contactCardImagePreview || resolveImageUrl(currentContactCardImageUrl)" alt="Fondo contacto" class="admin-preview mt-2">
+      </div>
+
+      <div class="col-12">
+        <hr>
+        <h3 class="admin-subtitle mb-3">Categorías de la portada</h3>
+        <small class="text-muted d-block mb-2">Las 3 tarjetas grandes de la página de inicio. Cada una lleva a la tienda ya filtrada por esa categoría.</small>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Imagen — Perros:</label>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 600×800px (vertical).</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onCategoryImageSelected('Perros', $event)">
+        <img *ngIf="categoryImagePreviews.Perros || currentCategoryImages.Perros" [src]="categoryImagePreviews.Perros || resolveImageUrl(currentCategoryImages.Perros)" alt="Categoría Perros" class="admin-preview mt-2">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Imagen — Gatos:</label>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 600×800px (vertical).</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onCategoryImageSelected('Gatos', $event)">
+        <img *ngIf="categoryImagePreviews.Gatos || currentCategoryImages.Gatos" [src]="categoryImagePreviews.Gatos || resolveImageUrl(currentCategoryImages.Gatos)" alt="Categoría Gatos" class="admin-preview mt-2">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Imagen — Accesorios:</label>
+        <small class="text-muted d-block mb-2">Tamaño recomendado: 600×800px (vertical).</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onCategoryImageSelected('Accesorios', $event)">
+        <img *ngIf="categoryImagePreviews.Accesorios || currentCategoryImages.Accesorios" [src]="categoryImagePreviews.Accesorios || resolveImageUrl(currentCategoryImages.Accesorios)" alt="Categoría Accesorios" class="admin-preview mt-2">
+      </div>
+
+      <div class="col-12">
+        <hr>
         <h3 class="admin-subtitle mb-3">Conócenos / Redes sociales</h3>
       </div>
 
       <div class="col-12">
-        <label class="form-label fw-semibold">Sobre nosotros:</label>
-        <textarea class="form-control" formControlName="aboutText" rows="4" placeholder="Cuéntale a tus clientes quién es Kpet..."></textarea>
+        <label class="form-label fw-semibold">¿Qué es Kiara petnutri?:</label>
+        <textarea class="form-control" formControlName="aboutText" rows="4" placeholder="Contale a tus clientes qué es Kiara petnutri..."></textarea>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Misión:</label>
+        <textarea class="form-control" formControlName="missionText" rows="3"></textarea>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Visión:</label>
+        <textarea class="form-control" formControlName="visionText" rows="3"></textarea>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Nuestro compromiso:</label>
+        <textarea class="form-control" formControlName="commitmentText" rows="3"></textarea>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Imagen destacada de "Conócenos" (opcional):</label>
+        <small class="text-muted d-block mb-2">Se muestra junto al video, arriba de la página "Conócenos". Tamaño recomendado: 800×600px.</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onAboutImageSelected($event)">
+        <img *ngIf="aboutImagePreview || currentAboutImageUrl" [src]="aboutImagePreview || resolveImageUrl(currentAboutImageUrl)" alt="Imagen de Conócenos" class="admin-preview mt-2">
       </div>
 
       <div class="col-12">

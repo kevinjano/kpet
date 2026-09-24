@@ -1,0 +1,246 @@
+:host {
+  display: block;
+}
+
+.sobre-hero {
+  background: linear-gradient(135deg, var(--kpet-purple-700), var(--kpet-purple-500) 60%, var(--kpet-yellow-500));
+  color: var(--kpet-white);
+  padding: 3.5rem 0 3rem;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.sobre-hero h1 {
+  font-weight: 800;
+  font-size: 2.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.sobre-hero p {
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+.section-title {
+  font-weight: 800;
+  color: var(--kpet-ink);
+}
+
+.about-underline {
+  flex: 1;
+  max-width: 90px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
+}
+
+/* Alternating rows — each row plain-white or lightly tinted, and the
+   media/text order flips (order-md-2 on row 1's image) so the section reads
+   as a staggered magazine layout instead of a stack of identical blocks. */
+.sobre-row {
+  position: relative;
+  padding: 3rem 0;
+}
+
+.sobre-row-tint {
+  background: linear-gradient(160deg, var(--kpet-purple-50) 0%, var(--kpet-purple-100) 100%);
+}
+
+/* Small full-bleed brand-gradient strip for a bit of color rhythm between
+   the section heading and the first content row. */
+.mini-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+  padding: 0.9rem 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(100deg, var(--kpet-purple-600), var(--kpet-purple-700) 55%, var(--kpet-yellow-500) 130%);
+  color: var(--kpet-white);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.mini-banner-dot {
+  opacity: 0.6;
+}
+
+.sobre-row-paw {
+  display: inline-block;
+  font-size: 1.6rem;
+  opacity: 0.5;
+  margin-bottom: 0.25rem;
+}
+
+.sobre-row h3,
+.sobre-card-wide h3 {
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 0.85rem;
+  background: linear-gradient(100deg, var(--kpet-purple-700), var(--kpet-purple-500) 70%, var(--kpet-yellow-600) 140%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.about-text {
+  color: var(--kpet-ink-soft);
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.sobre-row-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow);
+}
+
+.sobre-card-wide {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sobre-card-wide h3 {
+  display: inline-block;
+}
+
+.sobre-card-wide p {
+  color: var(--kpet-ink-soft);
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.sobre-card-accent {
+  position: relative;
+}
+
+.sobre-card-accent::before {
+  content: '🐾';
+  display: block;
+  font-size: 1.6rem;
+  opacity: 0.5;
+  margin-bottom: 0.25rem;
+}
+
+.about-video,
+.about-video-embed {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: var(--kpet-radius);
+  box-shadow: var(--kpet-shadow);
+  background: #000;
+}
+
+.about-video-embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+
+.about-video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: var(--kpet-radius);
+}
+
+.about-video-facade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: var(--kpet-radius);
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-video-play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.92);
+  color: var(--kpet-white);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transition: transform var(--kpet-transition), background-color var(--kpet-transition);
+}
+
+.about-video-facade:hover .about-video-play-icon {
+  transform: scale(1.08);
+}
+
+.about-video-play-icon svg {
+  width: 30px;
+  height: 30px;
+  margin-left: 3px;
+}
+
+.about-address {
+  color: var(--kpet-white);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.sobre-contact-card {
+  background: linear-gradient(150deg, var(--kpet-purple-600) 0%, var(--kpet-purple-800) 75%, var(--kpet-purple-900) 130%);
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow);
+  padding: 1.75rem 2rem;
+  text-align: center;
+}
+
+.sobre-contact-card.has-bg-image {
+  background-image: linear-gradient(150deg, rgba(109, 40, 217, 0.88) 0%, rgba(76, 29, 149, 0.9) 75%, rgba(59, 7, 100, 0.92) 130%), var(--bg-image, none);
+  background-size: cover;
+  background-position: center;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--kpet-white);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.contact-link:hover {
+  color: var(--kpet-yellow-500);
+}
+
+.contact-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}

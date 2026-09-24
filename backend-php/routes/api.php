@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlogPostController;
+use App\Http\Controllers\DiscountLeadController;
 use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FavoriteController;
@@ -65,6 +66,9 @@ Route::get('/distributors/{id}', [DistributorController::class, 'show']);
 Route::post('/distributors/create', [DistributorController::class, 'create'])->middleware('role:Admin');
 Route::put('/distributors/update/{id}', [DistributorController::class, 'update'])->middleware('role:Admin');
 Route::delete('/distributors/delete/{id}', [DistributorController::class, 'destroy'])->middleware('role:Admin');
+Route::post('/distributors/{id}/stock-movements', [DistributorController::class, 'recordStockMovement'])->middleware('role:Admin');
+Route::get('/distributors/{id}/stock-movements', [DistributorController::class, 'stockHistory'])->middleware('role:Admin');
+Route::get('/distributors/{id}/stock-movements/export', [DistributorController::class, 'exportStockHistory'])->middleware('role:Admin');
 
 // ---------- Blog ----------
 Route::get('/blog/findAll', [BlogPostController::class, 'findAll']);
@@ -88,3 +92,8 @@ Route::put('/settings/update', [SiteSettingsController::class, 'update'])->middl
 // ---------- Uploads ----------
 Route::post('/upload', [UploadController::class, 'upload'])->middleware('role:Admin');
 Route::post('/upload/video', [UploadController::class, 'uploadVideo'])->middleware('role:Admin');
+
+// ---------- Discount leads (first-visit discount modal) ----------
+Route::post('/discount-leads', [DiscountLeadController::class, 'create'])->middleware('throttle:10,1');
+Route::get('/discount-leads', [DiscountLeadController::class, 'findAll'])->middleware('role:Admin');
+Route::get('/discount-leads/export', [DiscountLeadController::class, 'export'])->middleware('role:Admin');

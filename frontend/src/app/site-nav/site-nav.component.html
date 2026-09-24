@@ -1,0 +1,50 @@
+<div class="kpet-nav-spacer" *ngIf="!overlay" [style.height.px]="navHeight"></div>
+<nav #navEl class="kpet-nav" [class.kpet-nav-overlay]="overlay" [class.kpet-nav-scrolled]="overlay && scrolled">
+  <div class="container d-flex align-items-center justify-content-between py-2">
+    <a class="kpet-logo" routerLink="/">
+      <img [src]="resolveImageUrl(logoUrl)" alt="Kiara petnutri" height="50">
+    </a>
+
+    <button class="kpet-burger d-lg-none" type="button" (click)="toggleMobileMenu()" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="kpet-nav-content" [class.open]="mobileMenuOpen">
+      <button class="kpet-nav-close d-lg-none" type="button" (click)="closeMobileMenu()" aria-label="Cerrar menú">✕</button>
+
+      <div class="kpet-drawer-greeting d-lg-none" *ngIf="isLoggedIn()">
+        <span class="kpet-drawer-greeting-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <strong>¡Hola, {{ userName }}!</strong>
+      </div>
+
+      <ul class="kpet-category-nav">
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Inicio</a></li>
+        <li><a routerLink="/tienda" routerLinkActive="active" (click)="closeMobileMenu()">Tienda</a></li>
+        <li><a routerLink="/blog" routerLinkActive="active" (click)="closeMobileMenu()">Blog</a></li>
+        <li><a routerLink="/distribuidores" routerLinkActive="active" (click)="closeMobileMenu()">Distribuidores</a></li>
+        <li><a routerLink="/sobre-nosotros" routerLinkActive="active" (click)="closeMobileMenu()">Conócenos</a></li>
+      </ul>
+
+      <div class="kpet-nav-actions">
+        <button class="btn btn-outline-secondary kpet-cart-btn position-relative" routerLink="/favoritos" (click)="closeMobileMenu()">
+          <span aria-hidden="true">♡</span> Favoritos
+        </button>
+        <button class="btn btn-outline-secondary kpet-cart-btn position-relative" routerLink="/carrito" (click)="closeMobileMenu()">
+          <span aria-hidden="true">🛒</span> Carrito
+          <span *ngIf="cartItemCount > 0" class="kpet-cart-badge">{{ cartItemCount }}</span>
+        </button>
+
+        <ng-container *ngIf="!isLoggedIn(); else loggedInMenu">
+          <button class="btn btn-outline-secondary" (click)="openLoginDialog()">Iniciar sesión</button>
+        </ng-container>
+        <ng-template #loggedInMenu>
+          <button class="btn btn-outline-secondary" (click)="goToAccount()">Mi perfil</button>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="kpet-nav-backdrop d-lg-none" *ngIf="mobileMenuOpen" (click)="closeMobileMenu()"></div>
+  </div>
+</nav>

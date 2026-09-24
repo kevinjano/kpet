@@ -1,0 +1,39 @@
+@import '../product-card-shared.css';
+
+:host {
+  display: block;
+}
+
+.tienda-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.tienda-chip {
+  border: 1.5px solid rgba(76, 29, 149, 0.14);
+  background: var(--kpet-white);
+  color: var(--kpet-ink);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color var(--kpet-transition), color var(--kpet-transition), border-color var(--kpet-transition);
+}
+
+.tienda-chip:hover {
+  border-color: var(--kpet-purple-300, var(--kpet-purple-200));
+}
+
+.tienda-chip.active {
+  background: linear-gradient(120deg, var(--kpet-purple-600), var(--kpet-purple-700));
+  border-color: transparent;
+  color: var(--kpet-white);
+}
+
+.tienda-chip-offer.active {
+  background: linear-gradient(120deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
+  color: var(--kpet-purple-900);
+}

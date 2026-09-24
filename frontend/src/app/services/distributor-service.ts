@@ -4,6 +4,13 @@ import {Observable} from 'rxjs';
 import {Distributor} from '../distributor';
 import {API_ORIGIN} from '../constants';
 
+export interface DistributorStockMovement {
+  id: number;
+  quantity: number;
+  createdAt: string;
+  product: { id: number; name: string };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,5 +41,17 @@ export class DistributorService {
 
   deleteDistributor(id: number): Observable<any> {
     return this.httpClient.delete(`${this.apiUrl}/delete/${id}`);
+  }
+
+  recordStockMovement(distributorId: number, productId: number, quantity: number): Observable<Distributor> {
+    return this.httpClient.post<Distributor>(`${this.apiUrl}/${distributorId}/stock-movements`, {productId, quantity});
+  }
+
+  getStockHistory(distributorId: number): Observable<DistributorStockMovement[]> {
+    return this.httpClient.get<DistributorStockMovement[]>(`${this.apiUrl}/${distributorId}/stock-movements`);
+  }
+
+  exportStockHistory(distributorId: number): Observable<Blob> {
+    return this.httpClient.get(`${this.apiUrl}/${distributorId}/stock-movements/export`, {responseType: 'blob'});
   }
 }

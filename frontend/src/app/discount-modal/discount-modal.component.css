@@ -1,0 +1,127 @@
+.discount-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 10, 40, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.discount-modal {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  border-radius: var(--kpet-radius-lg);
+  overflow: hidden;
+  background: var(--kpet-white);
+  box-shadow: var(--kpet-shadow-lg);
+}
+
+.discount-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--kpet-ink);
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.discount-image-side {
+  flex: 1 1 45%;
+  background-size: cover;
+  background-position: center;
+  min-height: 320px;
+}
+
+.discount-form-side {
+  flex: 1 1 55%;
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--kpet-purple-700), var(--kpet-purple-600));
+  color: var(--kpet-white);
+}
+
+.discount-title {
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+.discount-subtitle {
+  opacity: 0.9;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.discount-input {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.75rem;
+  border: none;
+  border-radius: var(--kpet-radius);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--kpet-ink);
+  font-size: 0.9rem;
+}
+
+.discount-input:focus {
+  outline: 2px solid var(--kpet-yellow-500);
+}
+
+.discount-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.8rem;
+  border: none;
+  border-radius: var(--kpet-radius-pill);
+  background: var(--kpet-yellow-500);
+  color: var(--kpet-purple-900);
+  font-weight: 800;
+  cursor: pointer;
+  transition: background var(--kpet-transition);
+}
+
+.discount-submit:hover:not(:disabled) {
+  background: var(--kpet-yellow-600);
+}
+
+.discount-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.discount-code {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+  border: 2px dashed var(--kpet-yellow-500);
+  border-radius: var(--kpet-radius);
+}
+
+@media (max-width: 600px) {
+  .discount-modal {
+    flex-direction: column;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .discount-image-side {
+    min-height: 160px;
+  }
+}

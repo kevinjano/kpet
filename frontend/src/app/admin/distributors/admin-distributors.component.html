@@ -126,4 +126,49 @@
       <button type="button" class="btn btn-outline-secondary" *ngIf="editingDistributorId" (click)="cancelEdit()">Cancelar</button>
     </div>
   </form>
+
+  <div class="admin-form-card kpet-fade-up mt-3" *ngIf="editingDistributorId">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h3 class="admin-subtitle mb-0">Historial de stock</h3>
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="exportStockHistory()">⬇ Exportar CSV</button>
+    </div>
+    <small class="text-muted d-block mt-2 mb-3">Registrá acá cada vez que le enviás mercadería a este distribuidor, o corregí su stock con una cantidad negativa (por ejemplo, si vendió pero no se descontó).</small>
+
+    <div class="row g-2 align-items-end mb-4 stock-movement-form">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Producto:</label>
+        <select class="form-select" [(ngModel)]="stockMovementProductId" [ngModelOptions]="{standalone: true}">
+          <option [ngValue]="null">Elegí un producto...</option>
+          <option *ngFor="let product of allProducts; trackBy: trackById" [ngValue]="product.id">{{ product.name }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Cantidad:</label>
+        <input type="number" class="form-control" placeholder="Ej: 20 o -5" [(ngModel)]="stockMovementQuantity" [ngModelOptions]="{standalone: true}">
+      </div>
+      <div class="col-md-3">
+        <button type="button" class="btn btn-kpet-primary w-100" [disabled]="!stockMovementProductId || !stockMovementQuantity || recordingMovement" (click)="recordStockMovement()">
+          {{ recordingMovement ? 'Guardando...' : 'Registrar' }}
+        </button>
+      </div>
+    </div>
+
+    <app-admin-table>
+      <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let m of stockHistory">
+        <td>{{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ m.product.name }}</td>
+        <td [class.text-danger]="m.quantity < 0" [class.fw-semibold]="m.quantity < 0">{{ m.quantity > 0 ? '+' : '' }}{{ m.quantity }}</td>
+      </tr>
+      </tbody>
+    </app-admin-table>
+    <p *ngIf="stockHistoryLoaded && stockHistory.length === 0" class="text-muted text-center py-3 mb-0">Todavía no hay movimientos registrados para este distribuidor.</p>
+  </div>
 </div>

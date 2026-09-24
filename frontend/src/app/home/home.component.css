@@ -1,326 +1,12 @@
+@import '../product-card-shared.css';
+
 :host {
   display: block;
 }
 
-/* ---------- Nav ---------- */
-.kpet-nav {
-  background: var(--kpet-white);
-  border-bottom: 1px solid rgba(76, 29, 149, 0.08);
-  box-shadow: var(--kpet-shadow-sm);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-/* Bootstrap's default .container caps out at 960px right at the 992px
-   breakpoint where the desktop nav first turns on — barely more than the
-   viewport itself, so the links + action buttons had almost no breathing
-   room and "Ver todo" (the extra item shown while a category/offers filter
-   is active) would wrap mid-word. Widening just the nav's own container
-   gives every link room to sit on one line. */
-.kpet-nav .container {
-  max-width: 1600px;
-}
-
-.kpet-logo {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
-
-.kpet-logo-text {
-  font-size: 1.8rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-800));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.kpet-logo-text .dot {
-  color: var(--kpet-yellow-500);
-  -webkit-text-fill-color: var(--kpet-yellow-500);
-}
-
-.kpet-burger {
-  border: none;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 6px;
-}
-
-.kpet-burger span {
-  width: 24px;
-  height: 2px;
-  background: var(--kpet-purple-700);
-  border-radius: 2px;
-}
-
-@media (max-width: 991.98px) {
-  .kpet-nav .container {
-    padding-top: 0.9rem;
-    padding-bottom: 0.9rem;
-  }
-
-  .kpet-logo img {
-    height: 56px;
-  }
-
-  .kpet-logo-text {
-    font-size: 2.1rem;
-  }
-
-  .kpet-burger {
-    padding: 9px;
-  }
-
-  .kpet-burger span {
-    width: 27px;
-    height: 2.5px;
-  }
-}
-
-.kpet-nav-content {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  flex: 1;
-  justify-content: flex-end;
-}
-
-.kpet-category-nav {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 1.5rem;
-}
-
-@media (min-width: 992px) {
-  /* Category links center themselves in whatever space is left between the
-     logo and the action buttons, instead of clustering next to Carrito/Mi
-     perfil — and since they now claim all the leftover width, the actions
-     naturally land flush against the right edge. */
-  .kpet-category-nav {
-    flex: 1;
-    justify-content: center;
-  }
-
-  .kpet-nav-actions {
-    flex-shrink: 0;
-  }
-}
-
-.kpet-category-nav a {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--kpet-ink-soft);
-  text-decoration: none;
-  position: relative;
-  padding-bottom: 4px;
-  white-space: nowrap;
-  transition: color var(--kpet-transition);
-}
-
-.kpet-category-nav a::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
-  transition: width var(--kpet-transition);
-  border-radius: 2px;
-}
-
-.kpet-category-nav a:hover,
-.kpet-category-nav a.active {
-  color: var(--kpet-purple-700);
-}
-
-.kpet-category-nav a:hover::after,
-.kpet-category-nav a.active::after {
-  width: 100%;
-}
-
-.kpet-category-nav a.offer-link {
-  color: var(--kpet-purple-600);
-}
-
-.kpet-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.kpet-cart-btn {
-  position: relative;
-}
-
-.kpet-cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: var(--kpet-yellow-500);
-  color: var(--kpet-purple-900);
-  font-size: 0.7rem;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-@media (max-width: 991.98px) {
-  /* The mobile menu is a right-side drawer (matches the burger button's
-     position) rather than an inline dropdown — always rendered, off-screen via
-     transform when closed so it can slide in smoothly instead of popping open. */
-  .kpet-nav-content {
-    display: flex;
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100dvh;
-    width: min(320px, 85vw);
-    background: var(--kpet-purple-100);
-    flex-direction: column;
-    align-items: stretch;
-    padding: 5.5rem 1.5rem 2rem;
-    gap: 1.75rem;
-    transform: translateX(100%);
-    transition: transform 320ms var(--kpet-ease);
-    overflow-y: auto;
-    z-index: 200;
-    box-shadow: var(--kpet-shadow-lg);
-  }
-
-  .kpet-nav-content.open {
-    transform: translateX(0);
-  }
-
-  .kpet-nav-close {
-    position: absolute;
-    top: 1.1rem;
-    left: 1.1rem;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: var(--kpet-white);
-    color: var(--kpet-purple-700);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color var(--kpet-transition), transform var(--kpet-transition);
-  }
-
-  .kpet-nav-close:hover {
-    background: var(--kpet-purple-100);
-    transform: rotate(90deg);
-  }
-
-  .kpet-nav-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(59, 7, 100, 0.5);
-    backdrop-filter: blur(2px);
-    z-index: 190;
-    animation: kpet-nav-backdrop-in 220ms var(--kpet-ease);
-  }
-
-  @keyframes kpet-nav-backdrop-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  /* ---------- Drawer greeting ---------- */
-  .kpet-drawer-greeting {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--kpet-ink);
-    font-size: 0.98rem;
-  }
-
-  .kpet-drawer-greeting-icon {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: var(--kpet-white);
-    color: var(--kpet-purple-700);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .kpet-drawer-greeting-icon svg {
-    width: 19px;
-    height: 19px;
-  }
-
-  /* ---------- Category list + sliding multicolor pill (mirrors the admin sidebar) ---------- */
-  .kpet-category-nav {
-    position: relative;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .kpet-category-slider {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    border-radius: 12px;
-    background: linear-gradient(120deg, var(--kpet-purple-600) 0%, var(--kpet-purple-500) 55%, var(--kpet-yellow-500) 130%);
-    box-shadow: 0 4px 14px rgba(76, 29, 149, 0.22);
-    transition: transform 380ms cubic-bezier(0.34, 1.15, 0.64, 1), height 380ms cubic-bezier(0.34, 1.15, 0.64, 1);
-    z-index: 0;
-  }
-
-  .kpet-category-nav a {
-    position: relative;
-    z-index: 1;
-    display: block;
-    padding: 0.65rem 0.85rem;
-    border-radius: 12px;
-  }
-
-  .kpet-category-nav a::after {
-    display: none;
-  }
-
-  .kpet-category-nav a.active {
-    color: var(--kpet-white);
-  }
-
-  .kpet-nav-actions {
-    margin-top: auto;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(76, 29, 149, 0.1);
-  }
-
-  .kpet-nav-actions .btn {
-    width: 100%;
-    background: var(--kpet-white);
-  }
-}
-
 /* ---------- Hero ---------- */
-/* Banners are wide landscape images, so a fixed height (tuned for desktop)
-   crops most of their width away on narrow screens once object-fit:cover
-   forces that same height on a much narrower box. Scaling by aspect-ratio
-   instead — taller on phones, wider as the viewport grows — keeps a much
-   larger share of each banner visible at every size. */
 .hero-wrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
   max-height: 60vh;
@@ -335,8 +21,8 @@
 @media (min-width: 992px) {
   .hero-wrap {
     aspect-ratio: unset;
-    height: 420px;
-    max-height: 55vh;
+    height: 480px;
+    max-height: 60vh;
   }
 }
 
@@ -374,6 +60,11 @@
 .hero-overlay p {
   font-size: 1.1rem;
   opacity: 0.95;
+  margin-bottom: 1.25rem;
+}
+
+.hero-cta {
+  display: inline-block;
 }
 
 ::ng-deep app-banner-carousel {
@@ -398,431 +89,197 @@
   width: 100%;
 }
 
-/* ---------- Section header ---------- */
-.section-title {
-  font-weight: 800;
-  color: var(--kpet-ink);
+/* ---------- Category cards ---------- */
+.category-cards-section {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
-.section-underline {
-  flex: 1;
-  max-width: 120px;
-  height: 4px;
-  margin-left: 1.5rem;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
-  display: none;
+.category-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
-/* ---------- Product search + sort toolbar ---------- */
-.products-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1.75rem;
+@media (max-width: 575.98px) {
+  .category-cards-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.products-search {
+.category-card {
   position: relative;
-  flex: 1 1 260px;
-  min-width: 220px;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-decoration: none;
+  border-radius: var(--kpet-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--kpet-shadow-sm);
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
 }
 
-.products-search-icon {
-  position: absolute;
-  left: 0.9rem;
-  width: 18px;
-  height: 18px;
-  color: var(--kpet-ink-soft);
-  pointer-events: none;
+.category-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: var(--kpet-shadow-lg);
 }
 
-.products-search input {
+.category-card-image {
   width: 100%;
-  border: 1.5px solid rgba(76, 29, 149, 0.14);
-  border-radius: 999px;
-  padding: 0.65rem 2.4rem;
-  font-size: 0.95rem;
-  color: var(--kpet-ink);
-  background: var(--kpet-white);
-  transition: border-color var(--kpet-transition), box-shadow var(--kpet-transition);
-}
-
-.products-search input:focus {
-  outline: none;
-  border-color: var(--kpet-purple-500);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
-}
-
-.products-search-clear {
-  position: absolute;
-  right: 0.7rem;
-  border: none;
-  background: var(--kpet-purple-100);
-  color: var(--kpet-purple-700);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  line-height: 1;
-  cursor: pointer;
+  aspect-ratio: 3 / 4;
+  background-color: var(--kpet-purple-100);
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.products-sort {
-  position: relative;
-  flex: 0 0 auto;
-  min-width: 200px;
+.category-card-placeholder {
+  font-size: 3rem;
+  opacity: 0.4;
 }
 
-.products-sort-trigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  border: 1.5px solid rgba(76, 29, 149, 0.14);
-  border-radius: 999px;
-  padding: 0.65rem 1.1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--kpet-purple-700);
-  background: var(--kpet-white);
-  cursor: pointer;
-  transition: border-color var(--kpet-transition), box-shadow var(--kpet-transition);
-}
-
-.products-sort-trigger:hover {
-  border-color: var(--kpet-purple-300, var(--kpet-purple-200, var(--kpet-purple-100)));
-}
-
-.products-sort.open .products-sort-trigger,
-.products-sort-trigger:focus {
-  outline: none;
-  border-color: var(--kpet-purple-500);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
-}
-
-.products-sort-chevron {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  transition: transform var(--kpet-transition);
-}
-
-.products-sort.open .products-sort-chevron {
-  transform: rotate(180deg);
-}
-
-.products-sort-menu {
+.category-card-label {
   position: absolute;
-  top: calc(100% + 0.4rem);
   left: 0;
   right: 0;
-  z-index: 20;
-  list-style: none;
-  margin: 0;
-  padding: 0.4rem;
+  bottom: 0;
+  padding: 1.1rem 1rem 0.9rem;
+  background: linear-gradient(0deg, rgba(20, 8, 43, 0.85), rgba(20, 8, 43, 0));
+  color: var(--kpet-white);
+  font-weight: 800;
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+/* ---------- Síguenos ---------- */
+.follow-section {
+  margin-bottom: 3rem;
+}
+
+.follow-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--kpet-purple-600) 0%, var(--kpet-purple-800) 75%, var(--kpet-purple-900) 130%);
+  border-radius: var(--kpet-radius-lg);
+  box-shadow: var(--kpet-shadow);
+  padding: 1.75rem 2rem;
+  text-align: center;
+}
+
+/* An optional photo shows through a tinted gradient (not plain on top of a
+   plain image) so the white text/icons on top stay readable regardless of
+   what's in the picture. */
+.follow-card.has-bg-image {
+  background-image: linear-gradient(150deg, rgba(109, 40, 217, 0.88) 0%, rgba(76, 29, 149, 0.9) 75%, rgba(59, 7, 100, 0.92) 130%), var(--bg-image, none);
+  background-size: cover;
+  background-position: center;
+}
+
+.follow-title {
+  color: var(--kpet-white);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 1.1rem;
+}
+
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--kpet-purple-700);
   background: var(--kpet-white);
-  border-radius: var(--kpet-radius);
-  box-shadow: var(--kpet-shadow-lg);
-  border: 1px solid rgba(76, 29, 149, 0.08);
-  animation: sort-menu-in 160ms var(--kpet-ease);
+  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition), background-color var(--kpet-transition);
 }
 
-@keyframes sort-menu-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
+.social-link:hover {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  background: var(--kpet-yellow-500);
+  color: var(--kpet-purple-900);
 }
 
-.products-sort-menu button {
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: transparent;
-  color: var(--kpet-ink);
-  font-size: 0.88rem;
-  font-weight: 500;
-  padding: 0.55rem 0.75rem;
-  border-radius: 8px;
+.social-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ---------- Featured products carousel ---------- */
+.featured-section {
+  margin-bottom: 3rem;
+}
+
+.featured-nav-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.featured-nav-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(76, 29, 149, 0.14);
+  background: var(--kpet-white);
+  color: var(--kpet-purple-700);
+  font-size: 1.3rem;
+  line-height: 1;
   cursor: pointer;
   transition: background-color var(--kpet-transition), color var(--kpet-transition);
 }
 
-.products-sort-menu button:hover {
-  background: var(--kpet-purple-50);
+.featured-nav-btn:hover {
+  background: var(--kpet-purple-600);
+  color: var(--kpet-white);
 }
 
-.products-sort-menu button.active {
-  background: linear-gradient(120deg, var(--kpet-purple-600), var(--kpet-purple-700));
-  color: var(--kpet-white);
-  font-weight: 700;
+.featured-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+
+.featured-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.featured-item {
+  flex: 0 0 auto;
+  width: 240px;
+  scroll-snap-align: start;
 }
 
 @media (max-width: 575.98px) {
-  .products-sort {
-    flex: 1 1 100%;
+  .featured-item {
+    width: 200px;
   }
 }
 
-/* ---------- Product cards ---------- */
-.product-card {
-  border-color: rgba(76, 29, 149, 0.08);
+/* ---------- About video ---------- */
+.video-section {
+  margin-bottom: 3rem;
+  max-width: 900px;
 }
 
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--kpet-shadow-lg);
-}
-
-.product-image-wrapper {
-  position: relative;
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--kpet-purple-50);
-  border-top-left-radius: var(--kpet-radius);
-  border-top-right-radius: var(--kpet-radius);
-  overflow: hidden;
-}
-
-.product-image {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
-  transition: transform 400ms var(--kpet-ease);
-}
-
-.product-card:hover .product-image {
-  transform: scale(1.06);
-}
-
-.product-image-placeholder {
-  font-size: 3rem;
-  opacity: 0.35;
-}
-
-.offer-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: linear-gradient(135deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
-  color: var(--kpet-purple-900);
-  font-weight: 700;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: 999px;
-  box-shadow: var(--kpet-shadow-sm);
-}
-
-.favorite-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--kpet-ink-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--kpet-shadow-sm);
-  cursor: pointer;
-  transition: transform var(--kpet-transition), color var(--kpet-transition), background-color var(--kpet-transition);
-}
-
-.favorite-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.favorite-btn:hover {
-  transform: scale(1.1);
-  color: #E11D48;
-}
-
-.favorite-btn.active {
-  background: #FEE2E2;
-  color: #E11D48;
-}
-
-.product-name {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-  color: var(--kpet-ink);
-}
-
-.product-rating {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.35rem;
-}
-
-.product-stars {
-  display: inline-flex;
-  gap: 1px;
-}
-
-.product-star {
-  color: rgba(76, 29, 149, 0.18);
-  font-size: 0.85rem;
-  line-height: 1;
-}
-
-.product-star.filled {
-  color: var(--kpet-yellow-500);
-}
-
-.product-rating-count {
-  color: var(--kpet-ink-soft);
-  font-size: 0.75rem;
-}
-
-.product-description {
-  font-size: 0.85rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-}
-
-.price-old {
-  text-decoration: line-through;
-  color: #A79BC4;
-  font-size: 0.85rem;
-}
-
-.price-current {
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: var(--kpet-purple-700);
-}
-
-/* Quantity stepper shown on a card once that product is already in the
-   cart, so +/- 1 doesn't require opening the product or going to the cart. */
-.card-qty-stepper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
-  background: var(--kpet-purple-50);
-  border-radius: 999px;
-  padding: 0.4rem 0.6rem;
-}
-
-.card-qty-stepper span {
-  min-width: 1.2rem;
-  text-align: center;
-  font-weight: 800;
-  color: var(--kpet-purple-800, var(--kpet-purple-700));
-}
-
-.card-qty-stepper button {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: none;
-  background: var(--kpet-white);
-  color: var(--kpet-purple-700);
-  font-weight: 700;
-  font-size: 1rem;
-  line-height: 1;
-  box-shadow: var(--kpet-shadow-sm);
-  cursor: pointer;
-  transition: transform var(--kpet-transition), background-color var(--kpet-transition), color var(--kpet-transition);
-}
-
-.card-qty-stepper button:hover:not(:disabled) {
-  background: var(--kpet-purple-600);
-  color: var(--kpet-white);
-  transform: scale(1.08);
-}
-
-.card-qty-stepper button:disabled {
-  opacity: 0.4;
-  cursor: default;
-  box-shadow: none;
-}
-
-/* ---------- Conócenos / Social ---------- */
-.about-section {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(160deg, var(--kpet-purple-50) 0%, var(--kpet-purple-50) 60%, var(--kpet-purple-100) 140%);
-  padding: 3.5rem 0;
-  margin-top: 3rem;
-}
-
-.about-paw {
-  position: absolute;
-  font-size: 5rem;
-  opacity: 0.08;
-  pointer-events: none;
-}
-
-.about-paw-1 {
-  top: -1rem;
-  left: -1rem;
-  transform: rotate(-15deg);
-}
-
-.about-paw-2 {
-  bottom: -1.5rem;
-  right: -1rem;
-  font-size: 7rem;
-  transform: rotate(20deg);
-}
-
-.about-section > .container {
-  position: relative;
-  z-index: 1;
-}
-
-.about-underline {
-  flex: 1;
-  max-width: 90px;
-  height: 4px;
-  margin-left: 1.25rem;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--kpet-purple-600), var(--kpet-yellow-500));
-}
-
-.about-text {
-  position: relative;
-  color: var(--kpet-ink-soft);
-  line-height: 1.75;
-  white-space: pre-line;
-  padding-left: 1.1rem;
-  border-left: 3px solid var(--kpet-purple-200, var(--kpet-purple-100));
-}
-
-.about-address {
-  color: var(--kpet-ink-soft);
-  font-weight: 600;
-  margin: 1rem 0 0.75rem;
-}
-
-.about-video {
+.about-video,
+.about-video-embed {
   display: block;
   width: 100%;
-  max-width: 900px;
-  margin: 0.5rem auto 0;
+  margin: 0 auto;
   border-radius: var(--kpet-radius);
   box-shadow: var(--kpet-shadow);
   background: #000;
@@ -830,19 +287,9 @@
 
 .about-video-embed {
   position: relative;
-  width: 100%;
-  max-width: 900px;
   aspect-ratio: 16 / 9;
-  margin: 0.5rem auto 0;
-  box-shadow: var(--kpet-shadow);
-  background: #000;
 }
 
-/* Rounded corners live on the iframe/button itself, not the wrapper above —
-   an ancestor with overflow:hidden clipping a nested cross-origin iframe is
-   another well-known iOS Safari trigger for broken touch delivery into that
-   iframe's own content (YouTube's controls), separate from the transform
-   issue already fixed on the row above this. */
 .about-video-embed iframe {
   position: absolute;
   inset: 0;
@@ -884,7 +331,6 @@
 
 .about-video-facade:hover .about-video-play-icon {
   transform: scale(1.08);
-  background: rgba(220, 38, 38, 1);
 }
 
 .about-video-play-icon svg {
@@ -893,210 +339,56 @@
   margin-left: 3px;
 }
 
-.about-video-link-fallback {
+/* ---------- Icon row ---------- */
+.icon-row-section {
+  margin-bottom: 3.5rem;
+}
+
+.icon-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 767.98px) {
+  .icon-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.icon-row-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  width: 100%;
-  max-width: 900px;
-  aspect-ratio: 16 / 9;
-  margin: 0.5rem auto 0;
+  text-align: center;
+  gap: 0.35rem;
+  padding: 1.75rem 1.25rem;
   border-radius: var(--kpet-radius);
-  box-shadow: var(--kpet-shadow);
-  background: linear-gradient(150deg, var(--kpet-purple-600) 0%, var(--kpet-purple-800) 75%, var(--kpet-purple-900) 130%);
-  color: var(--kpet-white);
-  font-weight: 700;
-  font-size: 1.1rem;
+  background: var(--kpet-purple-50);
   text-decoration: none;
+  color: var(--kpet-ink);
   transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
 }
 
-.about-video-link-fallback:hover {
-  color: var(--kpet-white);
-  transform: translateY(-2px);
-  box-shadow: var(--kpet-shadow-lg);
-}
-
-.about-video-link-fallback svg {
-  width: 32px;
-  height: 32px;
-}
-
-.social-card {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(150deg, var(--kpet-purple-600) 0%, var(--kpet-purple-800) 75%, var(--kpet-purple-900) 130%);
-  border-radius: var(--kpet-radius);
-  box-shadow: var(--kpet-shadow);
-  padding: 1.75rem;
-  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition);
-}
-
-.social-card:hover {
+.icon-row-item:hover {
   transform: translateY(-4px);
-  box-shadow: var(--kpet-shadow-lg);
+  box-shadow: var(--kpet-shadow);
+  color: var(--kpet-ink);
 }
 
-.social-card-blob {
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 140px;
-  height: 140px;
+.icon-row-icon {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(250, 204, 21, 0.28), transparent 70%);
-  pointer-events: none;
-}
-
-.social-title {
-  position: relative;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--kpet-white);
-  margin-bottom: 1.1rem;
-}
-
-.social-links {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1.4rem;
-}
-
-.social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  color: var(--kpet-purple-700);
-  background: var(--kpet-white);
-  transition: transform var(--kpet-transition), box-shadow var(--kpet-transition), background-color var(--kpet-transition);
-}
-
-.social-link:hover {
-  transform: translateY(-3px) scale(1.06);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  background: var(--kpet-yellow-500);
-  color: var(--kpet-purple-900);
-}
-
-.social-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.contact-links {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  padding-top: 1.1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.contact-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--kpet-white);
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.contact-link-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-
-.contact-link:hover {
-  color: var(--kpet-yellow-500);
-}
-
-/* ---------- Footer ---------- */
-.footer-kpet {
-  background: linear-gradient(135deg, var(--kpet-purple-900), var(--kpet-purple-700));
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.footer-col-title {
-  color: var(--kpet-white);
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.footer-link-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.footer-link-list a {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.75);
-  text-decoration: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.footer-link-list a:hover {
-  color: var(--kpet-white);
-  text-decoration: underline;
-}
-
-.footer-contact-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.footer-social-links {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.footer-social-link {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-700));
   color: var(--kpet-white);
-  transition: background-color var(--kpet-transition), transform var(--kpet-transition);
+  margin-bottom: 0.5rem;
 }
 
-.footer-social-link svg {
-  width: 18px;
-  height: 18px;
-}
-
-.footer-social-link:hover {
-  background: var(--kpet-yellow-500);
-  color: var(--kpet-purple-900);
-  transform: translateY(-2px);
-}
-
-.footer-divider {
-  border-color: rgba(255, 255, 255, 0.15);
-  margin: 2rem 0 1.25rem;
+.icon-row-icon svg {
+  width: 26px;
+  height: 26px;
 }

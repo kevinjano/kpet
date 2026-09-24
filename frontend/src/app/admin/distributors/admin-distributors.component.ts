@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DistributorService } from '../../services/distributor-service';
+import { DistributorService, DistributorStockMovement } from '../../services/distributor-service';
 import { ProductService } from '../../services/product-service';
 import { UploadService } from '../../services/upload-service';
 import { Distributor } from '../../distributor';
@@ -42,6 +42,14 @@ export class AdminDistributorsComponent implements OnInit {
   // productId -> quantity; presence of a key means the product is selected
   productQuantities = new Map<number, number>();
   saving = false;
+
+  // Stock history panel — only relevant while editing an existing
+  // distributor (nothing to show/log yet for one being created).
+  stockHistory: DistributorStockMovement[] = [];
+  stockHistoryLoaded = false;
+  stockMovementProductId: number | null = null;
+  stockMovementQuantity: number | null = null;
+  recordingMovement = false;
 
   get cities(): string[] {
     return Array.from(new Set(this.distributors.map(d => d.city).filter(c => !!c))).sort();
@@ -161,6 +169,7 @@ export class AdminDistributorsComponent implements OnInit {
       description: dist.description,
       active: dist.active,
     });
+    this.loadStockHistory(dist.id);
   }
 
   cancelEdit(): void {
@@ -169,6 +178,58 @@ export class AdminDistributorsComponent implements OnInit {
     this.previewUrl = null;
     this.productQuantities = new Map();
     this.form.reset({name: '', city: '', address: '', phone: '', whatsappNumber: '', mapUrl: '', description: '', active: true});
+    this.stockHistory = [];
+    this.stockHistoryLoaded = false;
+    this.stockMovementProductId = null;
+    this.stockMovementQuantity = null;
+  }
+
+  loadStockHistory(distributorId: number): void {
+    this.stockHistoryLoaded = false;
+    this.distributorService.getStockHistory(distributorId).subscribe(history => {
+      this.stockHistory = history;
+      this.stockHistoryLoaded = true;
+    });
+  }
+
+  recordStockMovement(): void {
+    if (!this.editingDistributorId || !this.stockMovementProductId || !this.stockMovementQuantity) {
+      return;
+    }
+    this.recordingMovement = true;
+    this.distributorService.recordStockMovement(this.editingDistributorId, this.stockMovementProductId, this.stockMovementQuantity).subscribe({
+      next: updated => {
+        this.recordingMovement = false;
+        this.productQuantities = new Map(updated.distributorProducts.map(dp => [dp.product.id, dp.quantity]));
+        this.stockMovementProductId = null;
+        this.stockMovementQuantity = null;
+        this.loadStockHistory(this.editingDistributorId!);
+        this.loadDistributors();
+        this.modalService.success('Movimiento de stock registrado.');
+      },
+      error: err => {
+        this.recordingMovement = false;
+        this.modalService.error(extractErrorMessage(err, 'No se pudo registrar el movimiento.'));
+      }
+    });
+  }
+
+  exportStockHistory(): void {
+    if (!this.editingDistributorId) {
+      return;
+    }
+    const distributorName = this.distributors.find(d => d.id === this.editingDistributorId)?.name ?? 'distribuidor';
+    this.distributorService.exportStockHistory(this.editingDistributorId).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `historial-stock-${distributorName}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => this.modalService.error('Error al exportar el historial.')
+    });
   }
 
   async deleteDistributor(id: number): Promise<void> {
