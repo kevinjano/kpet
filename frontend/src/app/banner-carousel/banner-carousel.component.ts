@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /** Auto-advancing hero image carousel (home page banners). Restarts its timer whenever the `images` input changes so a mid-cycle content swap doesn't leave a stale interval running. */
@@ -16,6 +16,11 @@ export class BannerCarouselComponent implements OnInit, OnChanges, OnDestroy {
 
   activeIndex = 0;
   private timer: ReturnType<typeof setInterval> | undefined;
+
+  // Banners are cropped (object-fit: cover) to fill the hero — tapping one
+  // opens it uncropped in a fullscreen lightbox so the whole image is visible.
+  lightboxOpen = false;
+  lightboxIndex = 0;
 
   ngOnInit(): void {
     this.startAutoplay();
@@ -57,5 +62,38 @@ export class BannerCarouselComponent implements OnInit, OnChanges, OnDestroy {
   goTo(index: number): void {
     this.activeIndex = index;
     this.startAutoplay();
+  }
+
+  openLightbox(index: number): void {
+    this.lightboxIndex = index;
+    this.lightboxOpen = true;
+    this.stopAutoplay();
+  }
+
+  closeLightbox(): void {
+    this.lightboxOpen = false;
+    this.startAutoplay();
+  }
+
+  lightboxNext(): void {
+    this.lightboxIndex = (this.lightboxIndex + 1) % this.images.length;
+  }
+
+  lightboxPrev(): void {
+    this.lightboxIndex = (this.lightboxIndex - 1 + this.images.length) % this.images.length;
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (!this.lightboxOpen) {
+      return;
+    }
+    if (event.key === 'Escape') {
+      this.closeLightbox();
+    } else if (event.key === 'ArrowRight') {
+      this.lightboxNext();
+    } else if (event.key === 'ArrowLeft') {
+      this.lightboxPrev();
+    }
   }
 }

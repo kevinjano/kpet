@@ -10,6 +10,7 @@ import { Order } from '../order';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, extractErrorMessage, DEFAULT_LOGO_URL } from '../constants';
 import { SiteFooterComponent } from '../site-footer/site-footer.component';
+import { PENDING_DISCOUNT_KEY, PendingDiscount } from '../discount-modal/discount-modal.component';
 
 @Component({
   selector: 'app-cart',
@@ -91,6 +92,15 @@ export class CartComponent implements OnInit {
     return this.cartService.getTotal();
   }
 
+  get pendingDiscountPercent(): number | null {
+    return this.getPendingDiscount()?.percent ?? null;
+  }
+
+  get discountedTotal(): number {
+    const percent = this.pendingDiscountPercent;
+    return percent ? this.total * (1 - percent / 100) : this.total;
+  }
+
   increment(item: CartItem): void {
     this.cartService.updateQuantity(item.product.id, item.quantity + 1);
   }
@@ -101,6 +111,17 @@ export class CartComponent implements OnInit {
 
   remove(item: CartItem): void {
     this.cartService.removeFromCart(item.product.id);
+  }
+
+  // Set by DiscountModalComponent when a logged-out visitor submits the
+  // welcome-discount form, cleared once an order actually redeems it.
+  private getPendingDiscount(): PendingDiscount | null {
+    try {
+      const raw = localStorage.getItem(PENDING_DISCOUNT_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
   }
 
   // Step 1 (cart screen): create the order and move to the QR payment step.
@@ -121,7 +142,15 @@ export class CartComponent implements OnInit {
       quantity: item.quantity,
       unitPrice: this.unitPrice(item),
     }));
-    const totalSnapshot = this.total;
+    const rawTotal = this.total;
+
+    // A first-order welcome discount is redeemed at most once per lead (see
+    // OrderController@create) — checked here just to decide what to show the
+    // customer; the backend re-validates it's actually still unused before
+    // ever applying it.
+    const pendingDiscount = this.getPendingDiscount();
+    const discountAmount = pendingDiscount ? rawTotal * (pendingDiscount.percent / 100) : 0;
+    const totalSnapshot = rawTotal - discountAmount;
 
     // WhatsApp renders *text* as bold and a blank line as a paragraph break,
     // so this reads as a formatted receipt instead of one run-on paragraph.
@@ -131,24 +160,37 @@ export class CartComponent implements OnInit {
       `- ${item.quantity}x ${item.product.name} — Bs.${this.lineTotal(item).toFixed(2)}`
     );
 
+    const totalLines = pendingDiscount
+      ? [
+          `Por ser mi primer pedido, tengo un descuento del ${pendingDiscount.percent}%.`,
+          '',
+          `Subtotal: Bs.${rawTotal.toFixed(2)}`,
+          `Descuento (${pendingDiscount.percent}%): -Bs.${discountAmount.toFixed(2)}`,
+          `*Total a pagar: Bs.${totalSnapshot.toFixed(2)}*`,
+        ]
+      : [`*Total: Bs.${totalSnapshot.toFixed(2)}*`];
+
     this.pendingWhatsappMessage = [
       `¡Hola! Quiero hacer un pedido en *${this.storeName}*:`,
       '',
       '*Mi pedido:*',
       ...lines,
       '',
-      `*Total: Bs.${totalSnapshot.toFixed(2)}*`,
+      ...totalLines,
       '',
       'Ya realicé el pago, adjunto mi comprobante.',
     ].join('\n');
 
     this.placingOrder = true;
-    this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}).subscribe({
+    this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}, pendingDiscount?.leadId).subscribe({
       next: order => {
         this.placingOrder = false;
         this.currentOrder = order;
         this.checkoutStep = 'payment';
         this.cartService.clearCart();
+        if (pendingDiscount) {
+          localStorage.removeItem(PENDING_DISCOUNT_KEY);
+        }
       },
       error: err => {
         this.placingOrder = false;

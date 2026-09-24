@@ -66,15 +66,21 @@
             <tr *ngFor="let item of order.items">
               <td>{{ item.productName }}</td>
               <td>{{ item.quantity }}</td>
-              <td>Bs.{{ item.unitPrice.toFixed(2) }}</td>
-              <td>Bs.{{ (item.unitPrice * item.quantity).toFixed(2) }}</td>
+              <td>Bs.{{ itemUnitPrice(item).toFixed(2) }}</td>
+              <td>Bs.{{ itemSubtotal(item).toFixed(2) }}</td>
             </tr>
             </tbody>
           </table>
 
+          <div class="order-discount-breakdown" *ngIf="order.discountPercent">
+            <span>Subtotal: Bs.{{ preDiscountTotal(order).toFixed(2) }}</span>
+            <span>Descuento por primer pedido ({{ order.discountPercent }}%): -Bs.{{ discountAmount(order).toFixed(2) }}</span>
+          </div>
+
           <div class="order-card-footer">
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
               <span class="fw-bold">Total: Bs.{{ order.total.toFixed(2) }}</span>
+              <span class="role-pill role-admin" *ngIf="order.discountPercent">🏷 Descuento por primer pedido: {{ order.discountPercent }}% aplicado</span>
               <span class="receipt-flag" [class.receipt-flag-yes]="order.receiptSent">
                 {{ order.receiptSent ? '📎 Comprobante enviado' : 'Sin confirmar envío de comprobante' }}
               </span>
@@ -135,7 +141,10 @@
             </td>
             <td class="fw-semibold">#{{ order.id }}</td>
             <td>{{ order.createdAt | date:'d MMM y, HH:mm' }}</td>
-            <td class="fw-bold">Bs.{{ order.total.toFixed(2) }}</td>
+            <td class="fw-bold">
+              Bs.{{ order.total.toFixed(2) }}
+              <span class="discount-badge" *ngIf="order.discountPercent" title="Descuento por primer pedido">🏷 -{{ order.discountPercent }}%</span>
+            </td>
             <td>
               <span class="receipt-flag" [class.receipt-flag-yes]="order.receiptSent">
                 {{ order.receiptSent ? 'Enviado' : 'Sin confirmar' }}
@@ -157,11 +166,16 @@
                 <tr *ngFor="let item of order.items">
                   <td>{{ item.productName }}</td>
                   <td>{{ item.quantity }}</td>
-                  <td>Bs.{{ item.unitPrice.toFixed(2) }}</td>
-                  <td>Bs.{{ (item.unitPrice * item.quantity).toFixed(2) }}</td>
+                  <td>Bs.{{ itemUnitPrice(item).toFixed(2) }}</td>
+                  <td>Bs.{{ itemSubtotal(item).toFixed(2) }}</td>
                 </tr>
                 </tbody>
               </table>
+              <div class="order-discount-breakdown" *ngIf="order.discountPercent">
+                <span>Subtotal: Bs.{{ preDiscountTotal(order).toFixed(2) }}</span>
+                <span>Descuento por primer pedido ({{ order.discountPercent }}%): -Bs.{{ discountAmount(order).toFixed(2) }}</span>
+                <span class="fw-bold">Total pagado: Bs.{{ order.total.toFixed(2) }}</span>
+              </div>
             </td>
           </tr>
         </ng-container>

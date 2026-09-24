@@ -25,8 +25,11 @@ export class OrderService {
     return this.httpClient.get<Order[]>(`${this.apiUrl}/mine`);
   }
 
-  createOrder(order: Partial<Order>): Observable<Order> {
-    return this.httpClient.post<Order>(`${this.apiUrl}/create`, order);
+  // discountLeadId isn't a field on Order itself (it's redeemed, not stored,
+  // by the backend — see OrderController@create) so it's a separate param
+  // rather than baked into the Partial<Order> shape.
+  createOrder(order: Partial<Order>, discountLeadId?: number): Observable<Order> {
+    return this.httpClient.post<Order>(`${this.apiUrl}/create`, { ...order, discountLeadId });
   }
 
   markReceiptSent(id: number): Observable<Order> {

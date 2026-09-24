@@ -80,38 +80,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
     public favoriteService: FavoriteService,
     private reviewService: ReviewService,
     private sanitizer: DomSanitizer,
-  ) {}
+  ) {
+    // Seed the hero banner from the last-known settings *before* the first
+    // render, not just in ngOnInit's subscription — that fires one change
+    // detection cycle later, which was enough of a gap to flash the
+    // no-banner placeholder on reload before the real one popped in.
+    const cached = this.siteSettingsService.getCachedSettings();
+    if (cached) {
+      this.applySettings(cached);
+    }
+  }
 
   ngOnInit(): void {
     this.productService.getProducts().subscribe(data => {
       this.products = data.filter(p => p.active);
     });
 
-    this.siteSettingsService.getSettings().subscribe(data => {
-      this.settings = data;
-      this.bannerImages = (data.bannerUrls ?? [])
-        .map(url => resolveImageUrl(url))
-        .filter((url): url is string => !!url);
-      this.categoryCards = [
-        { category: 'Perros', label: 'Perros', imageUrl: data.categoryImagePerros ? resolveImageUrl(data.categoryImagePerros) : null },
-        { category: 'Gatos', label: 'Gatos', imageUrl: data.categoryImageGatos ? resolveImageUrl(data.categoryImageGatos) : null },
-        { category: 'Accesorios', label: 'Accesorios', imageUrl: data.categoryImageAccesorios ? resolveImageUrl(data.categoryImageAccesorios) : null },
-      ];
-
-      this.aboutVideoActivated = false;
-      this.aboutVideoThumbnail = null;
-      this.aboutVideoRawEmbedUrl = null;
-      this.safeAboutVideoUrl = null;
-      if (data.aboutVideoUrl && !isDirectVideoFile(data.aboutVideoUrl) && isVideoEmbeddable(data.aboutVideoUrl)) {
-        this.aboutVideoRawEmbedUrl = toEmbedVideoUrl(data.aboutVideoUrl);
-        const youtubeId = extractYoutubeId(data.aboutVideoUrl);
-        if (youtubeId) {
-          this.aboutVideoThumbnail = `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
-        } else {
-          this.safeAboutVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.aboutVideoRawEmbedUrl);
-        }
-      }
-    });
+    this.siteSettingsService.getSettings().subscribe(data => this.applySettings(data));
 
     this.cartService.cart$.subscribe(items => {
       this.cartQuantities = new Map(items.map(item => [item.product.id, item.quantity]));
@@ -124,6 +109,32 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.measureHero();
+  }
+
+  private applySettings(data: SiteSettings): void {
+    this.settings = data;
+    this.bannerImages = (data.bannerUrls ?? [])
+      .map(url => resolveImageUrl(url))
+      .filter((url): url is string => !!url);
+    this.categoryCards = [
+      { category: 'Perros', label: 'Perros', imageUrl: data.categoryImagePerros ? resolveImageUrl(data.categoryImagePerros) : null },
+      { category: 'Gatos', label: 'Gatos', imageUrl: data.categoryImageGatos ? resolveImageUrl(data.categoryImageGatos) : null },
+      { category: 'Accesorios', label: 'Accesorios', imageUrl: data.categoryImageAccesorios ? resolveImageUrl(data.categoryImageAccesorios) : null },
+    ];
+
+    this.aboutVideoActivated = false;
+    this.aboutVideoThumbnail = null;
+    this.aboutVideoRawEmbedUrl = null;
+    this.safeAboutVideoUrl = null;
+    if (data.aboutVideoUrl && !isDirectVideoFile(data.aboutVideoUrl) && isVideoEmbeddable(data.aboutVideoUrl)) {
+      this.aboutVideoRawEmbedUrl = toEmbedVideoUrl(data.aboutVideoUrl);
+      const youtubeId = extractYoutubeId(data.aboutVideoUrl);
+      if (youtubeId) {
+        this.aboutVideoThumbnail = `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+      } else {
+        this.safeAboutVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.aboutVideoRawEmbedUrl);
+      }
+    }
   }
 
   @HostListener('window:resize')

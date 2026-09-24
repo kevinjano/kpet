@@ -23,6 +23,10 @@
   <span>Snacks para tu mejor amigo</span>
 </div>
 
+<app-loading-spinner *ngIf="!settingsLoaded" message="Cargando..."></app-loading-spinner>
+
+<ng-container *ngIf="settingsLoaded">
+
 <!-- ---------- Row 1: ¿Qué es? + imagen destacada ---------- -->
 <section class="container sobre-row" *ngIf="settings?.aboutText">
   <div class="row g-4 align-items-center">
@@ -37,27 +41,12 @@
   </div>
 </section>
 
-<!-- ---------- Row 2: Misión + video (alternado) ---------- -->
+<!-- ---------- Row 2: Misión ---------- -->
 <section class="container sobre-row sobre-row-tint" *ngIf="settings?.missionText">
-  <div class="row g-4 align-items-center">
-    <div class="col-md-6 kpet-fade-up" *ngIf="settings?.aboutVideoUrl">
-      <video *ngIf="isDirectVideoFile(settings!.aboutVideoUrl!); else missionVideoNotDirect" class="about-video" [src]="settings?.aboutVideoUrl" controls playsinline preload="metadata"></video>
-      <ng-template #missionVideoNotDirect>
-        <div class="about-video-embed" *ngIf="safeAboutVideoUrl || aboutVideoThumbnail">
-          <button *ngIf="aboutVideoThumbnail && !aboutVideoActivated" type="button" class="about-video-facade" [style.backgroundImage]="'url(' + aboutVideoThumbnail + ')'" (click)="activateAboutVideo()" aria-label="Reproducir video">
-            <span class="about-video-play-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
-            </span>
-          </button>
-          <iframe *ngIf="safeAboutVideoUrl && (!aboutVideoThumbnail || aboutVideoActivated)" [src]="safeAboutVideoUrl" title="Video de la tienda" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-      </ng-template>
-    </div>
-    <div class="kpet-fade-up" [class.col-md-6]="settings?.aboutVideoUrl" [class.col-12]="!settings?.aboutVideoUrl">
-      <span class="sobre-row-paw">🐾</span>
-      <h3>Misión</h3>
-      <p class="about-text">{{ settings?.missionText }}</p>
-    </div>
+  <div class="sobre-card-wide kpet-fade-up">
+    <span class="sobre-row-paw">🐾</span>
+    <h3>Misión</h3>
+    <p class="about-text">{{ settings?.missionText }}</p>
   </div>
 </section>
 
@@ -69,11 +58,16 @@
   </div>
 </section>
 
-<!-- ---------- Row 4: Nuestro compromiso ---------- -->
-<section class="container sobre-row sobre-row-tint" *ngIf="settings?.commitmentText">
-  <div class="sobre-card-wide sobre-card-accent kpet-fade-up">
-    <h3>Nuestro compromiso</h3>
-    <p>{{ settings?.commitmentText }}</p>
+<!-- ---------- Row 4: Nuestro compromiso + corazón ---------- -->
+<section class="container sobre-row sobre-row-tint" *ngIf="settings?.commitmentText || settings?.commitmentImageUrl">
+  <div class="row g-4 align-items-center">
+    <div class="col-md-5 kpet-fade-up" *ngIf="settings?.commitmentImageUrl" [class.col-12]="!settings?.commitmentText">
+      <img [src]="resolveImageUrl(settings?.commitmentImageUrl)" alt="Nuestro compromiso" class="commitment-image">
+    </div>
+    <div class="kpet-fade-up sobre-card-accent" *ngIf="settings?.commitmentText" [class.col-md-7]="settings?.commitmentImageUrl" [class.col-12]="!settings?.commitmentImageUrl">
+      <h3>Nuestro compromiso</h3>
+      <p>{{ settings?.commitmentText }}</p>
+    </div>
   </div>
 </section>
 
@@ -91,5 +85,7 @@
     </div>
   </div>
 </section>
+
+</ng-container>
 
 <app-site-footer [settings]="settings"></app-site-footer>

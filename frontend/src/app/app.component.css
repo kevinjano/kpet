@@ -1,0 +1,13 @@
+/* Brief full-screen overlay shown between route navigations (see
+   AppComponent's router-events subscription) so every page transition gets
+   the same paw-bounce moment instead of a blank flash while the next page's
+   own data loads. */
+.global-paws-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--kpet-white);
+}

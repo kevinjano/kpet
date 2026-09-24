@@ -20,7 +20,10 @@
         <small class="text-muted d-block mb-2">Tamaño recomendado: 240×80px, PNG con fondo transparente.</small>
         <input type="file" accept="image/*" class="form-control" (change)="onLogoSelected($event)">
         <div class="mt-2">
-          <img *ngIf="logoPreview || currentLogoUrl" [src]="logoPreview || resolveImageUrl(currentLogoUrl)" alt="logo" class="admin-preview">
+          <ng-container *ngIf="logoPreview || currentLogoUrl">
+            <img [src]="logoPreview || resolveImageUrl(currentLogoUrl)" alt="logo" class="admin-preview">
+            <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeLogo()">Eliminar imagen</button>
+          </ng-container>
           <span *ngIf="!logoPreview && !currentLogoUrl" class="text-muted">Sin logo todavía</span>
         </div>
       </div>
@@ -62,7 +65,10 @@
         <small class="text-muted d-block mb-2">Tamaño recomendado: 500×500px (cuadrado).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onQrSelected($event)">
         <div class="mt-2">
-          <img *ngIf="qrPreview || currentQrCodeUrl" [src]="qrPreview || resolveImageUrl(currentQrCodeUrl)" alt="QR de pago" class="admin-preview">
+          <ng-container *ngIf="qrPreview || currentQrCodeUrl">
+            <img [src]="qrPreview || resolveImageUrl(currentQrCodeUrl)" alt="QR de pago" class="admin-preview">
+            <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeQrCode()">Eliminar imagen</button>
+          </ng-container>
           <span *ngIf="!qrPreview && !currentQrCodeUrl" class="text-muted">Sin código QR todavía</span>
         </div>
       </div>
@@ -88,40 +94,34 @@
         <small class="text-muted d-block mb-2">Se recomienda una imagen vertical (ej: 600×760px) — es la mitad izquierda del cartel.</small>
         <input type="file" accept="image/*" class="form-control" (change)="onDiscountImageSelected($event)">
         <div class="mt-2">
-          <img *ngIf="discountImagePreview || currentDiscountImageUrl" [src]="discountImagePreview || resolveImageUrl(currentDiscountImageUrl)" alt="Imagen del descuento" class="admin-preview">
+          <ng-container *ngIf="discountImagePreview || currentDiscountImageUrl">
+            <img [src]="discountImagePreview || resolveImageUrl(currentDiscountImageUrl)" alt="Imagen del descuento" class="admin-preview">
+            <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeDiscountImage()">Eliminar imagen</button>
+          </ng-container>
         </div>
       </div>
 
-      <div class="col-12" *ngIf="leads.length > 0">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <label class="form-label fw-semibold mb-0">Contactos capturados ({{ leads.length }}):</label>
-          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="exportLeads()">⬇ Exportar CSV</button>
-        </div>
-        <div class="leads-table-wrap">
-          <table class="table table-sm">
-            <thead><tr><th>Nombre</th><th>Correo</th><th>Mascota</th></tr></thead>
-            <tbody>
-              <tr *ngFor="let lead of leads">
-                <td>{{ lead.name }}</td>
-                <td>{{ lead.email }}</td>
-                <td>{{ lead.petName || '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="col-12">
+        <small class="text-muted">Los contactos que se registran para el descuento ahora se ven en <strong>Descuentos</strong>, en el menú del admin.</small>
       </div>
 
       <div class="col-md-6">
         <label class="form-label fw-semibold">Imagen de fondo — tarjeta "Síguenos en redes" (Home, opcional):</label>
         <small class="text-muted d-block mb-2">Tamaño recomendado: 1200×500px (horizontal).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onFollowCardImageSelected($event)">
-        <img *ngIf="followCardImagePreview || currentFollowCardImageUrl" [src]="followCardImagePreview || resolveImageUrl(currentFollowCardImageUrl)" alt="Fondo Síguenos" class="admin-preview mt-2">
+        <ng-container *ngIf="followCardImagePreview || currentFollowCardImageUrl">
+          <img [src]="followCardImagePreview || resolveImageUrl(currentFollowCardImageUrl)" alt="Fondo Síguenos" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeFollowCardImage()">Eliminar imagen</button>
+        </ng-container>
       </div>
       <div class="col-md-6">
         <label class="form-label fw-semibold">Imagen de fondo — tarjeta de contacto (Conócenos, opcional):</label>
         <small class="text-muted d-block mb-2">Tamaño recomendado: 1200×500px (horizontal).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onContactCardImageSelected($event)">
-        <img *ngIf="contactCardImagePreview || currentContactCardImageUrl" [src]="contactCardImagePreview || resolveImageUrl(currentContactCardImageUrl)" alt="Fondo contacto" class="admin-preview mt-2">
+        <ng-container *ngIf="contactCardImagePreview || currentContactCardImageUrl">
+          <img [src]="contactCardImagePreview || resolveImageUrl(currentContactCardImageUrl)" alt="Fondo contacto" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeContactCardImage()">Eliminar imagen</button>
+        </ng-container>
       </div>
 
       <div class="col-12">
@@ -134,19 +134,28 @@
         <label class="form-label fw-semibold">Imagen — Perros:</label>
         <small class="text-muted d-block mb-2">Tamaño recomendado: 600×800px (vertical).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onCategoryImageSelected('Perros', $event)">
-        <img *ngIf="categoryImagePreviews.Perros || currentCategoryImages.Perros" [src]="categoryImagePreviews.Perros || resolveImageUrl(currentCategoryImages.Perros)" alt="Categoría Perros" class="admin-preview mt-2">
+        <ng-container *ngIf="categoryImagePreviews.Perros || currentCategoryImages.Perros">
+          <img [src]="categoryImagePreviews.Perros || resolveImageUrl(currentCategoryImages.Perros)" alt="Categoría Perros" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeCategoryImage('Perros')">Eliminar imagen</button>
+        </ng-container>
       </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold">Imagen — Gatos:</label>
         <small class="text-muted d-block mb-2">Tamaño recomendado: 600×800px (vertical).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onCategoryImageSelected('Gatos', $event)">
-        <img *ngIf="categoryImagePreviews.Gatos || currentCategoryImages.Gatos" [src]="categoryImagePreviews.Gatos || resolveImageUrl(currentCategoryImages.Gatos)" alt="Categoría Gatos" class="admin-preview mt-2">
+        <ng-container *ngIf="categoryImagePreviews.Gatos || currentCategoryImages.Gatos">
+          <img [src]="categoryImagePreviews.Gatos || resolveImageUrl(currentCategoryImages.Gatos)" alt="Categoría Gatos" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeCategoryImage('Gatos')">Eliminar imagen</button>
+        </ng-container>
       </div>
       <div class="col-md-4">
         <label class="form-label fw-semibold">Imagen — Accesorios:</label>
         <small class="text-muted d-block mb-2">Tamaño recomendado: 600×800px (vertical).</small>
         <input type="file" accept="image/*" class="form-control" (change)="onCategoryImageSelected('Accesorios', $event)">
-        <img *ngIf="categoryImagePreviews.Accesorios || currentCategoryImages.Accesorios" [src]="categoryImagePreviews.Accesorios || resolveImageUrl(currentCategoryImages.Accesorios)" alt="Categoría Accesorios" class="admin-preview mt-2">
+        <ng-container *ngIf="categoryImagePreviews.Accesorios || currentCategoryImages.Accesorios">
+          <img [src]="categoryImagePreviews.Accesorios || resolveImageUrl(currentCategoryImages.Accesorios)" alt="Categoría Accesorios" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeCategoryImage('Accesorios')">Eliminar imagen</button>
+        </ng-container>
       </div>
 
       <div class="col-12">
@@ -175,10 +184,23 @@
       </div>
 
       <div class="col-12">
+        <label class="form-label fw-semibold">Imagen — "Nuestro compromiso" (opcional):</label>
+        <small class="text-muted d-block mb-2">Se muestra al lado del texto de "Nuestro compromiso". Tamaño recomendado: 800×600px (horizontal).</small>
+        <input type="file" accept="image/*" class="form-control" (change)="onCommitmentImageSelected($event)">
+        <ng-container *ngIf="commitmentImagePreview || currentCommitmentImageUrl">
+          <img [src]="commitmentImagePreview || resolveImageUrl(currentCommitmentImageUrl)" alt="Imagen de Nuestro compromiso" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeCommitmentImage()">Eliminar imagen</button>
+        </ng-container>
+      </div>
+
+      <div class="col-12">
         <label class="form-label fw-semibold">Imagen destacada de "Conócenos" (opcional):</label>
         <small class="text-muted d-block mb-2">Se muestra junto al video, arriba de la página "Conócenos". Tamaño recomendado: 800×600px.</small>
         <input type="file" accept="image/*" class="form-control" (change)="onAboutImageSelected($event)">
-        <img *ngIf="aboutImagePreview || currentAboutImageUrl" [src]="aboutImagePreview || resolveImageUrl(currentAboutImageUrl)" alt="Imagen de Conócenos" class="admin-preview mt-2">
+        <ng-container *ngIf="aboutImagePreview || currentAboutImageUrl">
+          <img [src]="aboutImagePreview || resolveImageUrl(currentAboutImageUrl)" alt="Imagen de Conócenos" class="admin-preview mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger d-block mt-2" (click)="removeAboutImage()">Eliminar imagen</button>
+        </ng-container>
       </div>
 
       <div class="col-12">

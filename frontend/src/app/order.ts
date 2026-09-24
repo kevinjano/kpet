@@ -18,6 +18,7 @@ export interface Order {
   receiptSent: boolean;
   createdAt: string;
   userId: number | null;
+  discountPercent: number | null;
 }
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {

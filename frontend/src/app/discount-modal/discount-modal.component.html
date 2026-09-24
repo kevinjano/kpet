@@ -7,13 +7,25 @@
     <div class="discount-form-side">
       <ng-container *ngIf="!submitted; else successBlock">
         <h2 class="discount-title">¡{{ discountPercent }}% OFF<br>en tu primer pedido!</h2>
-        <p class="discount-subtitle">Dejanos tus datos y te mandamos el código de descuento.</p>
+        <p class="discount-subtitle">Dejanos tus datos y te lo aplicamos automáticamente en tu primer pedido.</p>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <input type="text" class="discount-input" placeholder="Nombre" formControlName="name">
-          <input type="email" class="discount-input" placeholder="Correo" formControlName="email">
-          <input type="text" class="discount-input" placeholder="Nombre de tu mascota (opcional)" formControlName="petName">
-          <input type="date" class="discount-input" placeholder="Cumpleaños de tu mascota (opcional)" formControlName="petBirthday">
+          <div class="discount-field">
+            <label class="discount-label" for="discountName">Nombre</label>
+            <input id="discountName" type="text" class="discount-input" placeholder="Nombre" formControlName="name">
+          </div>
+          <div class="discount-field">
+            <label class="discount-label" for="discountEmail">Correo</label>
+            <input id="discountEmail" type="email" class="discount-input" placeholder="Correo" formControlName="email">
+          </div>
+          <div class="discount-field">
+            <label class="discount-label" for="discountPetName">Nombre de tu mascota</label>
+            <input id="discountPetName" type="text" class="discount-input" placeholder="Nombre de tu mascota" formControlName="petName">
+          </div>
+          <div class="discount-field">
+            <label class="discount-label" for="discountPetBirthday">Cumpleaños de tu mascota</label>
+            <input id="discountPetBirthday" type="date" class="discount-input" formControlName="petBirthday">
+          </div>
           <button type="submit" class="discount-submit" [disabled]="form.invalid || submitting">
             {{ submitting ? 'Enviando...' : 'Obtener descuento' }}
           </button>
@@ -22,8 +34,7 @@
 
       <ng-template #successBlock>
         <h2 class="discount-title">¡Listo!</h2>
-        <p class="discount-subtitle">Usá este código al hacer tu pedido por WhatsApp:</p>
-        <div class="discount-code">{{ discountCode }}</div>
+        <p class="discount-subtitle">Tu descuento del {{ discountPercent }}% se aplica automáticamente en tu primer pedido — no necesitás ningún código.</p>
         <button type="button" class="discount-submit" (click)="close()">Empezar a comprar</button>
       </ng-template>
     </div>

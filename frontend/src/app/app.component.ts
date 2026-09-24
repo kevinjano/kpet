@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Meta } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, Router, RouterOutlet, RouterLink } from '@angular/router';
+import { ActivatedRoute, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet, RouterLink } from '@angular/router';
 import { RouterModule} from '@angular/router';
 import { filter } from 'rxjs';
 import { SiteSettingsService } from './services/site-settings-service';
@@ -10,12 +10,13 @@ import { ModalComponent } from './modal/modal.component';
 import { WhatsappBubbleComponent } from './whatsapp-bubble/whatsapp-bubble.component';
 import { DiscountModalComponent } from './discount-modal/discount-modal.component';
 import { FavoriteService } from './services/favorite-service';
+import { PawsLoaderComponent } from './paws-loader/paws-loader.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule, ModalComponent, WhatsappBubbleComponent, DiscountModalComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule, ModalComponent, WhatsappBubbleComponent, DiscountModalComponent, PawsLoaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -23,6 +24,7 @@ import { FavoriteService } from './services/favorite-service';
 // All actual page chrome (nav, footer) lives in each routed page component.
 export class AppComponent implements OnInit {
   title = 'Kpet';
+  routeLoading = false;
 
   private storeName = 'Kpet';
   private routeTitle: string | null = null;
@@ -42,6 +44,17 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.favoriteService.loadFavorites();
+
+    // Shows the paw-bounce overlay for the length of every route transition
+    // (not just data-fetching within a page) so navigating anywhere on the
+    // site gets the same brief, branded moment instead of a blank flash.
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.routeLoading = true;
+      } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+        this.routeLoading = false;
+      }
+    });
 
     // Keep the browser tab icon in sync with whatever logo the admin has configured,
     // so changing it in Configuración takes effect without touching any code.

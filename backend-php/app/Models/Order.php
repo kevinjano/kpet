@@ -12,13 +12,14 @@ class Order extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['total', 'status', 'receiptSent', 'createdAt', 'userId'];
+    protected $fillable = ['total', 'status', 'receiptSent', 'createdAt', 'userId', 'discountPercent'];
 
     protected $casts = [
         'receiptSent' => 'boolean',
         'total' => 'float',
         'userId' => 'integer',
         'createdAt' => 'datetime',
+        'discountPercent' => 'integer',
     ];
 
     protected $appends = ['items'];
@@ -39,8 +40,8 @@ class Order extends Model
             ->map(fn ($row) => [
                 'productId' => $row->productId,
                 'productName' => $row->productName,
-                'quantity' => $row->quantity,
-                'unitPrice' => $row->unitPrice,
+                'quantity' => (int) $row->quantity,
+                'unitPrice' => (float) $row->unitPrice,
             ])
             ->all();
     }

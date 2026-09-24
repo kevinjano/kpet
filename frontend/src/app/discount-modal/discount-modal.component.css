@@ -66,11 +66,22 @@
   font-size: 0.95rem;
 }
 
+.discount-field {
+  margin-bottom: 0.75rem;
+}
+
+.discount-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
 .discount-input {
   display: block;
   width: 100%;
   padding: 0.7rem 1rem;
-  margin-bottom: 0.75rem;
   border: none;
   border-radius: var(--kpet-radius);
   background: rgba(255, 255, 255, 0.94);
@@ -102,17 +113,6 @@
 .discount-submit:disabled {
   opacity: 0.6;
   cursor: default;
-}
-
-.discount-code {
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-align: center;
-  padding: 0.9rem;
-  margin-bottom: 1rem;
-  border: 2px dashed var(--kpet-yellow-500);
-  border-radius: var(--kpet-radius);
 }
 
 @media (max-width: 600px) {

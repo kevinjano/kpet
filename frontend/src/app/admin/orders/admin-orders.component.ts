@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order-service';
 import { DistributorService } from '../../services/distributor-service';
 import { Order, ORDER_STATUS_LABELS, ORDER_STATUS_PENDING, ORDER_STATUS_CONFIRMED, ORDER_STATUS_COMPLETED, ORDER_STATUS_CANCELLED } from '../../order';
+import { OrderItem } from '../../order-item';
 import { trackById, LOW_STOCK_THRESHOLD } from '../../constants';
 import { ModalService } from '../../services/modal-service';
 import { AdminTableComponent } from '../../admin-table/admin-table.component';
@@ -168,6 +169,31 @@ export class AdminOrdersComponent implements OnInit {
 
   isExpanded(orderId: number): boolean {
     return this.expandedOrderIds.has(orderId);
+  }
+
+  // Defensive against a stale/legacy row where unitPrice came back as null
+  // or a numeric string (e.g. from a raw DB read) — calling .toFixed()
+  // directly on that in the template throws and blanks out the whole cell
+  // instead of just showing Bs.0.00, which is what broke Precio/Subtotal.
+  itemUnitPrice(item: OrderItem): number {
+    return Number(item.unitPrice) || 0;
+  }
+
+  itemSubtotal(item: OrderItem): number {
+    return this.itemUnitPrice(item) * item.quantity;
+  }
+
+  // Subtotal before the first-order discount was applied — order.total is
+  // already the post-discount amount that was actually charged.
+  preDiscountTotal(order: Order): number {
+    if (!order.discountPercent) {
+      return order.total;
+    }
+    return order.total / (1 - order.discountPercent / 100);
+  }
+
+  discountAmount(order: Order): number {
+    return this.preDiscountTotal(order) - order.total;
   }
 
   ngOnInit(): void {

@@ -28,7 +28,7 @@ class SiteSettingsController extends Controller
         $data = $request->all();
         $settings = SiteSettings::find(1);
         $fields = $request->only([
-            'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'missionText', 'visionText', 'commitmentText', 'aboutVideoUrl', 'aboutImageUrl', 'address', 'mapUrl',
+            'storeName', 'logoUrl', 'whatsappNumber', 'aboutText', 'missionText', 'visionText', 'commitmentText', 'commitmentImageUrl', 'aboutVideoUrl', 'aboutImageUrl', 'address', 'mapUrl',
             'instagramUrl', 'facebookUrl', 'tiktokUrl', 'youtubeUrl', 'contactEmail', 'qrCodeUrl',
             'discountEnabled', 'discountPercent', 'discountImageUrl',
             'categoryImagePerros', 'categoryImageGatos', 'categoryImageAccesorios',

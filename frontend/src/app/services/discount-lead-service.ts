@@ -9,7 +9,10 @@ export interface DiscountLead {
   email: string;
   petName: string | null;
   petBirthday: string | null;
+  discountPercent: number | null;
   createdAt: string;
+  redeemedAt: string | null;
+  orderId: number | null;
 }
 
 export interface DiscountLeadInput {
@@ -27,8 +30,8 @@ export class DiscountLeadService {
 
   constructor(private httpClient: HttpClient) {}
 
-  create(lead: DiscountLeadInput): Observable<void> {
-    return this.httpClient.post<void>(this.apiUrl, lead);
+  create(lead: DiscountLeadInput): Observable<DiscountLead> {
+    return this.httpClient.post<DiscountLead>(this.apiUrl, lead);
   }
 
   getAll(): Observable<DiscountLead[]> {

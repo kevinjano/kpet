@@ -1,4 +1,7 @@
 
+<div class="global-paws-overlay" *ngIf="routeLoading">
+  <app-paws-loader></app-paws-loader>
+</div>
 <router-outlet></router-outlet>
 <app-modal></app-modal>
 <app-whatsapp-bubble></app-whatsapp-bubble>

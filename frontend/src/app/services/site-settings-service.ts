@@ -31,6 +31,15 @@ export class SiteSettingsService {
     return cached ? concat(of(cached), network$) : network$;
   }
 
+  // Synchronous escape hatch for a component that needs the last-known
+  // settings before its first render (e.g. seeding an @Input field's
+  // initializer) — even the "cached" emission from getSettings() above
+  // only arrives after a subscription fires, which is one change-detection
+  // cycle too late to avoid a flash of the empty/placeholder state.
+  getCachedSettings(): SiteSettings | null {
+    return this.readCache();
+  }
+
   updateSettings(settings: Partial<SiteSettings>): Observable<SiteSettings> {
     return this.httpClient.put<SiteSettings>(`${this.apiUrl}/update`, settings).pipe(
       tap(updated => this.writeCache(updated))

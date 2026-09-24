@@ -4,9 +4,19 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SiteSettingsService } from '../services/site-settings-service';
 import { DiscountLeadService } from '../services/discount-lead-service';
 import { AuthService } from '../services/auth-service';
+import { OrderService } from '../services/order-service';
 import { resolveImageUrl } from '../constants';
 
 const SEEN_KEY = 'discountModalSeen';
+// Read by CartComponent at checkout to automatically mention the discount
+// in the WhatsApp order message and redeem it server-side — cleared once
+// an order actually uses it (see cart.component.ts).
+export const PENDING_DISCOUNT_KEY = 'kpet_pending_discount';
+
+export interface PendingDiscount {
+  leadId: number;
+  percent: number;
+}
 
 @Component({
   selector: 'app-discount-modal',
@@ -16,10 +26,10 @@ const SEEN_KEY = 'discountModalSeen';
   styleUrl: './discount-modal.component.css',
 })
 // Shown once per browser (localStorage flag, not per-session) to a logged-out
-// visitor, the same "10% off your first order" pattern referenced from the
-// competitor site. No online payment to actually apply a coupon against —
-// the code is just something the customer mentions in their WhatsApp order,
-// same as every other discount on this storefront.
+// visitor. The discount isn't a coupon code to remember — signing up here
+// stores a pending-discount flag (see PENDING_DISCOUNT_KEY) that
+// CartComponent picks up automatically on the customer's first order and
+// the backend redeems at most once per lead (OrderController@create).
 export class DiscountModalComponent implements OnInit {
   visible = false;
   submitted = false;
@@ -33,6 +43,7 @@ export class DiscountModalComponent implements OnInit {
     private siteSettingsService: SiteSettingsService,
     private discountLeadService: DiscountLeadService,
     private authService: AuthService,
+    private orderService: OrderService,
   ) {
     this.form = this.formBuilder.group({
       name: ['', Validators.required],
@@ -43,9 +54,32 @@ export class DiscountModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.authService.isLoggedIn() || localStorage.getItem(SEEN_KEY)) {
+    // Already filled out the form on this browser (logged in or not) —
+    // don't ask again, whether or not that lead has been redeemed yet.
+    if (localStorage.getItem(SEEN_KEY)) {
       return;
     }
+    if (this.authService.isLoggedIn()) {
+      // A logged-in customer only qualifies while they've never placed an
+      // order — once they have, the "first order" discount no longer
+      // applies to them even if they never happened to fill this form.
+      this.orderService.getMyOrders().subscribe({
+        next: orders => {
+          if (orders.length === 0) {
+            this.loadAndShow();
+          }
+        },
+        error: () => {
+          // Can't confirm order history — safer to just not show it than
+          // risk offering an already-used discount.
+        },
+      });
+      return;
+    }
+    this.loadAndShow();
+  }
+
+  private loadAndShow(): void {
     this.siteSettingsService.getSettings().subscribe(settings => {
       if (!settings.discountEnabled) {
         return;
@@ -54,10 +88,6 @@ export class DiscountModalComponent implements OnInit {
       this.imageUrl = settings.discountImageUrl ? resolveImageUrl(settings.discountImageUrl) : null;
       this.visible = true;
     });
-  }
-
-  get discountCode(): string {
-    return `BIENVENIDO${this.discountPercent}`;
   }
 
   close(): void {
@@ -71,10 +101,17 @@ export class DiscountModalComponent implements OnInit {
     }
     this.submitting = true;
     this.discountLeadService.create(this.form.value).subscribe({
-      next: () => {
+      next: lead => {
         this.submitting = false;
         this.submitted = true;
         localStorage.setItem(SEEN_KEY, 'true');
+        const pending: PendingDiscount = { leadId: lead.id, percent: lead.discountPercent ?? this.discountPercent };
+        try {
+          localStorage.setItem(PENDING_DISCOUNT_KEY, JSON.stringify(pending));
+        } catch {
+          // Private browsing / storage disabled — the discount just won't
+          // auto-apply at checkout, not worth failing the signup over.
+        }
       },
       error: () => {
         this.submitting = false;

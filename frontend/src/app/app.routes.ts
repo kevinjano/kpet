@@ -39,6 +39,7 @@ export const routes: Routes = [
             {path: 'usuarios', loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Usuarios'}},
             {path: 'productos', loadComponent: () => import('./admin/products/admin-products.component').then(m => m.AdminProductsComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Productos'}},
             {path: 'configuracion', loadComponent: () => import('./admin/site-settings/admin-site-settings.component').then(m => m.AdminSiteSettingsComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Configuración'}},
+            {path: 'descuentos', loadComponent: () => import('./admin/discounts/admin-discounts.component').then(m => m.AdminDiscountsComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Descuentos'}},
             {path: 'blog', loadComponent: () => import('./admin/blog/admin-blog.component').then(m => m.AdminBlogComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Blog'}},
             {path: 'preguntas-frecuentes', loadComponent: () => import('./admin/faq/admin-faq.component').then(m => m.AdminFaqComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Preguntas Frecuentes'}},
             {path: 'pedidos', loadComponent: () => import('./admin/orders/admin-orders.component').then(m => m.AdminOrdersComponent), canActivate: [AuthGuard], data: {role: 'Admin', title: 'Pedidos'}},

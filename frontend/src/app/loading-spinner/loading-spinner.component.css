@@ -7,19 +7,6 @@
   padding: 3.5rem 1rem;
 }
 
-.kpet-loading-ring {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 4px solid var(--kpet-purple-100);
-  border-top-color: var(--kpet-purple-600);
-  animation: kpet-loading-spin 0.75s linear infinite;
-}
-
-@keyframes kpet-loading-spin {
-  to { transform: rotate(360deg); }
-}
-
 .kpet-loading-text {
   color: var(--kpet-ink-soft);
   font-weight: 600;

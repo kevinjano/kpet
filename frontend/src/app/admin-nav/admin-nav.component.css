@@ -11,7 +11,17 @@
   flex-direction: column;
   align-items: center;
   padding: 1.85rem 1.1rem;
-  overflow-y: auto;
+  overflow: hidden;
+}
+
+/* Pinned at the top — never scrolls away, even when the links list below
+   overflows and needs its own scrollbar. */
+.admin-sidebar-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .admin-logo {
@@ -55,6 +65,24 @@
   gap: 0.15rem;
   width: 100%;
   margin-top: 2.25rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.admin-nav-links {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.admin-nav-links::-webkit-scrollbar {
+  width: 5px;
+}
+
+.admin-nav-links::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
 }
 
 .admin-nav-slider {
@@ -105,7 +133,8 @@
 
 .admin-logout-btn {
   width: 100%;
-  margin-top: auto;
+  flex-shrink: 0;
+  margin-top: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;

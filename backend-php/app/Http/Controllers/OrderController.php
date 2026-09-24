@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DiscountLead;
 use App\Models\Order;
 use App\Models\Product;
 use App\Support\CsvWriter;
@@ -104,14 +105,35 @@ class OrderController extends Controller
 
         $userId = $request->attributes->get('authUserId');
 
+        // The welcome-discount lead is only ever redeemed here — validated
+        // server-side (not just trusted from the frontend) so a stale or
+        // already-used id can't be replayed onto a second order.
+        $discountPercent = null;
+        $lead = null;
+        $discountLeadId = $data['discountLeadId'] ?? null;
+        if ($discountLeadId !== null) {
+            $lead = DiscountLead::whereNull('redeemedAt')->find($discountLeadId);
+            if ($lead) {
+                $discountPercent = $lead->discountPercent;
+            }
+        }
+
         $order = Order::create([
             'total' => $data['total'] ?? 0,
             'status' => Order::PENDING_CONFIRMATION,
             'receiptSent' => false,
             'createdAt' => now(),
             'userId' => $userId, // never trusted from the request body
+            'discountPercent' => $discountPercent,
         ]);
         $order->syncItems($items);
+
+        if ($lead) {
+            $lead->redeemedAt = now();
+            $lead->orderId = $order->id;
+            $lead->save();
+        }
+
         $order->refresh();
 
         return response()->json($order, 201, ['Location' => "/api/orders/{$order->id}"]);

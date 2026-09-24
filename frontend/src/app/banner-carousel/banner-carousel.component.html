@@ -1,7 +1,7 @@
 <div class="kpet-carousel" (mouseenter)="stopAutoplay()" (mouseleave)="startAutoplay()">
 
   <div class="kpet-carousel-track" [style.transform]="'translateX(-' + (activeIndex * 100) + '%)'">
-    <div class="kpet-carousel-slide" *ngFor="let img of images">
+    <div class="kpet-carousel-slide" *ngFor="let img of images; let i = index" (click)="openLightbox(i)">
       <img [src]="img" alt="Banner Kpet">
     </div>
   </div>
@@ -23,4 +23,34 @@
     </div>
   </ng-container>
 
+</div>
+
+<div class="kpet-lightbox" *ngIf="lightboxOpen" (click)="closeLightbox()">
+  <button class="kpet-lightbox-close" type="button" (click)="closeLightbox()" aria-label="Cerrar">✕</button>
+
+  <button
+    *ngIf="images.length > 1"
+    class="kpet-lightbox-arrow kpet-lightbox-prev"
+    type="button"
+    (click)="lightboxPrev(); $event.stopPropagation()"
+    aria-label="Anterior">‹</button>
+
+  <img class="kpet-lightbox-image" [src]="images[lightboxIndex]" alt="Banner Kpet" (click)="$event.stopPropagation()">
+
+  <button
+    *ngIf="images.length > 1"
+    class="kpet-lightbox-arrow kpet-lightbox-next"
+    type="button"
+    (click)="lightboxNext(); $event.stopPropagation()"
+    aria-label="Siguiente">›</button>
+
+  <div class="kpet-lightbox-dots" *ngIf="images.length > 1" (click)="$event.stopPropagation()">
+    <button
+      *ngFor="let img of images; let i = index"
+      class="kpet-carousel-dot"
+      [class.active]="i === lightboxIndex"
+      (click)="lightboxIndex = i"
+      [attr.aria-label]="'Ir al banner ' + (i + 1)">
+    </button>
+  </div>
 </div>

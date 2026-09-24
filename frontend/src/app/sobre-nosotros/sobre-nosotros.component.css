@@ -128,68 +128,15 @@
   margin-bottom: 0.25rem;
 }
 
-.about-video,
-.about-video-embed {
+.commitment-image {
   display: block;
-  width: 100%;
+  width: 85%;
+  max-width: 340px;
   margin: 0 auto;
-  border-radius: var(--kpet-radius);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--kpet-radius-lg);
   box-shadow: var(--kpet-shadow);
-  background: #000;
-}
-
-.about-video-embed {
-  position: relative;
-  aspect-ratio: 16 / 9;
-}
-
-.about-video-embed iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: var(--kpet-radius);
-}
-
-.about-video-facade {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: var(--kpet-radius);
-  overflow: hidden;
-  padding: 0;
-  cursor: pointer;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.about-video-play-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  background: rgba(220, 38, 38, 0.92);
-  color: var(--kpet-white);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-  transition: transform var(--kpet-transition), background-color var(--kpet-transition);
-}
-
-.about-video-facade:hover .about-video-play-icon {
-  transform: scale(1.08);
-}
-
-.about-video-play-icon svg {
-  width: 30px;
-  height: 30px;
-  margin-left: 3px;
 }
 
 .about-address {

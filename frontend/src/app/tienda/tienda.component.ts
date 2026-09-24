@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -15,6 +15,8 @@ import { SiteNavComponent } from '../site-nav/site-nav.component';
 import { SiteFooterComponent } from '../site-footer/site-footer.component';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
 import { CartToastComponent } from '../cart-toast/cart-toast.component';
+import { PaginationComponent } from '../pagination/pagination.component';
+import { PawsLoaderComponent } from '../paws-loader/paws-loader.component';
 
 type SortOption = 'relevancia' | 'precio-asc' | 'precio-desc' | 'nuevos';
 
@@ -27,7 +29,7 @@ const FILTER_CATEGORIES = ['Perros', 'Gatos', 'Accesorios'];
 @Component({
   selector: 'app-tienda',
   standalone: true,
-  imports: [CommonModule, FormsModule, SiteNavComponent, SiteFooterComponent, ProductDetailModalComponent, CartToastComponent],
+  imports: [CommonModule, FormsModule, SiteNavComponent, SiteFooterComponent, ProductDetailModalComponent, CartToastComponent, PaginationComponent, PawsLoaderComponent],
   templateUrl: './tienda.component.html',
   styleUrl: './tienda.component.css',
 })
@@ -36,6 +38,8 @@ const FILTER_CATEGORIES = ['Perros', 'Gatos', 'Accesorios'];
 // (?categoria=Perros / ?categoria=Gatos / ?categoria=Accesorios /
 // ?oferta=1), read once on init.
 export class TiendaComponent implements OnInit {
+  @ViewChild('productsGrid') productsGridRef?: ElementRef<HTMLElement>;
+
   categories = FILTER_CATEGORIES;
   selectedCategory: string | null = null;
   showOffersOnly = false;
@@ -55,6 +59,16 @@ export class TiendaComponent implements OnInit {
   resolveImageUrl = resolveImageUrl;
   trackById = trackById;
   selectedProduct: Product | null = null;
+
+  productsPage = 1;
+  readonly productsPageSize = 12;
+
+  // True while the products API call is in flight, OR while the current
+  // page's product images are still being fetched — kept true across both
+  // so the loading screen covers exactly the stretch that used to render as
+  // a slow pop-in of blank image boxes.
+  imagesLoading = true;
+  private imagesLoadToken = 0;
 
   cartQuantities = new Map<number, number>();
   ratingSummaries = new Map<number, RatingSummary>();
@@ -79,6 +93,7 @@ export class TiendaComponent implements OnInit {
     this.productService.getProducts().subscribe(data => {
       this.products = data.filter(p => p.active);
       this.productsLoaded = true;
+      this.preloadCurrentPageImages();
     });
 
     this.siteSettingsService.getSettings().subscribe(settings => this.settings = settings);
@@ -130,6 +145,70 @@ export class TiendaComponent implements OnInit {
     return product.onSale && product.salePrice != null ? product.salePrice : product.price;
   }
 
+  get pagedProducts(): Product[] {
+    const start = (this.productsPage - 1) * this.productsPageSize;
+    return this.visibleProducts.slice(start, start + this.productsPageSize);
+  }
+
+  // Called by every filter/search/sort/page action so the loading screen +
+  // image preloading always match what's about to render, instead of the
+  // grid quietly popping in image-by-image while the user waits.
+  private preloadCurrentPageImages(): void {
+    const token = ++this.imagesLoadToken;
+    const urls = this.pagedProducts
+      .map(p => p.imageUrl ? this.resolveImageUrl(p.imageUrl) : null)
+      .filter((url): url is string => !!url);
+
+    if (urls.length === 0) {
+      this.imagesLoading = false;
+      return;
+    }
+
+    this.imagesLoading = true;
+    let remaining = urls.length;
+    const onOneDone = () => {
+      remaining--;
+      if (remaining <= 0 && token === this.imagesLoadToken) {
+        this.imagesLoading = false;
+      }
+    };
+    urls.forEach(url => {
+      const img = new Image();
+      img.onload = onOneDone;
+      img.onerror = onOneDone;
+      img.src = url;
+    });
+    // Never block the page for more than a couple seconds, even if an image
+    // stalls or 404s.
+    setTimeout(() => {
+      if (token === this.imagesLoadToken) {
+        this.imagesLoading = false;
+      }
+    }, 2500);
+  }
+
+  goToProductsPage(page: number): void {
+    this.productsPage = page;
+    this.preloadCurrentPageImages();
+    this.productsGridRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  private resetToFirstPage(): void {
+    this.productsPage = 1;
+    this.preloadCurrentPageImages();
+  }
+
+  onSearchTermChange(term: string): void {
+    this.searchTerm = term;
+    this.resetToFirstPage();
+  }
+
+  clearFilters(): void {
+    this.selectedCategory = null;
+    this.showOffersOnly = false;
+    this.resetToFirstPage();
+  }
+
   get productsSectionTitle(): string {
     if (this.searchTerm.trim()) {
       return `Resultados para "${this.searchTerm.trim()}"`;
@@ -145,6 +224,7 @@ export class TiendaComponent implements OnInit {
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.resetToFirstPage();
   }
 
   get sortLabel(): string {
@@ -158,6 +238,7 @@ export class TiendaComponent implements OnInit {
   selectSort(option: SortOption): void {
     this.sortOption = option;
     this.sortMenuOpen = false;
+    this.resetToFirstPage();
   }
 
   @HostListener('document:click', ['$event'])
@@ -174,11 +255,13 @@ export class TiendaComponent implements OnInit {
   selectCategory(category: string | null): void {
     this.selectedCategory = this.selectedCategory === category ? null : category;
     this.showOffersOnly = false;
+    this.resetToFirstPage();
   }
 
   selectOffers(): void {
     this.showOffersOnly = !this.showOffersOnly;
     this.selectedCategory = null;
+    this.resetToFirstPage();
   }
 
   addToCart(product: Product): void {

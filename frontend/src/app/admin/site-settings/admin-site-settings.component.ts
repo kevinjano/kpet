@@ -7,7 +7,6 @@ import { SiteSettingsService } from '../../services/site-settings-service';
 import { UploadService } from '../../services/upload-service';
 import { ModalService } from '../../services/modal-service';
 import { resolveImageUrl, extractErrorMessage, toEmbedVideoUrl, isDirectVideoFile, isVideoEmbeddable } from '../../constants';
-import { DiscountLeadService, DiscountLead } from '../../services/discount-lead-service';
 
 @Component({
   selector: 'app-admin-site-settings',
@@ -50,11 +49,14 @@ export class AdminSiteSettingsComponent implements OnInit {
   currentDiscountImageUrl: string | null = null;
   discountImageFile: File | null = null;
   discountImagePreview: string | null = null;
-  leads: DiscountLead[] = [];
 
   currentAboutImageUrl: string | null = null;
   aboutImageFile: File | null = null;
   aboutImagePreview: string | null = null;
+
+  currentCommitmentImageUrl: string | null = null;
+  commitmentImageFile: File | null = null;
+  commitmentImagePreview: string | null = null;
 
   currentFollowCardImageUrl: string | null = null;
   followCardImageFile: File | null = null;
@@ -79,7 +81,6 @@ export class AdminSiteSettingsComponent implements OnInit {
     private modalService: ModalService,
     private formBuilder: FormBuilder,
     private sanitizer: DomSanitizer,
-    private discountLeadService: DiscountLeadService,
   ) {
     this.form = this.formBuilder.group({
       storeName: ['', Validators.required],
@@ -104,7 +105,6 @@ export class AdminSiteSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.loadSettings();
     this.form.get('aboutVideoUrl')!.valueChanges.subscribe(url => this.updateAboutVideoPreview(url));
-    this.discountLeadService.getAll().subscribe(leads => this.leads = leads);
   }
 
   private updateAboutVideoPreview(url: string | null): void {
@@ -146,6 +146,7 @@ export class AdminSiteSettingsComponent implements OnInit {
       this.currentQrCodeUrl = settings.qrCodeUrl;
       this.currentDiscountImageUrl = settings.discountImageUrl;
       this.currentAboutImageUrl = settings.aboutImageUrl;
+      this.currentCommitmentImageUrl = settings.commitmentImageUrl;
       this.currentFollowCardImageUrl = settings.followCardImageUrl;
       this.currentContactCardImageUrl = settings.contactCardImageUrl;
       this.currentCategoryImages = {
@@ -165,12 +166,24 @@ export class AdminSiteSettingsComponent implements OnInit {
     }
   }
 
+  removeLogo(): void {
+    this.logoFile = null;
+    this.logoPreview = null;
+    this.currentLogoUrl = null;
+  }
+
   onQrSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.qrFile = input.files[0];
       this.qrPreview = URL.createObjectURL(this.qrFile);
     }
+  }
+
+  removeQrCode(): void {
+    this.qrFile = null;
+    this.qrPreview = null;
+    this.currentQrCodeUrl = null;
   }
 
   onDiscountImageSelected(event: Event): void {
@@ -181,12 +194,38 @@ export class AdminSiteSettingsComponent implements OnInit {
     }
   }
 
+  removeDiscountImage(): void {
+    this.discountImageFile = null;
+    this.discountImagePreview = null;
+    this.currentDiscountImageUrl = null;
+  }
+
   onAboutImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.aboutImageFile = input.files[0];
       this.aboutImagePreview = URL.createObjectURL(this.aboutImageFile);
     }
+  }
+
+  removeAboutImage(): void {
+    this.aboutImageFile = null;
+    this.aboutImagePreview = null;
+    this.currentAboutImageUrl = null;
+  }
+
+  onCommitmentImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.commitmentImageFile = input.files[0];
+      this.commitmentImagePreview = URL.createObjectURL(this.commitmentImageFile);
+    }
+  }
+
+  removeCommitmentImage(): void {
+    this.commitmentImageFile = null;
+    this.commitmentImagePreview = null;
+    this.currentCommitmentImageUrl = null;
   }
 
   onFollowCardImageSelected(event: Event): void {
@@ -197,12 +236,24 @@ export class AdminSiteSettingsComponent implements OnInit {
     }
   }
 
+  removeFollowCardImage(): void {
+    this.followCardImageFile = null;
+    this.followCardImagePreview = null;
+    this.currentFollowCardImageUrl = null;
+  }
+
   onContactCardImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.contactCardImageFile = input.files[0];
       this.contactCardImagePreview = URL.createObjectURL(this.contactCardImageFile);
     }
+  }
+
+  removeContactCardImage(): void {
+    this.contactCardImageFile = null;
+    this.contactCardImagePreview = null;
+    this.currentContactCardImageUrl = null;
   }
 
   onCategoryImageSelected(category: 'Perros' | 'Gatos' | 'Accesorios', event: Event): void {
@@ -213,18 +264,10 @@ export class AdminSiteSettingsComponent implements OnInit {
     }
   }
 
-  exportLeads(): void {
-    this.discountLeadService.export().subscribe({
-      next: blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'descuentos-kiara-petnutri.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-      },
-      error: () => this.modalService.error('Error al exportar los datos.')
-    });
+  removeCategoryImage(category: 'Perros' | 'Gatos' | 'Accesorios'): void {
+    delete this.categoryImageFiles[category];
+    delete this.categoryImagePreviews[category];
+    this.currentCategoryImages[category] = null;
   }
 
   onBannerSelected(event: Event): void {
@@ -275,18 +318,20 @@ export class AdminSiteSettingsComponent implements OnInit {
     const qrUpload$ = this.qrFile ? this.uploadService.upload(this.qrFile) : of(null);
     const discountImageUpload$ = this.discountImageFile ? this.uploadService.upload(this.discountImageFile) : of(null);
     const aboutImageUpload$ = this.aboutImageFile ? this.uploadService.upload(this.aboutImageFile) : of(null);
+    const commitmentImageUpload$ = this.commitmentImageFile ? this.uploadService.upload(this.commitmentImageFile) : of(null);
     const perrosUpload$ = this.categoryImageFiles.Perros ? this.uploadService.upload(this.categoryImageFiles.Perros) : of(null);
     const gatosUpload$ = this.categoryImageFiles.Gatos ? this.uploadService.upload(this.categoryImageFiles.Gatos) : of(null);
     const accesoriosUpload$ = this.categoryImageFiles.Accesorios ? this.uploadService.upload(this.categoryImageFiles.Accesorios) : of(null);
     const followCardUpload$ = this.followCardImageFile ? this.uploadService.upload(this.followCardImageFile) : of(null);
     const contactCardUpload$ = this.contactCardImageFile ? this.uploadService.upload(this.contactCardImageFile) : of(null);
 
-    forkJoin({logo: logoUpload$, qr: qrUpload$, discountImage: discountImageUpload$, aboutImage: aboutImageUpload$, perros: perrosUpload$, gatos: gatosUpload$, accesorios: accesoriosUpload$, followCard: followCardUpload$, contactCard: contactCardUpload$}).subscribe({
-      next: ({logo, qr, discountImage, aboutImage, perros, gatos, accesorios, followCard, contactCard}) => {
+    forkJoin({logo: logoUpload$, qr: qrUpload$, discountImage: discountImageUpload$, aboutImage: aboutImageUpload$, commitmentImage: commitmentImageUpload$, perros: perrosUpload$, gatos: gatosUpload$, accesorios: accesoriosUpload$, followCard: followCardUpload$, contactCard: contactCardUpload$}).subscribe({
+      next: ({logo, qr, discountImage, aboutImage, commitmentImage, perros, gatos, accesorios, followCard, contactCard}) => {
         const logoUrl = logo ? logo.url : this.currentLogoUrl;
         const qrCodeUrl = qr ? qr.url : this.currentQrCodeUrl;
         const discountImageUrl = discountImage ? discountImage.url : this.currentDiscountImageUrl;
         const aboutImageUrl = aboutImage ? aboutImage.url : this.currentAboutImageUrl;
+        const commitmentImageUrl = commitmentImage ? commitmentImage.url : this.currentCommitmentImageUrl;
         const categoryImagePerros = perros ? perros.url : this.currentCategoryImages.Perros;
         const categoryImageGatos = gatos ? gatos.url : this.currentCategoryImages.Gatos;
         const categoryImageAccesorios = accesorios ? accesorios.url : this.currentCategoryImages.Accesorios;
@@ -300,6 +345,7 @@ export class AdminSiteSettingsComponent implements OnInit {
           missionText: this.form.value.missionText,
           visionText: this.form.value.visionText,
           commitmentText: this.form.value.commitmentText,
+          commitmentImageUrl,
           aboutVideoUrl: this.form.value.aboutVideoUrl || null,
           address: this.form.value.address,
           mapUrl: this.form.value.mapUrl,
@@ -328,6 +374,7 @@ export class AdminSiteSettingsComponent implements OnInit {
             this.currentQrCodeUrl = qrCodeUrl;
             this.currentDiscountImageUrl = discountImageUrl;
             this.currentAboutImageUrl = aboutImageUrl;
+            this.currentCommitmentImageUrl = commitmentImageUrl;
             this.currentFollowCardImageUrl = followCardImageUrl;
             this.currentContactCardImageUrl = contactCardImageUrl;
             this.currentCategoryImages = { Perros: categoryImagePerros, Gatos: categoryImageGatos, Accesorios: categoryImageAccesorios };
@@ -339,6 +386,8 @@ export class AdminSiteSettingsComponent implements OnInit {
             this.discountImagePreview = null;
             this.aboutImageFile = null;
             this.aboutImagePreview = null;
+            this.commitmentImageFile = null;
+            this.commitmentImagePreview = null;
             this.followCardImageFile = null;
             this.followCardImagePreview = null;
             this.contactCardImageFile = null;

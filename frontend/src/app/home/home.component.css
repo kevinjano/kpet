@@ -133,6 +133,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.4s ease;
+}
+
+.category-card:hover .category-card-image {
+  transform: scale(1.1);
 }
 
 .category-card-placeholder {

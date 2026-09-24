@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductService } from '../../services/product-service';
@@ -26,6 +26,8 @@ type CategoryFilterValue = string;
 // upload is fire-and-forget: if a new file was picked, it's uploaded first and
 // its URL is spliced into the payload before the product itself is saved.
 export class AdminProductsComponent implements OnInit {
+
+  @ViewChild('editFormSection') editFormSectionRef?: ElementRef<HTMLElement>;
 
   products: Product[] = [];
   categories = PRODUCT_CATEGORIES;
@@ -187,6 +189,10 @@ export class AdminProductsComponent implements OnInit {
       stock: product.stock,
       active: product.active,
     });
+    // The edit form sits below the (possibly long, paginated) table, so
+    // without this the admin has to notice the title changed and scroll
+    // down manually to find it.
+    setTimeout(() => this.editFormSectionRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   }
 
   cancelEdit(): void {

@@ -37,3 +37,59 @@
   background: linear-gradient(120deg, var(--kpet-yellow-500), var(--kpet-yellow-600));
   color: var(--kpet-purple-900);
 }
+
+/* ---------- Loading screen ---------- */
+/* Shown while products are being fetched and while the current page's
+   images are still preloading, so the grid never pops in image-by-image —
+   it only ever appears already-loaded. */
+.tienda-loading-screen {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 3rem 1rem 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.tienda-content-hidden {
+  display: none;
+}
+
+.tienda-loading-skeleton-grid {
+  width: 100%;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  opacity: 0.6;
+}
+
+.tienda-loading-skeleton-card {
+  height: 220px;
+  border-radius: var(--kpet-radius-lg);
+  background: linear-gradient(100deg, var(--kpet-purple-50) 25%, var(--kpet-purple-100) 50%, var(--kpet-purple-50) 75%);
+  background-size: 200% 100%;
+  animation: tienda-skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes tienda-skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 767.98px) {
+  .tienda-loading-skeleton-grid .tienda-loading-skeleton-card:nth-child(n+3) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tienda-loading-skeleton-card {
+    animation: none;
+  }
+}

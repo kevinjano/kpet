@@ -12,10 +12,12 @@
 <aside class="admin-sidebar" [class.open]="mobileNavOpen">
   <button class="admin-sidebar-close d-md-none" type="button" (click)="closeMobileNav()" aria-label="Cerrar menú">✕</button>
 
-  <a class="admin-logo" routerLink="/">
-    <img [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="admin-logo-img">
-  </a>
-  <span class="admin-tag">Admin</span>
+  <div class="admin-sidebar-header">
+    <a class="admin-logo" routerLink="/">
+      <img [src]="resolveImageUrl(logoUrl)" alt="Kpet" class="admin-logo-img">
+    </a>
+    <span class="admin-tag">Admin</span>
+  </div>
 
   <nav class="admin-nav-links" #navLinks>
     <div class="admin-nav-slider" *ngIf="sliderReady" [style.transform]="'translateY(' + sliderTop + 'px)'" [style.height.px]="sliderHeight"></div>
@@ -43,6 +45,11 @@
     <a routerLink="/admin/configuracion" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onLinkClick($event)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
       <span>Configuración</span>
+    </a>
+
+    <a routerLink="/admin/descuentos" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onLinkClick($event)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+      <span>Descuentos</span>
     </a>
 
     <a routerLink="/admin/blog" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onLinkClick($event)">

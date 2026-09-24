@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DiscountLead;
+use App\Models\SiteSettings;
 use App\Support\CsvWriter;
 use Illuminate\Http\Request;
 
@@ -16,15 +17,21 @@ class DiscountLeadController extends Controller
             return response()->json(['error' => 'Nombre y correo válidos son obligatorios.'], 400);
         }
 
-        DiscountLead::create([
+        // Captured at signup time rather than read live from site_settings on
+        // redemption, so a later change to the site-wide percentage doesn't
+        // retroactively change a code that was already handed out.
+        $percent = SiteSettings::find(1)->discountPercent ?? 10;
+
+        $lead = DiscountLead::create([
             'name' => $name,
             'email' => $email,
             'petName' => $request->input('petName') ?: null,
             'petBirthday' => $request->input('petBirthday') ?: null,
+            'discountPercent' => $percent,
             'createdAt' => now(),
         ]);
 
-        return response()->noContent();
+        return response()->json($lead, 201);
     }
 
     public function findAll()
@@ -32,7 +39,7 @@ class DiscountLeadController extends Controller
         return response()->json(DiscountLead::orderByDesc('createdAt')->get());
     }
 
-    private const EXPORT_HEADERS = ['Fecha', 'Nombre', 'Correo', 'Nombre de mascota', 'Cumpleaños de mascota'];
+    private const EXPORT_HEADERS = ['Fecha', 'Nombre', 'Correo', 'Nombre de mascota', 'Cumpleaños de mascota', 'Descuento', 'Usado en pedido'];
 
     public function export()
     {
@@ -44,6 +51,8 @@ class DiscountLeadController extends Controller
                 $lead->email,
                 $lead->petName,
                 $lead->petBirthday?->format('d/m/Y'),
+                $lead->discountPercent !== null ? "{$lead->discountPercent}%" : '',
+                $lead->orderId ? "#{$lead->orderId}" : 'No',
             ], ';') . "\n";
         }
 

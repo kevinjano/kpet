@@ -229,3 +229,8 @@
   font-size: 3rem;
   margin-bottom: 0.5rem;
 }
+
+.discount-line {
+  color: var(--kpet-purple-700);
+  font-weight: 600;
+}

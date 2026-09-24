@@ -229,3 +229,27 @@
   border-radius: var(--kpet-radius-sm);
   overflow: hidden;
 }
+
+.order-discount-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-end;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--kpet-ink-soft);
+  padding: 0.6rem 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.discount-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--kpet-purple-100);
+  color: var(--kpet-purple-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+}

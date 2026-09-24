@@ -1,0 +1,41 @@
+<div class="mb-5">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2">
+    <h2 class="admin-title mb-0">Descuentos</h2>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="exportLeads()" *ngIf="leads.length > 0">⬇ Exportar CSV</button>
+  </div>
+  <small class="text-muted d-block mb-3">Contactos que dejaron sus datos en el cartel de descuento de bienvenida, y si ya lo usaron en un pedido.</small>
+
+  <div *ngIf="leadsLoaded && leads.length === 0" class="text-muted text-center py-5">
+    Todavía no hay contactos registrados.
+  </div>
+
+  <ng-container *ngIf="leadsLoaded && leads.length > 0">
+    <p class="text-muted mb-3">{{ leads.length }} contactos — {{ redeemedCount }} ya usaron su descuento.</p>
+    <app-admin-table>
+      <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Mascota</th>
+        <th>Descuento</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let lead of leads">
+        <td class="fw-semibold">{{ lead.name }}</td>
+        <td>{{ lead.email }}</td>
+        <td>{{ lead.petName || '—' }}</td>
+        <td>{{ lead.discountPercent ?? '—' }}%</td>
+        <td>{{ lead.createdAt | date:'d MMM y, HH:mm' }}</td>
+        <td>
+          <span class="role-pill" [class.role-admin]="lead.redeemedAt">
+            {{ lead.redeemedAt ? ('Usado en pedido #' + lead.orderId) : 'Sin usar' }}
+          </span>
+        </td>
+      </tr>
+      </tbody>
+    </app-admin-table>
+  </ng-container>
+</div>

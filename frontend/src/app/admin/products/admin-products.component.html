@@ -71,7 +71,7 @@
 
   <app-pagination *ngIf="productsLoaded" [page]="productsPage" [pageSize]="productsPageSize" [totalItems]="filteredProducts.length" (pageChange)="productsPage = $event"></app-pagination>
 
-  <h3 class="admin-subtitle pt-5">{{ editingProductId ? 'Editar producto' : 'Añadir producto' }}</h3>
+  <h3 class="admin-subtitle pt-5" #editFormSection>{{ editingProductId ? 'Editar producto' : 'Añadir producto' }}</h3>
 
   <form [formGroup]="form" (ngSubmit)="save()" class="admin-form-card kpet-fade-up">
     <div class="row g-3">

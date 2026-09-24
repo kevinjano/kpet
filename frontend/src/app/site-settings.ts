@@ -11,6 +11,7 @@ export interface SiteSettings {
   missionText: string | null;
   visionText: string | null;
   commitmentText: string | null;
+  commitmentImageUrl: string | null;
   aboutVideoUrl: string | null;
   aboutImageUrl: string | null;
   address: string | null;
