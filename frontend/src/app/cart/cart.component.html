@@ -6,15 +6,75 @@
 </nav>
 
 <div class="container mt-4 mb-5" *ngIf="checkoutStep === 'cart'">
-  <h2 class="mb-4 kpet-title">Tu carrito</h2>
+  <h2 class="mb-4 kpet-title">{{ activeTab === 'history' ? 'Mis pedidos' : 'Tu carrito' }}</h2>
 
-  <div *ngIf="items.length === 0" class="empty-cart kpet-fade-up">
+  <div class="cart-tab-switch" *ngIf="isLoggedIn">
+    <div class="cart-tab-slider" [class.tab-history]="activeTab === 'history'"></div>
+    <button type="button" class="cart-tab-btn" [class.active]="activeTab === 'cart'" (click)="selectTab('cart')">
+      Carrito
+    </button>
+    <button type="button" class="cart-tab-btn" [class.active]="activeTab === 'history'" (click)="selectTab('history')">
+      Historial
+    </button>
+  </div>
+
+  <div *ngIf="activeTab === 'history'" class="history-section kpet-fade-up">
+    <div *ngIf="!ordersLoaded" class="text-muted py-4 text-center">Cargando tus pedidos...</div>
+
+    <div *ngIf="ordersLoaded && ordersLoadFailed" class="empty-cart">
+      <p>No pudimos cargar tus pedidos. Intenta de nuevo.</p>
+      <button type="button" class="btn btn-kpet-primary mt-2" (click)="loadMyOrders()">Reintentar</button>
+    </div>
+
+    <div *ngIf="ordersLoaded && !ordersLoadFailed && myOrders.length === 0" class="empty-cart">
+      <div class="empty-cart-icon">🧾</div>
+      <p>Todavía no hiciste ningún pedido.</p>
+      <a routerLink="/tienda" class="btn btn-kpet-primary mt-2">Ir a la tienda</a>
+    </div>
+
+    <div class="history-list" *ngIf="ordersLoaded && !ordersLoadFailed && myOrders.length > 0">
+      <div class="history-row" *ngFor="let order of myOrders">
+        <button type="button" class="history-row-summary" (click)="toggleOrderExpanded(order.id)">
+          <div class="history-row-main">
+            <strong>Pedido #{{ order.id }}</strong>
+            <span class="history-row-date">{{ order.createdAt | date:'d MMM y, HH:mm' }}</span>
+          </div>
+          <span class="history-status-pill" [ngClass]="'status-' + order.status">{{ statusLabels[order.status] || order.status }}</span>
+          <span class="history-row-total">Bs.{{ order.total.toFixed(2) }}</span>
+          <span class="history-row-chevron" [class.open]="isOrderExpanded(order.id)">▾</span>
+        </button>
+
+        <div class="history-row-details" *ngIf="isOrderExpanded(order.id)">
+          <div class="history-item-line" *ngFor="let item of order.items">
+            <span>{{ item.quantity }}x {{ item.productName }}</span>
+            <span>Bs.{{ orderItemSubtotal(item).toFixed(2) }}</span>
+          </div>
+          <ng-container *ngIf="order.discountPercent">
+            <div class="history-item-line history-discount-line">
+              <span>Subtotal</span>
+              <span>Bs.{{ orderSubtotal(order).toFixed(2) }}</span>
+            </div>
+            <div class="history-item-line history-discount-line">
+              <span>Descuento por primer pedido ({{ order.discountPercent }}%)</span>
+              <span>-Bs.{{ (orderSubtotal(order) - order.total).toFixed(2) }}</span>
+            </div>
+          </ng-container>
+          <div class="history-item-line history-total-line">
+            <span>Total</span>
+            <span>Bs.{{ order.total.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'cart' && items.length === 0" class="empty-cart kpet-fade-up">
     <div class="empty-cart-icon">🛒</div>
     <p>Tu carrito está vacío.</p>
     <a routerLink="/" class="btn btn-kpet-primary mt-2">Ir a la tienda</a>
   </div>
 
-  <div *ngIf="items.length > 0" class="row g-4">
+  <div *ngIf="activeTab === 'cart' && items.length > 0" class="row g-4">
     <div class="col-lg-8">
       <div class="cart-items-card">
         <div class="cart-row cart-row-header d-none d-md-flex">

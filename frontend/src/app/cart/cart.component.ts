@@ -5,8 +5,10 @@ import { CartService } from '../services/cart-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { OrderService } from '../services/order-service';
 import { ModalService } from '../services/modal-service';
+import { AuthService } from '../services/auth-service';
 import { CartItem } from '../cart-item';
-import { Order } from '../order';
+import { Order, ORDER_STATUS_LABELS } from '../order';
+import { OrderItem } from '../order-item';
 import { SiteSettings } from '../site-settings';
 import { resolveImageUrl, extractErrorMessage, DEFAULT_LOGO_URL } from '../constants';
 import { SiteFooterComponent } from '../site-footer/site-footer.component';
@@ -41,6 +43,17 @@ export class CartComponent implements OnInit {
   resolveImageUrl = resolveImageUrl;
 
   checkoutStep: 'cart' | 'payment' = 'cart';
+
+  // "Historial": the logged-in customer's own past orders and their live
+  // status (same labels the admin sets in Pedidos). Only offered when logged
+  // in — guests can still check out, they just have no history to show.
+  activeTab: 'cart' | 'history' = 'cart';
+  myOrders: Order[] = [];
+  ordersLoaded = false;
+  ordersLoadFailed = false;
+  statusLabels = ORDER_STATUS_LABELS;
+  expandedOrderIds = new Set<number>();
+
   currentOrder: Order | null = null;
   receiptConfirmed = false;
   confirmingReceipt = false;
@@ -62,7 +75,59 @@ export class CartComponent implements OnInit {
     private siteSettingsService: SiteSettingsService,
     private orderService: OrderService,
     private modalService: ModalService,
+    private authService: AuthService,
   ) {}
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  selectTab(tab: 'cart' | 'history'): void {
+    this.activeTab = tab;
+    if (tab === 'history') {
+      this.loadMyOrders();
+    }
+  }
+
+  // Re-fetched every time the tab is opened so a status the admin just
+  // changed (e.g. Confirmado) shows up without reloading the page.
+  loadMyOrders(): void {
+    this.ordersLoadFailed = false;
+    this.orderService.getMyOrders().subscribe({
+      next: orders => {
+        this.myOrders = orders;
+        this.ordersLoaded = true;
+      },
+      error: () => {
+        this.ordersLoadFailed = true;
+        this.ordersLoaded = true;
+      }
+    });
+  }
+
+  toggleOrderExpanded(orderId: number): void {
+    if (this.expandedOrderIds.has(orderId)) {
+      this.expandedOrderIds.delete(orderId);
+    } else {
+      this.expandedOrderIds.add(orderId);
+    }
+  }
+
+  isOrderExpanded(orderId: number): boolean {
+    return this.expandedOrderIds.has(orderId);
+  }
+
+  // Number() so a stray null/string unitPrice can't make .toFixed() throw
+  // and blank the cell (see the same guard in the admin Pedidos screen).
+  orderItemSubtotal(item: OrderItem): number {
+    return (Number(item.unitPrice) || 0) * item.quantity;
+  }
+
+  // order.total is what was actually charged (already net of any first-order
+  // discount), so the pre-discount subtotal is derived back from it.
+  orderSubtotal(order: Order): number {
+    return order.discountPercent ? order.total / (1 - order.discountPercent / 100) : order.total;
+  }
 
   ngOnInit(): void {
     this.cartService.cart$.subscribe(items => this.items = items);

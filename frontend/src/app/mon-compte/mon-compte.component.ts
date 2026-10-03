@@ -8,9 +8,7 @@ import {RouterLink, RouterLinkActive, Router} from "@angular/router";
 import {AuthService} from "../services/auth-service";
 import {SiteSettingsService} from "../services/site-settings-service";
 import {ModalService} from "../services/modal-service";
-import {OrderService} from "../services/order-service";
 import {FavoriteService} from "../services/favorite-service";
-import {Order, ORDER_STATUS_LABELS} from "../order";
 import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 
 @Component({
@@ -24,9 +22,9 @@ import {resolveImageUrl, DEFAULT_LOGO_URL} from "../constants";
 })
 // "Mi Perfil" — the Client-only account page (AuthGuard + role check in
 // ngOnInit boot the user out if they're not a logged-in Client). Two
-// independent inline edit forms (profile fields, password) plus a delete
-// action; logout goes through a confirm modal (showLogoutConfirm) rather than
-// firing immediately.
+// independent inline edit forms (profile fields, password); logout goes
+// through a confirm modal rather than firing immediately. Order history
+// lives on the cart page ("Historial"), not here.
 export class MonCompteComponent implements OnInit {
   private user: User | undefined;
   selectedUser!: UserModel;
@@ -38,17 +36,11 @@ export class MonCompteComponent implements OnInit {
   logoUrl: string = DEFAULT_LOGO_URL;
   resolveImageUrl = resolveImageUrl;
 
-  myOrders: Order[] = [];
-  ordersLoaded = false;
-  statusLabels = ORDER_STATUS_LABELS;
-  expandedOrderIds = new Set<number>();
-
   constructor(
     private userService: UserService,
     private authService: AuthService,
     private siteSettingsService: SiteSettingsService,
     private modalService: ModalService,
-    private orderService: OrderService,
     private favoriteService: FavoriteService,
     private formBuilder: FormBuilder,
     private router: Router,
@@ -68,28 +60,6 @@ export class MonCompteComponent implements OnInit {
     this.siteSettingsService.getSettings().subscribe(settings => {
       this.logoUrl = settings.logoUrl || DEFAULT_LOGO_URL;
     });
-
-    this.orderService.getMyOrders().subscribe({
-      next: orders => {
-        this.myOrders = orders;
-        this.ordersLoaded = true;
-      },
-      error: () => {
-        this.ordersLoaded = true;
-      }
-    });
-  }
-
-  toggleOrderExpanded(orderId: number): void {
-    if (this.expandedOrderIds.has(orderId)) {
-      this.expandedOrderIds.delete(orderId);
-    } else {
-      this.expandedOrderIds.add(orderId);
-    }
-  }
-
-  isOrderExpanded(orderId: number): boolean {
-    return this.expandedOrderIds.has(orderId);
   }
 
   checkoutForm = this.formBuilder.group({
@@ -124,30 +94,6 @@ export class MonCompteComponent implements OnInit {
       this.favoriteService.clear();
       this.authService.logout();
     }
-  }
-
-  async deleteUser(userId: number | undefined): Promise<void> {
-    const confirmed = await this.modalService.confirm({
-      title: 'Eliminar cuenta',
-      message: '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es irreversible.',
-      confirmText: 'Eliminar',
-    });
-    if (!confirmed) {
-      return;
-    }
-    if (typeof userId !== 'number') {
-      console.error('Error deleting user: user ID is undefined.');
-      return;
-    }
-    this.userService.deleteUser(userId).subscribe({
-      next: () => {
-        this.modalService.success('Cuenta eliminada con éxito.').then(() => this.authService.logout());
-      },
-      error: error => {
-        console.error('Error deleting user:', error);
-        this.modalService.error('Error al eliminar la cuenta. Intenta de nuevo.');
-      }
-    });
   }
 
   onSubmit(user: User): void {
