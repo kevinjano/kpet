@@ -9,7 +9,8 @@ import { ReviewService } from '../services/review-service';
 import { RatingSummary } from '../review';
 import { Product } from '../product';
 import { SiteSettings } from '../site-settings';
-import { resolveImageUrl, trackById, buildWhatsappUrl, isDirectVideoFile, isVideoEmbeddable, toEmbedVideoUrl, extractYoutubeId } from '../constants';
+import { resolveImageUrl, preloadImages, trackById, buildWhatsappUrl, isDirectVideoFile, isVideoEmbeddable, toEmbedVideoUrl, extractYoutubeId } from '../constants';
+import { PawsLoaderComponent } from '../paws-loader/paws-loader.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { BannerCarouselComponent } from '../banner-carousel/banner-carousel.component';
 import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
@@ -36,6 +37,7 @@ interface CategoryCard {
     CartToastComponent,
     SiteNavComponent,
     SiteFooterComponent,
+    PawsLoaderComponent,
   ],
 })
 // Landing page: hero banner (nav overlaid on top of it), the 3 big category
@@ -46,6 +48,10 @@ interface CategoryCard {
 // respectively — this page is now purely a landing/entry point.
 export class HomeComponent implements OnInit, AfterViewInit {
   products: Product[] = [];
+  // False until the products arrived and the first few featured images are
+  // downloaded, so the carousel appears complete instead of empty cards
+  // whose photos pop in one at a time.
+  featuredReady = false;
   settings: SiteSettings | undefined;
   bannerImages: string[] = [];
   selectedProduct: Product | null = null;
@@ -92,8 +98,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.productService.getProducts().subscribe(data => {
-      this.products = data.filter(p => p.active);
+    this.productService.getProducts().subscribe({
+      next: data => {
+        this.products = data.filter(p => p.active);
+        preloadImages(this.featuredProducts.slice(0, 6).map(p => resolveImageUrl(p.imageUrl)), 3500)
+          .then(() => this.featuredReady = true);
+      },
+      error: () => this.featuredReady = true,
     });
 
     this.siteSettingsService.getSettings().subscribe(data => this.applySettings(data));

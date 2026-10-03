@@ -52,7 +52,11 @@
 </section>
 
 <!-- ---------- Featured products carousel ---------- -->
-<section class="container featured-section" *ngIf="featuredProducts.length > 0">
+<section class="container featured-section featured-loading" *ngIf="!featuredReady">
+  <app-paws-loader></app-paws-loader>
+</section>
+
+<section class="container featured-section" *ngIf="featuredReady && featuredProducts.length > 0">
   <div class="d-flex align-items-center justify-content-between mb-4">
     <h2 class="section-title mb-0">Productos destacados</h2>
     <div class="featured-nav-btns">

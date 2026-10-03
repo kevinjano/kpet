@@ -1,5 +1,5 @@
 
-<div class="global-paws-overlay" *ngIf="routeLoading">
+<div class="global-paws-overlay" *ngIf="routeLoading || !appReady">
   <app-paws-loader></app-paws-loader>
 </div>
 <router-outlet></router-outlet>

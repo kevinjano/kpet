@@ -3,9 +3,10 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet, RouterLink } from '@angular/router';
 import { RouterModule} from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, from, switchMap } from 'rxjs';
 import { SiteSettingsService } from './services/site-settings-service';
-import { resolveImageUrl } from './constants';
+import { SiteSettings } from './site-settings';
+import { resolveImageUrl, preloadImages } from './constants';
 import { ModalComponent } from './modal/modal.component';
 import { WhatsappBubbleComponent } from './whatsapp-bubble/whatsapp-bubble.component';
 import { DiscountModalComponent } from './discount-modal/discount-modal.component';
@@ -26,6 +27,12 @@ export class AppComponent implements OnInit {
   title = 'Kpet';
   routeLoading = false;
 
+  // False only during the very first load of the page: keeps the paw loader
+  // up until the fresh store settings have arrived and their key images are
+  // downloaded, so a reload never flashes empty image slots or the previous
+  // (cached) texts before the current ones swap in.
+  appReady = false;
+
   private storeName = 'Kpet';
   private routeTitle: string | null = null;
 
@@ -44,6 +51,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.favoriteService.loadFavorites();
+    this.waitForInitialContent();
 
     // Shows the paw-bounce overlay for the length of every route transition
     // (not just data-fetching within a page) so navigating anywhere on the
@@ -88,6 +96,34 @@ export class AppComponent implements OnInit {
         this.updateTitle();
         this.meta.updateTag({ name: 'description', content: route?.snapshot.data?.['description'] ?? this.defaultDescription });
       });
+  }
+
+  private waitForInitialContent(): void {
+    // Never let a stalled request or image trap the visitor behind the loader.
+    const safety = setTimeout(() => this.appReady = true, 6000);
+    const finish = () => {
+      clearTimeout(safety);
+      this.appReady = true;
+    };
+    this.siteSettingsService.getFreshSettings().pipe(
+      switchMap(settings => from(preloadImages(this.criticalImages(settings))))
+    ).subscribe({ next: finish, error: finish });
+  }
+
+  // Logo everywhere; the hero banner and category cards only on the home
+  // page, where they're the first thing on screen — no point making every
+  // other page wait for images it doesn't show.
+  private criticalImages(settings: SiteSettings): (string | null)[] {
+    const urls = [resolveImageUrl(settings.logoUrl)];
+    if (this.document.location.pathname === '/') {
+      urls.push(
+        resolveImageUrl(settings.bannerUrls?.[0]),
+        resolveImageUrl(settings.categoryImagePerros),
+        resolveImageUrl(settings.categoryImageGatos),
+        resolveImageUrl(settings.categoryImageAccesorios),
+      );
+    }
+    return urls;
   }
 
   private updateTitle(): void {

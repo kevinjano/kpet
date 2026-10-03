@@ -5,7 +5,9 @@
 .global-paws-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  /* Above the discount popup (2000) so it can't show through while the
+     first load is still finishing, below the alert/confirm modals (3000). */
+  z-index: 2100;
   display: flex;
   align-items: center;
   justify-content: center;

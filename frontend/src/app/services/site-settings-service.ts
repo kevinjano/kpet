@@ -1,11 +1,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, concat, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {shareReplay, tap} from 'rxjs/operators';
 import {SiteSettings} from '../site-settings';
 import {API_ORIGIN} from '../constants';
 
 const CACHE_KEY = 'kpet_site_settings_cache';
+// How long one network response is reused by every component that asks for
+// settings, so a page full of components makes one request instead of ~10.
+const FRESH_TTL_MS = 30_000;
 
 @Injectable({
   providedIn: 'root',
@@ -14,8 +17,25 @@ const CACHE_KEY = 'kpet_site_settings_cache';
 export class SiteSettingsService {
 
   private apiUrl = `${API_ORIGIN}/api/settings`;
+  private fresh$?: Observable<SiteSettings>;
+  private freshFetchedAt = 0;
 
   constructor(private httpClient: HttpClient) {}
+
+  // Network-only, and shared: every caller within FRESH_TTL_MS gets the same
+  // response at the same moment. Before this, each component fired its own
+  // request, so the logo, footer, banners and texts each switched from the
+  // cached copy to the fresh one at a different time — which read as flicker.
+  getFreshSettings(): Observable<SiteSettings> {
+    if (!this.fresh$ || Date.now() - this.freshFetchedAt > FRESH_TTL_MS) {
+      this.freshFetchedAt = Date.now();
+      this.fresh$ = this.httpClient.get<SiteSettings>(this.apiUrl).pipe(
+        tap(settings => this.writeCache(settings)),
+        shareReplay(1)
+      );
+    }
+    return this.fresh$;
+  }
 
   // Emits the last-known settings from localStorage first (if any) so the
   // real logo/banners paint immediately instead of flashing the bundled
@@ -25,10 +45,8 @@ export class SiteSettingsService {
   // flicker everywhere at once instead of per-component.
   getSettings(): Observable<SiteSettings> {
     const cached = this.readCache();
-    const network$ = this.httpClient.get<SiteSettings>(this.apiUrl).pipe(
-      tap(settings => this.writeCache(settings))
-    );
-    return cached ? concat(of(cached), network$) : network$;
+    const fresh$ = this.getFreshSettings();
+    return cached ? concat(of(cached), fresh$) : fresh$;
   }
 
   // Synchronous escape hatch for a component that needs the last-known
@@ -42,7 +60,11 @@ export class SiteSettingsService {
 
   updateSettings(settings: Partial<SiteSettings>): Observable<SiteSettings> {
     return this.httpClient.put<SiteSettings>(`${this.apiUrl}/update`, settings).pipe(
-      tap(updated => this.writeCache(updated))
+      tap(updated => {
+        this.writeCache(updated);
+        this.fresh$ = of(updated).pipe(shareReplay(1));
+        this.freshFetchedAt = Date.now();
+      })
     );
   }
 

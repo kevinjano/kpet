@@ -36,6 +36,34 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
   return path.startsWith('/uploads/') ? `${API_ORIGIN}${path}` : path;
 }
 
+// Downloads the given images into the browser cache so they paint instantly
+// once rendered, instead of popping in one by one after the page is already
+// visible. Never rejects, and gives up after timeoutMs, so a slow or 404
+// image can't hold a loading screen forever.
+export function preloadImages(urls: (string | null | undefined)[], timeoutMs = 4000): Promise<void> {
+  const unique = Array.from(new Set(urls.filter((u): u is string => !!u)));
+  if (unique.length === 0) {
+    return Promise.resolve();
+  }
+  return new Promise<void>(resolve => {
+    let pending = unique.length;
+    const timer = setTimeout(resolve, timeoutMs);
+    const settle = () => {
+      pending--;
+      if (pending <= 0) {
+        clearTimeout(timer);
+        resolve();
+      }
+    };
+    unique.forEach(url => {
+      const img = new Image();
+      img.onload = settle;
+      img.onerror = settle;
+      img.src = url;
+    });
+  });
+}
+
 // Turns a YouTube/Vimeo/Google Drive link (whatever shape someone pastes —
 // youtu.be, /watch?v=, with other query params before/after v=, /shorts/,
 // /live/, youtube-nocookie.com, vimeo.com/id, or a Drive "view" share link)
