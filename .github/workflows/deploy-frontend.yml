@@ -1,0 +1,54 @@
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # constants.ts is toggled between the local API and the production API
+      # while developing (see the comment in the file), so the value actually
+      # committed can't be trusted — force it to the production API here so a
+      # forgotten toggle never ships a build that calls localhost.
+      - name: Force production API origin
+        run: |
+          sed -i "s|^export const API_ORIGIN = .*|export const API_ORIGIN = 'https://api.kiarapetnutri.com.bo';|" frontend/src/app/constants.ts
+          grep "API_ORIGIN" frontend/src/app/constants.ts
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build -- --configuration production
+
+      - name: Verify no localhost leaked into the build
+        run: |
+          if grep -rl "localhost:8091" frontend/dist/kpet-angular/browser/*.js 2>/dev/null; then
+            echo "::error::localhost:8091 leaked into the production build"
+            exit 1
+          fi
+
+      - name: Deploy to public_html via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_FRONTEND_USERNAME }}
+          password: ${{ secrets.FTP_FRONTEND_PASSWORD }}
+          protocol: ftps
+          local-dir: frontend/dist/kpet-angular/browser/
+          server-dir: ./

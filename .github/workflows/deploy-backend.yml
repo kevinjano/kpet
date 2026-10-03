@@ -1,0 +1,48 @@
+name: Deploy backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend-php/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy source to server via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_BACKEND_USERNAME }}
+          password: ${{ secrets.FTP_BACKEND_PASSWORD }}
+          protocol: ftps
+          local-dir: backend-php/
+          server-dir: ./
+          # Never touch anything generated at runtime or holding secrets/data
+          # that doesn't live in git: uploaded images, the real .env, logs,
+          # sessions, cached views, the installed vendor/ (composer isn't run
+          # here), public/.htaccess (cPanel injects its own PHP-version
+          # handler block into it), or scratch/deploy zips left over from
+          # manual deploys.
+          exclude: |
+            vendor/**
+            node_modules/**
+            .dev/**
+            tests/**
+            backups/**
+            storage/**
+            public/uploads/**
+            public/build/**
+            public/storage/**
+            public/hot
+            public/.htaccess
+            bootstrap/cache/*.php
+            .env
+            .env.backup
+            .env.production
+            .env.example
+            *.zip
