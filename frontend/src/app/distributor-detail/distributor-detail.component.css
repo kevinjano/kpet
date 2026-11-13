@@ -180,21 +180,4 @@
   -webkit-box-orient: vertical;
 }
 
-.price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-}
-
-.price-old {
-  text-decoration: line-through;
-  color: #A79BC4;
-  font-size: 0.85rem;
-}
-
-.price-current {
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: var(--kpet-purple-700);
-}
 

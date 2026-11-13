@@ -31,7 +31,7 @@
 
         <p class="pdm-description">{{ product.description }}</p>
 
-        <div class="pdm-price-row">
+        <div class="pdm-price-row" *ngIf="!hidePrice">
           <ng-container *ngIf="product.onSale && product.salePrice != null; else pdmRegularPrice">
             <span class="pdm-price-old">Bs.{{ product.price.toFixed(2) }}</span>
             <span class="pdm-price-current">Bs.{{ product.salePrice.toFixed(2) }}</span>
@@ -102,7 +102,7 @@
             </div>
             <div class="pdm-other-info">
               <span class="pdm-other-name">{{ other.name }}</span>
-              <span class="pdm-other-price">Bs.{{ unitPrice(other).toFixed(2) }}</span>
+              <span class="pdm-other-price" *ngIf="!hidePrice">Bs.{{ unitPrice(other).toFixed(2) }}</span>
             </div>
             <span class="pdm-other-cta">Ver producto →</span>
           </div>

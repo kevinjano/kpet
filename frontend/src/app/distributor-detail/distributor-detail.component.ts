@@ -19,8 +19,8 @@ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.comp
   styleUrl: './distributor-detail.component.css'
 })
 /**
- * Public page for a single distributor: informational only (name, price, stock
- * badge per product). Deliberately has no cart, no quantity selection, and
+ * Public page for a single distributor: informational only (name, stock badge
+ * per product — prices are deliberately not shown here). Has no cart, no quantity selection, and
  * creates no backend Order — see Distributor's model comment for why.
  */
 export class DistributorDetailComponent implements OnInit {

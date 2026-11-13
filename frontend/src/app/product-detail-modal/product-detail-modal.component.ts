@@ -31,6 +31,7 @@ export class ProductDetailModalComponent implements OnChanges, OnDestroy {
   // Distributor pages are informational-only (no cart there), so they show the
   // modal with the buy button/quantity stepper hidden.
   @Input() hideAddToCart = false;
+  @Input() hidePrice = false;
   @Output() close = new EventEmitter<void>();
   @Output() selectProduct = new EventEmitter<Product>();
 

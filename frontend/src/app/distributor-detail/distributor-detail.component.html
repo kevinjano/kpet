@@ -63,16 +63,7 @@
             <h3 class="product-name">{{ entry.product.name }}</h3>
             <p class="product-description text-muted">{{ entry.product.description }}</p>
             <div class="mt-auto">
-              <div class="price-row">
-                <ng-container *ngIf="entry.product.onSale && entry.product.salePrice != null; else regularPrice">
-                  <span class="price-old">Bs.{{ entry.product.price.toFixed(2) }}</span>
-                  <span class="price-current">Bs.{{ entry.product.salePrice.toFixed(2) }}</span>
-                </ng-container>
-                <ng-template #regularPrice>
-                  <span class="price-current">Bs.{{ entry.product.price.toFixed(2) }}</span>
-                </ng-template>
-              </div>
-              <button class="btn btn-outline-secondary w-100 mt-2" (click)="openProductInfo(entry.product)">Información</button>
+              <button class="btn btn-outline-secondary w-100" (click)="openProductInfo(entry.product)">Información</button>
             </div>
           </div>
         </div>
@@ -86,6 +77,7 @@
   [product]="selectedProduct"
   [allProducts]="productList"
   [hideAddToCart]="true"
+  [hidePrice]="true"
   (close)="closeProductInfo()"
   (selectProduct)="openProductInfo($event)">
 </app-product-detail-modal>
