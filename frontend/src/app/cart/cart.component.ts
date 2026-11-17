@@ -6,7 +6,9 @@ import { CartService, getPendingOrderId } from '../services/cart-service';
 import { PendingOrderService, PendingOrderOutcome } from '../services/pending-order-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { OrderService } from '../services/order-service';
+import { ProductService } from '../services/product-service';
 import { ModalService } from '../services/modal-service';
+import { Product } from '../product';
 import { AuthService } from '../services/auth-service';
 import { CartItem } from '../cart-item';
 import { Order, ORDER_STATUS_LABELS } from '../order';
@@ -86,6 +88,7 @@ export class CartComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private siteSettingsService: SiteSettingsService,
     private orderService: OrderService,
+    private productService: ProductService,
     private modalService: ModalService,
     private authService: AuthService,
     private pendingOrderService: PendingOrderService,
@@ -189,19 +192,6 @@ export class CartComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Back to the QR / "enviar comprobante" screen for the order that's already
-  // been placed (it never creates a second one).
-  openPaymentStep(): void {
-    const order = this.pendingOrder;
-    if (!order) {
-      return;
-    }
-    this.currentOrder = order;
-    this.pendingWhatsappMessage = this.buildWhatsappMessage(order);
-    this.receiptConfirmed = order.receiptSent;
-    this.checkoutStep = 'payment';
-  }
-
   backToCart(): void {
     this.checkoutStep = 'cart';
     this.activeTab = 'cart';
@@ -275,18 +265,13 @@ export class CartComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Step 1 (cart screen): create the order and move to the QR payment step.
-  // Does NOT open WhatsApp — that used to happen here and its new tab/window
-  // would cover the QR before the customer had a chance to pay. The cart is
-  // NOT emptied here: it stays (frozen) until the admin confirms the payment.
+  // Step 1 (cart screen): show the QR payment screen. NO order exists yet —
+  // the customer can still go back, edit the cart and return here as many
+  // times as they like. The order is only created when they tap "Enviar
+  // comprobante" (step 2). Stock is checked now, before they pay, so they
+  // aren't told it ran out only after sending money.
   proceedToPayment(): void {
-    // Already has an order waiting on payment — go back to its QR screen
-    // instead of ever creating a duplicate.
-    if (this.pendingOrderId !== null) {
-      this.openPaymentStep();
-      return;
-    }
-    if (this.items.length === 0 || !this.settingsLoaded) {
+    if (this.pendingOrderId !== null || this.items.length === 0 || !this.settingsLoaded) {
       return;
     }
     if (!this.whatsappNumber) {
@@ -294,46 +279,39 @@ export class CartComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const itemsSnapshot = this.items.map(item => ({
-      productId: item.product.id,
-      productName: item.product.name,
-      quantity: item.quantity,
-      unitPrice: this.unitPrice(item),
-    }));
-    const rawTotal = this.total;
-
-    // A first-order welcome discount is redeemed at most once per lead (see
-    // OrderController@create) — checked here just to decide what to show the
-    // customer; the backend re-validates it's actually still unused before
-    // ever applying it.
-    const pendingDiscount = this.getPendingDiscount();
-    const discountAmount = pendingDiscount ? rawTotal * (pendingDiscount.percent / 100) : 0;
-    const totalSnapshot = rawTotal - discountAmount;
-
     this.placingOrder = true;
-    this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}, pendingDiscount?.leadId).subscribe({
-      next: order => {
+    this.productService.getProducts().subscribe({
+      next: products => {
         this.placingOrder = false;
-        this.pendingOrderService.register(order);
-        this.currentOrder = order;
-        this.pendingWhatsappMessage = this.buildWhatsappMessage(order);
+        const problem = this.findStockProblem(products);
+        if (problem) {
+          this.modalService.error(problem);
+          return;
+        }
         this.receiptConfirmed = false;
         this.checkoutStep = 'payment';
-        if (pendingDiscount) {
-          localStorage.removeItem(PENDING_DISCOUNT_KEY);
-        }
       },
-      error: err => {
+      // Couldn't check — let them through; the server re-checks stock
+      // authoritatively when the order is created in step 2.
+      error: () => {
         this.placingOrder = false;
-        // Unlike the old flow (which opened WhatsApp in the same click),
-        // nothing irreversible has happened yet at this point — so a
-        // rejection here (most commonly: someone ordered more than what's
-        // actually in stock right now) should stop the checkout and tell the
-        // customer, not silently wave them through to a "pedido creado"
-        // screen for an order that isn't valid.
-        this.modalService.error(extractErrorMessage(err, 'No pudimos procesar tu pedido. Intenta de nuevo.'));
+        this.receiptConfirmed = false;
+        this.checkoutStep = 'payment';
       }
     });
+  }
+
+  private findStockProblem(products: Product[]): string | null {
+    for (const item of this.items) {
+      const current = products.find(p => p.id === item.product.id);
+      if (!current || !current.active) {
+        return `"${item.product.name}" ya no está disponible. Quítalo de tu carrito para continuar.`;
+      }
+      if (current.stock !== null && item.quantity > current.stock) {
+        return `No hay suficiente stock de "${item.product.name}" (disponible: ${current.stock}). Ajusta la cantidad para continuar.`;
+      }
+    }
+    return null;
   }
 
   // Built from the saved order (not the live cart) so it can be rebuilt
@@ -370,31 +348,87 @@ export class CartComponent implements OnInit, OnDestroy {
     ].join('\n');
   }
 
-  // Step 2 (QR payment screen): only now does WhatsApp open, with the order
-  // pre-filled — the customer attaches their payment screenshot manually
-  // once inside the chat, since a wa.me link can't attach a file for them.
-  sendReceiptOnWhatsapp(): void {
+  private whatsappUrl(message: string): string {
     const digitsOnly = this.whatsappNumber.replace(/\D/g, '');
-    const url = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(this.pendingWhatsappMessage)}`;
-    window.open(url, '_blank');
-    this.confirmReceiptSent();
+    return `https://wa.me/${digitsOnly}?text=${encodeURIComponent(message)}`;
   }
 
-  private confirmReceiptSent(): void {
-    if (!this.currentOrder) {
-      this.receiptConfirmed = true;
+  // Step 2 (QR payment screen): the customer has paid and taps "Enviar
+  // comprobante". Only now is the order created — it's what the admin sees and
+  // confirms — and WhatsApp opens with it pre-filled (the customer attaches
+  // their payment screenshot manually once inside the chat, since a wa.me link
+  // can't attach a file). The cart then stays, frozen, until the admin confirms.
+  sendReceiptOnWhatsapp(): void {
+    if (this.confirmingReceipt || this.items.length === 0) {
       return;
     }
+
+    // Opened synchronously, inside the click, because browsers block a window
+    // opened later from an async callback; it's pointed at WhatsApp once the
+    // order exists, or closed again if creating it fails.
+    const whatsappWindow = window.open('', '_blank');
+
+    const itemsSnapshot = this.items.map(item => ({
+      productId: item.product.id,
+      productName: item.product.name,
+      quantity: item.quantity,
+      unitPrice: this.unitPrice(item),
+    }));
+    const rawTotal = this.total;
+
+    // A first-order welcome discount is redeemed at most once per lead (see
+    // OrderController@create) — checked here just to decide what to show the
+    // customer; the backend re-validates it's actually still unused before
+    // ever applying it.
+    const pendingDiscount = this.getPendingDiscount();
+    const discountAmount = pendingDiscount ? rawTotal * (pendingDiscount.percent / 100) : 0;
+    const totalSnapshot = rawTotal - discountAmount;
+
     this.confirmingReceipt = true;
-    this.orderService.markReceiptSent(this.currentOrder.id).subscribe({
-      next: () => {
-        this.confirmingReceipt = false;
-        this.receiptConfirmed = true;
+    this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}, pendingDiscount?.leadId).subscribe({
+      next: order => {
+        this.pendingOrderService.register(order);
+        this.currentOrder = order;
+        this.pendingWhatsappMessage = this.buildWhatsappMessage(order);
+        if (pendingDiscount) {
+          localStorage.removeItem(PENDING_DISCOUNT_KEY);
+        }
+
+        const url = this.whatsappUrl(this.pendingWhatsappMessage);
+        if (whatsappWindow) {
+          whatsappWindow.location.href = url;
+        } else {
+          window.open(url, '_blank');
+        }
+
+        // The flag is best-effort: the order already exists either way.
+        this.orderService.markReceiptSent(order.id).subscribe({
+          next: () => this.finishReceipt(),
+          error: () => this.finishReceipt(),
+        });
       },
-      error: () => {
+      error: err => {
+        whatsappWindow?.close();
         this.confirmingReceipt = false;
-        this.receiptConfirmed = true;
+        // Most commonly someone ordered more than what's in stock right now.
+        // Nothing was sent to WhatsApp, so it's safe to stop here and say why.
+        this.modalService.error(extractErrorMessage(err, 'No pudimos procesar tu pedido. Intenta de nuevo.'));
       }
     });
+  }
+
+  private finishReceipt(): void {
+    this.confirmingReceipt = false;
+    this.receiptConfirmed = true;
+  }
+
+  // Re-opens WhatsApp with the same message for an order that already exists —
+  // for a customer who closed the chat without sending it. Creates nothing.
+  resendReceipt(): void {
+    const order = this.pendingOrder;
+    if (!order) {
+      return;
+    }
+    window.open(this.whatsappUrl(this.buildWhatsappMessage(order)), '_blank');
   }
 }

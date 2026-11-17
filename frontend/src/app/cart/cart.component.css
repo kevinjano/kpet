@@ -460,3 +460,20 @@
   font-size: 0.9rem;
   font-weight: 600;
 }
+
+.payment-amount {
+  font-size: 1.1rem;
+  color: var(--kpet-ink);
+  margin-bottom: 1rem;
+}
+
+.payment-amount strong {
+  color: var(--kpet-purple-700);
+  font-size: 1.35rem;
+}
+
+.payment-amount-note {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--kpet-ink-soft);
+}

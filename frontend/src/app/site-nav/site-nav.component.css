@@ -78,9 +78,31 @@
   background: var(--kpet-white);
 }
 
+/* The mobile drawer has its own light background, so it must not inherit the
+   white-on-dark colors the transparent nav uses over the hero banner —
+   that made every link and button in it nearly invisible. */
 @media (max-width: 991.98px) {
   .kpet-nav-overlay .kpet-nav-content {
     background: var(--kpet-purple-100);
+  }
+
+  .kpet-nav-overlay .kpet-category-nav a {
+    color: var(--kpet-ink-soft);
+  }
+
+  .kpet-nav-overlay .kpet-category-nav a:hover {
+    color: var(--kpet-purple-700);
+  }
+
+  .kpet-nav-overlay .kpet-category-nav a.active,
+  .kpet-nav-overlay.kpet-nav-scrolled .kpet-category-nav a.active {
+    color: var(--kpet-white);
+  }
+
+  .kpet-nav-overlay .kpet-nav-actions .btn {
+    background: var(--kpet-white);
+    border-color: rgba(76, 29, 149, 0.25);
+    color: var(--kpet-ink);
   }
 }
 

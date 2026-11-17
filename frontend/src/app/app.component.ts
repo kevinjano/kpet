@@ -10,6 +10,7 @@ import { PendingOrderService } from './services/pending-order-service';
 import { resolveImageUrl, preloadImages } from './constants';
 import { ModalComponent } from './modal/modal.component';
 import { WhatsappBubbleComponent } from './whatsapp-bubble/whatsapp-bubble.component';
+import { CartBubbleComponent } from './cart-bubble/cart-bubble.component';
 import { DiscountModalComponent } from './discount-modal/discount-modal.component';
 import { FavoriteService } from './services/favorite-service';
 import { PawsLoaderComponent } from './paws-loader/paws-loader.component';
@@ -18,7 +19,7 @@ import { PawsLoaderComponent } from './paws-loader/paws-loader.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule, ModalComponent, WhatsappBubbleComponent, DiscountModalComponent, PawsLoaderComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule, ModalComponent, WhatsappBubbleComponent, CartBubbleComponent, DiscountModalComponent, PawsLoaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

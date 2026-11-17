@@ -71,14 +71,14 @@
   <div class="pending-order-banner kpet-fade-up" *ngIf="activeTab === 'cart' && pendingOrderId !== null">
     <div class="pending-order-banner-top">
       <div class="pending-order-banner-text">
-        <strong>Pedido #{{ pendingOrderId }} pendiente de confirmación de pago</strong>
+        <strong>Pedido #{{ pendingOrderId }} enviado, pendiente de confirmación de pago</strong>
         <span>Tu carrito se queda aquí hasta que confirmemos tu pago. Después pasa a tu historial.</span>
       </div>
       <span class="history-status-pill status-PENDING_CONFIRMATION">{{ statusLabels['PENDING_CONFIRMATION'] }}</span>
     </div>
     <div class="pending-order-banner-actions">
-      <button type="button" class="btn btn-kpet-primary btn-sm" (click)="openPaymentStep()" [disabled]="!pendingOrder || !settingsLoaded">
-        {{ pendingOrder?.receiptSent ? 'Ver mi pago y comprobante' : 'Ir a pagar / enviar comprobante' }}
+      <button type="button" class="btn btn-kpet-primary btn-sm" (click)="resendReceipt()" [disabled]="!pendingOrder || !settingsLoaded">
+        Abrir WhatsApp de nuevo
       </button>
       <button type="button" class="btn btn-outline-danger btn-sm" (click)="cancelPendingOrder()" [disabled]="cancellingOrder">
         {{ cancellingOrder ? 'Cancelando...' : 'Cancelar pedido' }}
@@ -170,6 +170,11 @@
       <h2 class="payment-title">¡Ya casi terminamos!</h2>
       <p class="payment-subtitle">Escanea el código QR para pagar tu pedido. Cuando hayas pagado, tocá el botón para enviarnos el detalle de tu pedido por WhatsApp — ahí mismo adjunta tu comprobante de pago.</p>
 
+      <p class="payment-amount">
+        Total a pagar: <strong>Bs.{{ discountedTotal.toFixed(2) }}</strong>
+        <span *ngIf="pendingDiscountPercent as percent" class="payment-amount-note">(con {{ percent }}% de descuento por primer pedido)</span>
+      </p>
+
       <div class="qr-wrapper" *ngIf="qrCodeUrl; else noQr">
         <img [src]="resolveImageUrl(qrCodeUrl)" alt="Código QR de pago" class="qr-image">
       </div>
@@ -180,13 +185,16 @@
       <button class="btn btn-whatsapp mt-3" (click)="sendReceiptOnWhatsapp()" [disabled]="confirmingReceipt">
         <span aria-hidden="true">💬</span> {{ confirmingReceipt ? 'Enviando...' : 'Enviar comprobante por WhatsApp' }}
       </button>
+      <div>
+        <button type="button" class="btn btn-link mt-2" (click)="backToCart()" [disabled]="confirmingReceipt">← Volver y editar mi carrito</button>
+      </div>
     </ng-container>
 
     <ng-template #thanksBlock>
       <div class="payment-thanks">
         <div class="payment-thanks-icon">✅</div>
         <h2 class="payment-title">¡Gracias por tu compra!</h2>
-        <p class="payment-subtitle">Tu pedido quedó <strong>pendiente de confirmación</strong>. En cuanto verifiquemos tu pago te contactaremos por WhatsApp. Tu carrito se queda guardado hasta entonces, y después pasa a tu historial.</p>
+        <p class="payment-subtitle">Tu pedido #{{ pendingOrderId }} quedó <strong>pendiente de confirmación</strong>. En cuanto verifiquemos tu pago te contactaremos por WhatsApp. Tu carrito se queda guardado hasta entonces, y después pasa a tu historial.</p>
         <button type="button" class="btn btn-outline-secondary mt-2 me-2" (click)="backToCart()">Ver mi pedido</button>
         <a routerLink="/" class="btn btn-kpet-primary mt-2">Volver a la tienda</a>
       </div>

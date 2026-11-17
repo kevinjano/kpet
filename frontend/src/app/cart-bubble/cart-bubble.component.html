@@ -1,0 +1,14 @@
+<a
+  *ngIf="!hideBubble"
+  class="cart-bubble"
+  routerLink="/carrito"
+  [attr.aria-label]="itemCount > 0 ? 'Ver mi carrito (' + itemCount + ' productos)' : 'Ver mi carrito'">
+  <span class="cart-bubble-label">Mi carrito</span>
+  <span class="cart-bubble-icon">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/>
+      <path d="M2.5 3h2.7l2.4 11.6a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L21 7.5H6.1"/>
+    </svg>
+    <span *ngIf="itemCount > 0" class="cart-bubble-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+  </span>
+</a>

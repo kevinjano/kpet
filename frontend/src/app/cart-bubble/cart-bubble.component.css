@@ -1,0 +1,75 @@
+/* Same footprint and behavior as the WhatsApp bubble (a 52px circle that
+   grows a label on hover), sitting one bubble-height above it. */
+.cart-bubble {
+  position: fixed;
+  right: 1.25rem;
+  bottom: calc(1.25rem + 52px + 0.8rem);
+  /* Below the site nav (100) so the open mobile menu isn't covered by it. */
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, var(--kpet-purple-600), var(--kpet-purple-700));
+  color: var(--kpet-white);
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0.7rem;
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.45);
+  transition: box-shadow var(--kpet-transition), transform var(--kpet-transition), padding var(--kpet-transition);
+}
+
+.cart-bubble:hover {
+  color: var(--kpet-white);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(109, 40, 217, 0.55);
+  padding-left: 1.1rem;
+}
+
+.cart-bubble-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.cart-bubble-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.92rem;
+  opacity: 0;
+  transition: max-width 320ms var(--kpet-ease), opacity 240ms var(--kpet-ease);
+}
+
+.cart-bubble:hover .cart-bubble-label {
+  max-width: 220px;
+  opacity: 1;
+}
+
+.cart-bubble-badge {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--kpet-yellow-500);
+  color: var(--kpet-purple-900);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 575.98px) {
+  .cart-bubble {
+    right: 1rem;
+    bottom: calc(1rem + 52px + 0.8rem);
+  }
+}

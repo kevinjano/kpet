@@ -2,7 +2,8 @@
   position: fixed;
   right: 1.25rem;
   bottom: 1.25rem;
-  z-index: 300;
+  /* Below the site nav (100) so the open mobile menu isn't covered by it. */
+  z-index: 90;
   display: flex;
   align-items: center;
   gap: 0.6rem;
