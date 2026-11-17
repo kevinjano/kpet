@@ -47,6 +47,7 @@ Route::get('/orders/mine', [OrderController::class, 'mine'])->middleware('role:A
 Route::get('/orders/{id}', [OrderController::class, 'show'])->middleware('role:Admin')->where('id', '[0-9]+');
 Route::post('/orders/create', [OrderController::class, 'create']);
 Route::put('/orders/{id}/receipt-sent', [OrderController::class, 'markReceiptSent']);
+Route::put('/orders/{id}/cancel', [OrderController::class, 'cancelMine'])->middleware('role:Admin,Client')->where('id', '[0-9]+');
 Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->middleware('role:Admin');
 
 // ---------- Favorites ----------

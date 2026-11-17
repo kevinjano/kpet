@@ -413,3 +413,50 @@
     margin-left: auto;
   }
 }
+
+/* ---------- Pedido pendiente: el carrito queda guardado hasta confirmar el pago ---------- */
+.pending-order-banner {
+  background: var(--kpet-yellow-100);
+  border: 1px solid #F5C563;
+  border-radius: var(--kpet-radius);
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.pending-order-banner-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pending-order-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: #7A5309;
+}
+
+.pending-order-banner-text span {
+  font-size: 0.88rem;
+}
+
+.pending-order-banner-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.locked-qty {
+  font-weight: 700;
+  padding: 0 0.6rem;
+}
+
+.pending-order-note {
+  text-align: center;
+  color: var(--kpet-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+}

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartService } from '../services/cart-service';
+import { Subscription, interval } from 'rxjs';
+import { CartService, getPendingOrderId } from '../services/cart-service';
+import { PendingOrderService, PendingOrderOutcome } from '../services/pending-order-service';
 import { SiteSettingsService } from '../services/site-settings-service';
 import { OrderService } from '../services/order-service';
 import { ModalService } from '../services/modal-service';
@@ -32,7 +34,17 @@ import { PENDING_DISCOUNT_KEY, PendingDiscount } from '../discount-modal/discoun
  * pay. There is no "did the customer actually pay" signal here; that's
  * confirmed manually by the admin in the Pedidos screen.
  */
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
+
+  // The order the customer has placed and is waiting on the admin to confirm.
+  // While there is one, the cart below is frozen (read-only) and stays put —
+  // it's emptied only once that order is confirmed (see PendingOrderService).
+  // pendingOrderId comes from the stored marker so the frozen state shows
+  // immediately; pendingOrder (the full order) arrives once it's been fetched.
+  pendingOrderId: number | null = getPendingOrderId();
+  pendingOrder: Order | null = null;
+  cancellingOrder = false;
+  private subs = new Subscription();
 
   items: CartItem[] = [];
   storeName = 'Kpet';
@@ -76,6 +88,7 @@ export class CartComponent implements OnInit {
     private orderService: OrderService,
     private modalService: ModalService,
     private authService: AuthService,
+    private pendingOrderService: PendingOrderService,
   ) {}
 
   get isLoggedIn(): boolean {
@@ -130,7 +143,18 @@ export class CartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cartService.cart$.subscribe(items => this.items = items);
+    this.subs.add(this.cartService.cart$.subscribe(items => this.items = items));
+
+    this.subs.add(this.pendingOrderService.pendingOrder$.subscribe(order => {
+      this.pendingOrder = order;
+      this.pendingOrderId = getPendingOrderId();
+    }));
+    this.subs.add(this.pendingOrderService.outcome$.subscribe(outcome => this.onPendingOutcome(outcome)));
+    // Notices the admin's decision without a reload: checked now, then every
+    // 15 s while this page stays open (a no-op when nothing is pending).
+    this.pendingOrderService.refresh();
+    this.subs.add(interval(15000).subscribe(() => this.pendingOrderService.refresh()));
+
     this.siteSettingsService.getSettings().subscribe(settings => {
       this.settings = settings;
       this.storeName = settings.storeName || 'Kpet';
@@ -141,8 +165,70 @@ export class CartComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+
   trackByProductId(_index: number, item: CartItem): number {
     return item.product.id;
+  }
+
+  private onPendingOutcome(outcome: PendingOrderOutcome): void {
+    this.checkoutStep = 'cart';
+    this.currentOrder = null;
+    if (outcome.type === 'confirmed') {
+      this.activeTab = 'history';
+      this.loadMyOrders();
+      this.modalService.success(`¡Confirmamos el pago de tu pedido #${outcome.order.id}! Ya lo puedes ver en tu historial.`);
+    } else {
+      this.activeTab = 'cart';
+      this.modalService.alert({
+        title: 'Pedido cancelado',
+        message: `El pedido #${outcome.order.id} fue cancelado. Tu carrito sigue aquí por si quieres ajustarlo y pedir de nuevo.`,
+      });
+    }
+  }
+
+  // Back to the QR / "enviar comprobante" screen for the order that's already
+  // been placed (it never creates a second one).
+  openPaymentStep(): void {
+    const order = this.pendingOrder;
+    if (!order) {
+      return;
+    }
+    this.currentOrder = order;
+    this.pendingWhatsappMessage = this.buildWhatsappMessage(order);
+    this.receiptConfirmed = order.receiptSent;
+    this.checkoutStep = 'payment';
+  }
+
+  backToCart(): void {
+    this.checkoutStep = 'cart';
+    this.activeTab = 'cart';
+  }
+
+  async cancelPendingOrder(): Promise<void> {
+    const id = this.pendingOrderId;
+    if (id === null || this.cancellingOrder) {
+      return;
+    }
+    const confirmed = await this.modalService.confirm({
+      title: 'Cancelar pedido',
+      message: `¿Cancelar el pedido #${id}? Tu carrito se mantiene para que puedas ajustarlo y pedir de nuevo.`,
+      confirmText: 'Cancelar pedido',
+    });
+    if (!confirmed) {
+      return;
+    }
+    this.cancellingOrder = true;
+    this.pendingOrderService.cancel(id).subscribe({
+      next: () => this.cancellingOrder = false,
+      error: err => {
+        this.cancellingOrder = false;
+        this.modalService.error(extractErrorMessage(err, 'No pudimos cancelar el pedido. Intenta de nuevo.'));
+        this.pendingOrderService.refresh();
+      }
+    });
   }
 
   unitPrice(item: CartItem): number {
@@ -191,8 +277,15 @@ export class CartComponent implements OnInit {
 
   // Step 1 (cart screen): create the order and move to the QR payment step.
   // Does NOT open WhatsApp — that used to happen here and its new tab/window
-  // would cover the QR before the customer had a chance to pay.
+  // would cover the QR before the customer had a chance to pay. The cart is
+  // NOT emptied here: it stays (frozen) until the admin confirms the payment.
   proceedToPayment(): void {
+    // Already has an order waiting on payment — go back to its QR screen
+    // instead of ever creating a duplicate.
+    if (this.pendingOrderId !== null) {
+      this.openPaymentStep();
+      return;
+    }
     if (this.items.length === 0 || !this.settingsLoaded) {
       return;
     }
@@ -217,42 +310,15 @@ export class CartComponent implements OnInit {
     const discountAmount = pendingDiscount ? rawTotal * (pendingDiscount.percent / 100) : 0;
     const totalSnapshot = rawTotal - discountAmount;
 
-    // WhatsApp renders *text* as bold and a blank line as a paragraph break,
-    // so this reads as a formatted receipt instead of one run-on paragraph.
-    // No emoji here on purpose — they showed up as broken boxes in testing
-    // on both desktop and phone once sent through a wa.me link.
-    const lines = this.items.map(item =>
-      `- ${item.quantity}x ${item.product.name} — Bs.${this.lineTotal(item).toFixed(2)}`
-    );
-
-    const totalLines = pendingDiscount
-      ? [
-          `Por ser mi primer pedido, tengo un descuento del ${pendingDiscount.percent}%.`,
-          '',
-          `Subtotal: Bs.${rawTotal.toFixed(2)}`,
-          `Descuento (${pendingDiscount.percent}%): -Bs.${discountAmount.toFixed(2)}`,
-          `*Total a pagar: Bs.${totalSnapshot.toFixed(2)}*`,
-        ]
-      : [`*Total: Bs.${totalSnapshot.toFixed(2)}*`];
-
-    this.pendingWhatsappMessage = [
-      `¡Hola! Quiero hacer un pedido en *${this.storeName}*:`,
-      '',
-      '*Mi pedido:*',
-      ...lines,
-      '',
-      ...totalLines,
-      '',
-      'Ya realicé el pago, adjunto mi comprobante.',
-    ].join('\n');
-
     this.placingOrder = true;
     this.orderService.createOrder({items: itemsSnapshot, total: totalSnapshot}, pendingDiscount?.leadId).subscribe({
       next: order => {
         this.placingOrder = false;
+        this.pendingOrderService.register(order);
         this.currentOrder = order;
+        this.pendingWhatsappMessage = this.buildWhatsappMessage(order);
+        this.receiptConfirmed = false;
         this.checkoutStep = 'payment';
-        this.cartService.clearCart();
         if (pendingDiscount) {
           localStorage.removeItem(PENDING_DISCOUNT_KEY);
         }
@@ -268,6 +334,40 @@ export class CartComponent implements OnInit {
         this.modalService.error(extractErrorMessage(err, 'No pudimos procesar tu pedido. Intenta de nuevo.'));
       }
     });
+  }
+
+  // Built from the saved order (not the live cart) so it can be rebuilt
+  // identically whenever the customer comes back to the QR screen.
+  // WhatsApp renders *text* as bold and a blank line as a paragraph break,
+  // so this reads as a formatted receipt instead of one run-on paragraph.
+  // No emoji here on purpose — they showed up as broken boxes in testing
+  // on both desktop and phone once sent through a wa.me link.
+  private buildWhatsappMessage(order: Order): string {
+    const lines = order.items.map(item =>
+      `- ${item.quantity}x ${item.productName} — Bs.${this.orderItemSubtotal(item).toFixed(2)}`
+    );
+
+    const subtotal = this.orderSubtotal(order);
+    const totalLines = order.discountPercent
+      ? [
+          `Por ser mi primer pedido, tengo un descuento del ${order.discountPercent}%.`,
+          '',
+          `Subtotal: Bs.${subtotal.toFixed(2)}`,
+          `Descuento (${order.discountPercent}%): -Bs.${(subtotal - order.total).toFixed(2)}`,
+          `*Total a pagar: Bs.${order.total.toFixed(2)}*`,
+        ]
+      : [`*Total: Bs.${order.total.toFixed(2)}*`];
+
+    return [
+      `¡Hola! Quiero hacer un pedido en *${this.storeName}*:`,
+      '',
+      '*Mi pedido:*',
+      ...lines,
+      '',
+      ...totalLines,
+      '',
+      'Ya realicé el pago, adjunto mi comprobante.',
+    ].join('\n');
   }
 
   // Step 2 (QR payment screen): only now does WhatsApp open, with the order

@@ -66,6 +66,27 @@
   font-size: 0.85rem;
 }
 
+.order-customer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--kpet-purple-700);
+}
+
+.order-customer svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.order-customer-guest {
+  color: var(--kpet-ink-soft);
+  font-weight: 500;
+}
+
 .status-pill {
   display: inline-block;
   padding: 0.3rem 0.9rem;

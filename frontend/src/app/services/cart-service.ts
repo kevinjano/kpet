@@ -8,6 +8,33 @@ import {AuthService} from './auth-service';
 import {ModalService} from './modal-service';
 
 const STORAGE_KEY = 'kpet_cart';
+// Id of the order the customer has already placed and is waiting on the admin
+// to confirm the payment for. While it's set the cart is frozen (it still
+// shows what was ordered) and is only emptied once that order is confirmed —
+// see PendingOrderService. Wiped on logout along with everything else.
+const PENDING_ORDER_KEY = 'kpet_pending_order';
+
+export function getPendingOrderId(): number | null {
+  try {
+    const raw = localStorage.getItem(PENDING_ORDER_KEY);
+    const id = raw ? Number(raw) : NaN;
+    return Number.isFinite(id) ? id : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setPendingOrderId(id: number | null): void {
+  try {
+    if (id === null) {
+      localStorage.removeItem(PENDING_ORDER_KEY);
+    } else {
+      localStorage.setItem(PENDING_ORDER_KEY, String(id));
+    }
+  } catch {
+    // Storage unavailable — the cart just won't stay frozen across reloads.
+  }
+}
 
 /**
  * The single shared cart for the central store checkout flow (WhatsApp + QR).
@@ -58,7 +85,25 @@ export class CartService {
     return this.cartSubject.value;
   }
 
+  // The cart mirrors an order that's already been placed, so changing it now
+  // would make the two disagree. Tells the customer why instead of silently
+  // ignoring the click.
+  private blockedByPendingOrder(): boolean {
+    const pendingId = getPendingOrderId();
+    if (pendingId === null) {
+      return false;
+    }
+    this.modalService.alert({
+      title: 'Pedido pendiente',
+      message: `Tienes el pedido #${pendingId} esperando la confirmación de tu pago. Cuando lo confirmemos (o si lo cancelas) podrás hacer un pedido nuevo.`,
+    });
+    return true;
+  }
+
   async addToCart(product: Product, quantity: number = 1): Promise<void> {
+    if (this.blockedByPendingOrder()) {
+      return;
+    }
     if (!this.authService.isLoggedIn()) {
       const goToLogin = await this.modalService.confirm({
         title: 'Inicia sesión',
@@ -101,10 +146,16 @@ export class CartService {
   }
 
   removeFromCart(productId: number): void {
+    if (this.blockedByPendingOrder()) {
+      return;
+    }
     this.persist(this.cartSubject.value.filter(item => item.product.id !== productId));
   }
 
   updateQuantity(productId: number, quantity: number): void {
+    if (this.blockedByPendingOrder()) {
+      return;
+    }
     if (quantity <= 0) {
       this.removeFromCart(productId);
       return;

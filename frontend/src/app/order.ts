@@ -18,6 +18,9 @@ export interface Order {
   receiptSent: boolean;
   createdAt: string;
   userId: number | null;
+  // Filled in by the admin orders endpoint only: the buyer's name, null for a
+  // checkout without an account.
+  customerName?: string | null;
   discountPercent: number | null;
 }
 

@@ -36,6 +36,12 @@ export class OrderService {
     return this.httpClient.put<Order>(`${this.apiUrl}/${id}/receipt-sent`, {});
   }
 
+  // The customer withdrawing their own order while it's still pending —
+  // the backend rejects anything already confirmed/processed.
+  cancelMyOrder(id: number): Observable<Order> {
+    return this.httpClient.put<Order>(`${this.apiUrl}/${id}/cancel`, {});
+  }
+
   updateStatus(id: number, status: string): Observable<Order> {
     return this.httpClient.put<Order>(`${this.apiUrl}/${id}/status`, {status});
   }

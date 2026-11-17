@@ -68,7 +68,25 @@
     </div>
   </div>
 
-  <div *ngIf="activeTab === 'cart' && items.length === 0" class="empty-cart kpet-fade-up">
+  <div class="pending-order-banner kpet-fade-up" *ngIf="activeTab === 'cart' && pendingOrderId !== null">
+    <div class="pending-order-banner-top">
+      <div class="pending-order-banner-text">
+        <strong>Pedido #{{ pendingOrderId }} pendiente de confirmación de pago</strong>
+        <span>Tu carrito se queda aquí hasta que confirmemos tu pago. Después pasa a tu historial.</span>
+      </div>
+      <span class="history-status-pill status-PENDING_CONFIRMATION">{{ statusLabels['PENDING_CONFIRMATION'] }}</span>
+    </div>
+    <div class="pending-order-banner-actions">
+      <button type="button" class="btn btn-kpet-primary btn-sm" (click)="openPaymentStep()" [disabled]="!pendingOrder || !settingsLoaded">
+        {{ pendingOrder?.receiptSent ? 'Ver mi pago y comprobante' : 'Ir a pagar / enviar comprobante' }}
+      </button>
+      <button type="button" class="btn btn-outline-danger btn-sm" (click)="cancelPendingOrder()" [disabled]="cancellingOrder">
+        {{ cancellingOrder ? 'Cancelando...' : 'Cancelar pedido' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'cart' && items.length === 0 && pendingOrderId === null" class="empty-cart kpet-fade-up">
     <div class="empty-cart-icon">🛒</div>
     <p>Tu carrito está vacío.</p>
     <a routerLink="/" class="btn btn-kpet-primary mt-2">Ir a la tienda</a>
@@ -93,16 +111,17 @@
           </div>
           <div class="col-price">Bs.{{ unitPrice(item).toFixed(2) }}</div>
           <div class="col-qty">
-            <div class="qty-control">
+            <div class="qty-control" *ngIf="pendingOrderId === null; else lockedQty">
               <button type="button" (click)="decrement(item)">−</button>
               <span>{{ item.quantity }}</span>
               <button type="button" (click)="increment(item)" [disabled]="item.quantity >= item.product.stock">+</button>
             </div>
-            <div class="cart-stock-note" *ngIf="item.quantity >= item.product.stock">Máximo disponible</div>
+            <ng-template #lockedQty><span class="locked-qty">{{ item.quantity }}</span></ng-template>
+            <div class="cart-stock-note" *ngIf="pendingOrderId === null && item.quantity >= item.product.stock">Máximo disponible</div>
           </div>
           <div class="col-subtotal fw-bold">Bs.{{ lineTotal(item).toFixed(2) }}</div>
           <div class="col-actions">
-            <button class="btn-remove" type="button" (click)="remove(item)" aria-label="Eliminar">✕</button>
+            <button class="btn-remove" type="button" (click)="remove(item)" aria-label="Eliminar" *ngIf="pendingOrderId === null">✕</button>
           </div>
         </div>
       </div>
@@ -111,7 +130,17 @@
     <div class="col-lg-4">
       <div class="checkout-box kpet-fade-up">
         <h3 class="checkout-title">Resumen</h3>
-        <ng-container *ngIf="pendingDiscountPercent as percent">
+        <ng-container *ngIf="pendingOrder?.discountPercent as orderPercent">
+          <div class="d-flex justify-content-between mb-1 text-muted">
+            <span>Subtotal</span>
+            <span>Bs.{{ orderSubtotal(pendingOrder!).toFixed(2) }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1 discount-line">
+            <span>Descuento por primer pedido ({{ orderPercent }}%)</span>
+            <span>-Bs.{{ (orderSubtotal(pendingOrder!) - pendingOrder!.total).toFixed(2) }}</span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="pendingOrderId === null && pendingDiscountPercent as percent">
           <div class="d-flex justify-content-between mb-1 text-muted">
             <span>Subtotal</span>
             <span>Bs.{{ total.toFixed(2) }}</span>
@@ -123,11 +152,12 @@
         </ng-container>
         <div class="d-flex justify-content-between mb-3">
           <span class="fw-semibold">Total</span>
-          <span class="fw-bold fs-4 total-amount">Bs.{{ discountedTotal.toFixed(2) }}</span>
+          <span class="fw-bold fs-4 total-amount">Bs.{{ (pendingOrder?.total ?? discountedTotal).toFixed(2) }}</span>
         </div>
-        <button class="btn btn-whatsapp w-100" (click)="proceedToPayment()" [disabled]="placingOrder || !settingsLoaded">
+        <button *ngIf="pendingOrderId === null" class="btn btn-whatsapp w-100" (click)="proceedToPayment()" [disabled]="placingOrder || !settingsLoaded">
           {{ placingOrder ? 'Procesando...' : (settingsLoaded ? 'Continuar con mi pedido' : 'Cargando...') }}
         </button>
+        <p *ngIf="pendingOrderId !== null" class="pending-order-note mb-0">Esperando la confirmación de tu pago.</p>
       </div>
     </div>
   </div>
@@ -156,7 +186,8 @@
       <div class="payment-thanks">
         <div class="payment-thanks-icon">✅</div>
         <h2 class="payment-title">¡Gracias por tu compra!</h2>
-        <p class="payment-subtitle">Tu pedido quedó <strong>pendiente de confirmación</strong>. En cuanto verifiquemos tu pago te contactaremos por WhatsApp.</p>
+        <p class="payment-subtitle">Tu pedido quedó <strong>pendiente de confirmación</strong>. En cuanto verifiquemos tu pago te contactaremos por WhatsApp. Tu carrito se queda guardado hasta entonces, y después pasa a tu historial.</p>
+        <button type="button" class="btn btn-outline-secondary mt-2 me-2" (click)="backToCart()">Ver mi pedido</button>
         <a routerLink="/" class="btn btn-kpet-primary mt-2">Volver a la tienda</a>
       </div>
     </ng-template>

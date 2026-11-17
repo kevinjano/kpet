@@ -102,6 +102,9 @@ export class AdminOrdersComponent implements OnInit {
       if (String(o.id).includes(term)) {
         return true;
       }
+      if (o.customerName?.toLowerCase().includes(term)) {
+        return true;
+      }
       return o.items.some(item => item.productName.toLowerCase().includes(term));
     });
   }

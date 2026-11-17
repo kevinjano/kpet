@@ -6,6 +6,7 @@ import { RouterModule} from '@angular/router';
 import { filter, from, switchMap } from 'rxjs';
 import { SiteSettingsService } from './services/site-settings-service';
 import { SiteSettings } from './site-settings';
+import { PendingOrderService } from './services/pending-order-service';
 import { resolveImageUrl, preloadImages } from './constants';
 import { ModalComponent } from './modal/modal.component';
 import { WhatsappBubbleComponent } from './whatsapp-bubble/whatsapp-bubble.component';
@@ -43,6 +44,7 @@ export class AppComponent implements OnInit {
   constructor(
     private siteSettingsService: SiteSettingsService,
     private favoriteService: FavoriteService,
+    private pendingOrderService: PendingOrderService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private meta: Meta,
@@ -51,6 +53,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.favoriteService.loadFavorites();
+    // If the customer has an order waiting on payment confirmation, find out
+    // now whether the admin has confirmed it — that's what empties their cart.
+    this.pendingOrderService.refresh();
     this.waitForInitialContent();
 
     // Shows the paw-bounce overlay for the length of every route transition

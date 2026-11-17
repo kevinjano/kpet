@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DiscountLead;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use App\Support\CsvWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -14,7 +15,28 @@ class OrderController extends Controller
 {
     public function findAll()
     {
-        return response()->json(Order::orderByDesc('createdAt')->get());
+        $orders = Order::orderByDesc('createdAt')->get();
+        $this->attachCustomerNames($orders);
+        return response()->json($orders);
+    }
+
+    // Adds the buyer's name to each order for the admin screens, with one
+    // users query for the whole list. null = checked out without an account;
+    // "Usuario eliminado" = the account was deleted after ordering.
+    private function attachCustomerNames($orders): void
+    {
+        $userIds = $orders->pluck('userId')->filter()->unique()->values();
+        $users = User::whereIn('id', $userIds)->get(['id', 'firstName', 'lastName', 'email'])->keyBy('id');
+
+        foreach ($orders as $order) {
+            if ($order->userId === null) {
+                $order->setAttribute('customerName', null);
+                continue;
+            }
+            $user = $users->get($order->userId);
+            $name = $user ? trim($user->firstName . ' ' . $user->lastName) : '';
+            $order->setAttribute('customerName', $user ? ($name !== '' ? $name : $user->email ?? 'Sin nombre') : 'Usuario eliminado');
+        }
     }
 
     private const STATUS_LABELS_ES = [
@@ -147,6 +169,32 @@ class OrderController extends Controller
         }
         $order->receiptSent = true;
         $order->save();
+        return response()->json($order);
+    }
+
+    // A customer withdrawing their own order while it's still waiting for the
+    // admin to confirm the payment. Only PENDING_CONFIRMATION — nothing has
+    // been deducted from stock yet at that point, so there's nothing to
+    // restock. The first-order discount it used (if any) is handed back so
+    // cancelling doesn't cost them the one discount they're entitled to.
+    public function cancelMine(Request $request, $id)
+    {
+        $order = Order::find($id);
+        $userId = $request->attributes->get('authUserId');
+        if (!$order || $order->userId === null || (string) $order->userId !== (string) $userId) {
+            return response()->json(['error' => 'No encontrado'], 404);
+        }
+        if ($order->status !== Order::PENDING_CONFIRMATION) {
+            return response()->json(['error' => 'Este pedido ya no se puede cancelar porque ya fue procesado.'], 409);
+        }
+
+        DB::transaction(function () use ($order) {
+            $order->status = Order::CANCELLED;
+            $order->save();
+            DiscountLead::where('orderId', $order->id)->update(['redeemedAt' => null, 'orderId' => null]);
+        });
+
+        $order->refresh();
         return response()->json($order);
     }
 
